@@ -1,0 +1,33 @@
+<html id="myApp"><head><style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>
+        <base href="/">
+    </head>
+    <body>
+        <div id="msg"></div>
+        <div ng-controller="MainCtrl as vm" id="mainDiv" class="ng-scope">
+
+            Choose:
+
+            <a href="/Todo">Todo</a> |
+            <a href="/Main" class="ng-binding">Angular Es6 revisited</a>
+            <a href="/Error">Error</a>
+
+            <!-- ngView:  --><div ng-view="" id="prerendered" class="ng-scope"><h3 class="ng-binding ng-scope"></h3>
+
+<ul class="ng-scope">
+    <!-- ngRepeat: todo in vm.todos --><li ng-repeat="todo in vm.todos" ng-class="{'done-true': todo.done}" class="ng-binding ng-scope done-true">
+        <input type="checkbox" ng-value="todo.done" value="true">  learn angular
+    </li><!-- end ngRepeat: todo in vm.todos --><li ng-repeat="todo in vm.todos" ng-class="{'done-true': todo.done}" class="ng-binding ng-scope">
+        <input type="checkbox" ng-value="todo.done" value="false">  build an angular app
+    </li><!-- end ngRepeat: todo in vm.todos -->
+    <li>
+        <input type="text" ng-model="vm.todoText" class="ng-pristine ng-untouched ng-valid ng-empty">
+        <button type="button" ng-click="vm.addTodo()">Add</button>
+    </li>
+</ul></div>
+
+            <hr>
+
+        </div>
+
+    
+<script class="jsdom" src="http://localhost:3002/build-angular-engine/angular.js"></script><script class="jsdom" src="http://localhost:3002/build-angular-engine/angular-resource.js"></script><script class="jsdom" src="http://localhost:3002/build-angular-engine/angular-route.js"></script></body></html>
