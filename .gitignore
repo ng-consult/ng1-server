@@ -1,3 +1,5 @@
 node_modules
-*.log
+server/logs
+server/pid
+server/cache
 .idea

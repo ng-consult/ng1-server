@@ -2,22 +2,27 @@ var md = require('cli-md');
 var fs = require('fs');
 var yargs = require('yargs');
 var jsdom = require("jsdom");
-var utils = require('./utils');
-var util = require('util');
-var vm = require('vm');
+var ads = require('./lib/AngularDomJs');
+var config = require('./config');
+var log = require('./lib/log');
+var cache = require('./lib/cache');
 var StackTrace = require('stacktrace-js');
-var appConfig = require('./config');
 var moment = require('moment');
-
-var serverConfig = appConfig.serverConfig;
-var clientConfig = appConfig.clientConfig;
-
-var path = require('path');
-var MDDoc = {};
-MDDoc.server = fs.readFileSync( path.resolve(  './doc/cli.server.md')).toString();
-MDDoc.client = fs.readFileSync( path.resolve(  './doc/cli.client.md')).toString();
-
+var glob = require("glob")
 var ExpressHelper = require('./express/express');
+
+var cache = cache(config);
+var argv = yargs.argv;
+/****
+ *
+ * WE NEED A CONFIG
+ *
+ *  scripts: config.getJavascriptFiles(config),
+    src: ads.getClientJS(config),
+
+
+ */
+
 
 var app = ExpressHelper.appServer();
 
@@ -25,38 +30,59 @@ ExpressHelper.appStatic(app);
 
 ExpressHelper.appREST(app);
 
-yargs.usage('$0  [args]')
-    .command('server', md(MDDoc.server) , function (yargs, argv) {
+var name = argv.name ? argv.name : new Error('name not set');
+var port = argv.port ? argv.port : 3002;
+var logPath = argv.log ? argv.log : '/var/log/angular-server/';
 
-      var log = utils.getLogFile(serverConfig.appname, 'server');
+var logPath = argv.log ? argv.log : '/var/log/angular-server/';
+var type = argv.type ? argv.type : new Error('type is not set');
+var jsdom = argv.jsdom ? true : false;
+var log = utils.getLogFile(logPath, type);
+var html = argv.html ? argv.html : new Error('html is not set');
 
-      app.get("*", function(req, res, next) {
 
-        var url = req.url;
 
-        c_window = utils.getContext();
-        c_window.console = log;
-        c_window.cacheEngine = new utils.cacheEngine( appConfig.cacheConfig);
 
-        if (c_window.cacheEngine.isCached(url)) {
-          c_window.console.log('rendering cached page for ', url);
-          res.end ( c_window.cacheEngine.getCached(url) );
-          return;
-        }
+app.get("*", function(req, res, next) {
 
+  var url = req.url;
+
+  c_window = ads.getContext();
+  c_window.console = log;
+
+  app.listen(port);
+
+
+  //c_window.cacheEngine = cache;
+  /*
+  if (cache.isCached(url)) {
+    //log() directly inside the angular Context
+    log('rendering cached page for ', url);
+    res.end ( cache.getCached(url) );
+    return;
+  }
+  */
+
+  if (jsdom) {
+
+
+  } else {
+      log.info(req.url);
+      return res.end( ExpressHelper.getClientHtml() );
+  });
+
+
+    console.log('App listening on ', port, 'Access client on http://localhost:', port);
+  }
         config = {
-          file: 'index.server.html',
-          scripts: [
-              "http://localhost:3002/build-angular-engine/angular.js",
-              "http://localhost:3002/build-angular-engine/angular-resource.js",
-              "http://localhost:3002/build-angular-engine/angular-route.js"
-          ],
-          src: utils.getClientJS(),
+          file: html,
+          scripts: config.getJavascriptFiles(config),
+          src: ads.getClientJS(config),
           features: {
             FetchExternalResources :  false,
             ProcessExternalResources:  false
           },
-          url: 'http://localhost:3002' + url,
+          url: 'http://localhost:' + port + '/' + url,
           virtualConsole: jsdom.createVirtualConsole().sendTo(c_window.console),
           created: function (err, window) {
             if (err) {
@@ -66,8 +92,7 @@ yargs.usage('$0  [args]')
             }
             window.scrollTo = function () {};
             window.onServer = true;
-            window.fs = fs;
-            window.logFiles = serverConfig.logFiles;
+            window.appName = name;
             window.clientConfig = clientConfig;
             window.addEventListener('error', function(err) {
               c_window.cacheEngine.removeCache(url);
@@ -160,16 +185,8 @@ yargs.usage('$0  [args]')
     })
     .command('client', md(MDDoc.client), function() {
 
-      var log = utils.getLogFile(clientConfig.app.name, 'client');
 
-      app.get("*", function(req, res, next) {
-        log.info(req.url);
-        return res.end( ExpressHelper.getClientHtml() );
-      });
 
-      app.listen(3004);
-
-      console.log('App listening on 3004, Access client on http://localhost:3004');
     })
     .demand(1)
     .help('help')

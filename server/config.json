@@ -1,0 +1,45 @@
+
+{
+    "path": {
+    "log": "./logs/",
+    "pid": "./pid/",
+    "angular-name": "es6Angular",
+    "html_views": [
+      "./../src/views"
+    ],
+    "statics": [
+      "./../src/",
+      "./../build/"
+    ],
+    "scripts": [
+      "./../dist/client/app.js"
+    ]
+    "servers": [
+      {
+        "type": "server"
+        "port": 3002,
+        "pre_render": true,
+        "bootstrap_selector": "document",
+        "index_html": "./../index.server.html",
+        "doc": "JsDOM Pre Renderer"
+      }
+
+    ]
+  },
+  {
+    "name": {
+      "angular": "myApp",
+      "server": "client"
+    },
+    "port": 3004,
+    "net_root": "localhost",
+    "pre_render": false,
+    "files": {
+      "index_html": "./../index.es7.html"
+    },
+    "path": {
+      "log": "./logs/",
+      "pid": "./pid/"
+    }
+  }
+]

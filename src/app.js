@@ -2,9 +2,11 @@ import ErrorCtrl from './controllers/Error';
 import MainCtrl  from './controllers/Main';
 import TodoCtrl  from './controllers/Todo';
 import Routes from './routes';
-
-import { AngularClient } from './client';
 import ProductList from './directives/ProductList';
+
+// dream
+//import { AngularClient } from './client';
+
 
 var moduleName='myApp';
 
@@ -17,7 +19,9 @@ window[moduleName] = angular
                         .directive('productList',ProductList);
 
 
+/** Dream
 
 if ( typeof window.onServer === 'undefined') {
     AngularClient(angular, document, 100);
 }
+ */
