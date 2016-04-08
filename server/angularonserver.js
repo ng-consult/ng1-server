@@ -98,6 +98,20 @@ yargs.usage('$0  [args]')
 
             //var $log = angularApp.invoke( function($log) {return $log;} );
             var $window = angularApp.invoke( function($window) {return $window;});
+            
+            /**
+             * Get rid of the exception Handler issue
+             * https://github.com/angular/zone.js/issues/29
+             * */
+             /* 
+            module.config(function($provide) {
+			  $provide.decorator('$exceptionHandler', function($exceptionHandler) {
+				   return function(error, cause) {
+						$exceptionHandler(error, cause);
+						throw error;
+				   };
+			   });
+			});*/
 
             var rendering = false;
 
