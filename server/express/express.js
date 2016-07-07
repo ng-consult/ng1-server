@@ -63,28 +63,6 @@ exports.appServer = function() {
 
 exports.appREST = function(app) {
 
-    var getProducts = function(req, res) {
-        setTimeout( function() {
-            console.log('Sending back products');
-            return res.end(JSON.stringify([
-                {
-                    name: 'test',
-                    price: 1
-                },
-                {
-                    name: 'test2',
-                    price: 2,
-                }]))
-        },2000);
-    };
-
-    app.get('//products', function(req, res, next) {
-        return getProducts(req, res);
-    });
-
-    app.get('/products', function(req, res, next) {
-        return getProducts(req, res);
-    });
-
+   
     return app;
 };

@@ -1,34 +1,21 @@
+### simple to use angularRendere middle ware
 
-### Router Caching & configuration
+### record execution time server vs client
 
-Define the caching strategy on the server in a separate config file that supports URL rewriting (Apapche style): 
+### cors
+
+- inject origial domain
+
+### AngularJS hack
+
+- ajax calls caching???
 
 
-```javascript
-{
+### fixes
 
-  '/blog/[a-z]+/([0-9]+)': {
-     server: true,
-     strategy: function(id) { //id is coming from the regex extraction
-        var cachingDate = CacheService.getCachingDate('blog', id);
-        var lastModificationDate = Blog.getLastModificationDate(id);
-        return cachingDate < lastModificationDate;
-     }
-  },
-  '/weather/[a-z]*': {
-     strategy: 3600 //re-generate the cache every hour
-  },
-  '/stocks/.*': {
-     server: true,
-     strategy: false, // never use the cache for this url 
-   },
-  '/chat/.*': {
-       server: false, // No server rendering - serve <div ng-view></div> instead 
-   },
-}
-```
+- double slashes on ajax calls and views
 
-### httpBackend Caching
+### httpBackend Caching (HardCore caching)
 
 Define the httpBackend caching strategy
 
