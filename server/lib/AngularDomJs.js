@@ -2,16 +2,8 @@
  * Created by antoine on 16/02/16.
  */
 
-var Contextify = require('contextify');
+var contextify = require('contextify');
 var fs = require('fs');
-var moment = require('moment');
-var path = require('path');
-var bunyan = require('bunyan');
-
-
-var rootPath = __dirname + '/../';
-
-
 
 
 /**
@@ -36,10 +28,10 @@ exports.getClientJS = function( config ) {
 
 /**
  *
- * @returns {Contextify}
+ * @returns {contextify}
  */
 exports.getContext = function(){
-    c_window = Contextify({
+    c_window = contextify({
         console : console
     });
     c_window.window = c_window.getGlobal();
@@ -49,7 +41,7 @@ exports.getContext = function(){
 
 /**
  *
- * @param c_window  {Contextify}
+ * @param c_window  {contextify}
  * @param window {window}
  */
 exports.closeSession = function( c_window, window ) {
@@ -71,7 +63,7 @@ exports.closeSession = function( c_window, window ) {
 
 /**
  *
- * @param c_window {Contextify}
+ * @param c_window {contextify}
  * @param timeouts {Array}
  * @returns {string}
  */

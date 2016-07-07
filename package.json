@@ -17,6 +17,7 @@
     "hbs": "^4.0.0",
     "helmet": "^1.1.0",
     "jsdom": "^8.0.2",
+    "jsonschema": "^1.1.0",
     "lodash": "^4.5.1",
     "moment": "^2.11.2",
     "ng-forward": "0.0.1-alpha.12",

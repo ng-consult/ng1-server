@@ -34,6 +34,4 @@ export const AngularClient = (angular, document, timeout) => {
         var view = '<div id="prerendered"></div>';
         document.body.appendChild(view);
     }
-
-
-}
+};

@@ -232,18 +232,13 @@ var ServerConfig = function() {
 
 
     var validateFileArray = function(files, type) {
-        if (typeof files !== 'array') {
-            throw 'invalid ' + type + ' files';
-        }
         files.forEach(function(file) {
             validateFilePath(file);
         })
     };
 
     var validateFilePath = function(file) {
-        if (typeof file !== 'string') {
-            throw new Error('FilePath ' + file + ' is not a string');
-        }
+        
         if (!fs.existsSync( file)) {
             throw new Error('This file doesn\'t exist: ' + file);
         }
