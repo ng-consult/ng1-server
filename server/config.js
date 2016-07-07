@@ -1,18 +1,26 @@
 /**
- * Created by antoine on 15/02/16.
+ * Created by antoine on 07/07/16.
  */
-
-var fs = require('fs');
-var path = require('path');
-
-var AngularServerConfig = require('./lib/AngularServerConfig');
-
-var angularServerConfig = new AngularServerConfig( fs,readFileSync( path.resolve(__dirname + './config.json') ) );
-
-angularServerConfig.addJavascriptFiles([path.resolve('./../dist/client/app.js')]);
-
-angularServerConfig.addViewPaths([path.resolve('./../src/views')]);
-
-angularServerConfig.validateServerConfig();
-
-module.exports = angularServerConfig;
+module.exports = {
+    name: "myApp",
+    path: {
+        log: path.resolve( __dirname + '/logs'),
+        pid: path.resolve( __dirname + '/pids'),
+        scripts: [],
+    },
+    server: {
+        domain: '',
+        port: 3000,
+        pre_render: true,
+    },
+    cache: {
+        type: 'file',
+        fileDir: path.resolve( __dirname + '/cache'),
+        cacheMaxAge: [],
+        cacheAlways: [],
+        cacheNever: [{
+            regex: /.*/
+        }],
+        cacheTimeStamp: []
+    }
+};

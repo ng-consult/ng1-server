@@ -10,25 +10,25 @@ module.exports =  function(config, type) {
 
     var log = bunyan.createLogger(
         {
-            name: config.getAppName() + '.' + type,
+            name: config.name + '.' + type,
             streams: [
                 {
                     level: 'info',
-                    stream:  path.join(config.getLogBasePath(), type + '-info.log' )
+                    stream:  path.join(config.path.log, type + '-info.log' )
                 },
                 {
                     level: 'error',
                     src: true,
-                    path: path.join(config.getLogBasePath(), type + '-error.log' )
+                    path: path.join(config.path.log, type + '-error.log' )
                 },
                 {
                     level: 'debug',
-                    path: path.join(config.getLogBasePath(), type + '-debug.log' )
+                    path: path.join(config.path.log, type + '-debug.log' )
                 },
                 {
                     level: 'warn',
                     src: true,
-                    path: path.join(config.getLogBasePath(), type + '-warn.log' )
+                    path: path.join(config.path.log, type + '-warn.log' )
                 }
             ],
             serializers: bunyan.stdSerializers
@@ -37,7 +37,7 @@ module.exports =  function(config, type) {
 
     log.log = function() {
         return log.debug(arguments);
-    }
+    };
 
     return log;
 };

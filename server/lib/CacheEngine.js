@@ -1,47 +1,17 @@
 /**
  * Created by antoine on 26/02/16.
  */
-var configValidation = require('./configValidation');
+var crypto = require('crypto');
+var fs = require('fs');
 
-/**
- *
- * @param config {AngularServerConfig}
- */
-module.exports = function() {
-
-    var _configLoaded = false;
-    var _config = null;
-    //current URL
-    var _currentUrl = null;
+var cacheUrl = function(md5, url, config) {
+    var _config = config;
+    var _currentUrl = url;
     var _currentFilePath = null;
-    var _currentCategory = null;
-    var _currentMaxAge = null;
 
-
-    var that = this;
-
-    this.loadConfig = function(config) {
-        var  configValid = configValidation(config);
-        if(!configValid){
-            throw new Error('Server config is invalid');
-        }
-        _configLoaded = true;
-        _config = config.cache;
-    };
-
-    this.setCurrentUrl = function(url) {
-        _currentUrl = url;
-        getCacheCategory();
-        if( _config.type === 'file') {
-            _currentFilePath = path.join( this.cacheConfig.fileDir, url);
-        }
-    };
 
 
     var isFileCached = function() {
-        if (_currentUrl === null) {
-            throw new Error('Current Cached url not set');
-        }
         return fs.existsSync(_currentFilePath);
     };
 
@@ -58,26 +28,26 @@ module.exports = function() {
 
     //return always|never|maxAge|timestamp|default
     var getCacheCategory = function() {
-        this.cacheConfig.cacheNever.forEach(function( u ) {
+        _config.cacheNever.forEach(function( u ) {
             if (getRegexTest (u) === true) {
                 _currentCategory = 'never';
                 return;
             }
         });
-        this.cacheConfig.cacheAlways.forEach(function( u ) {
+        _config.cacheAlways.forEach(function( u ) {
             if (getRegexTest (u) === true) {
                 _currentCategory = 'always';
                 return;
             }
         });
-        this.cacheConfig.cacheMaxAge.forEach(function( u ) {
+        _config.cacheMaxAge.forEach(function( u ) {
             if (getRegexTest (u) === true) {
                 _currentCategory = 'maxAge';
                 _currentMaxAge = u.maxAge;
                 return;
             }
         });
-        this.cacheConfig.cacheTimestamp.forEach(function( u ) {
+        _config.cacheTimestamp.forEach(function( u ) {
             if (getRegexTest (u) === true) {
                 _currentCategory = 'timestamp';
                 return;
@@ -87,7 +57,7 @@ module.exports = function() {
     };
 
 
-    var isCacheExpired = function(url) {
+    var isCacheExpired = function() {
         if ( _currentCategory === 'maxAge' ) {
             if (_config.type === 'file') {
                 var stats = fs.statSync( _currentFilePath );
@@ -108,27 +78,35 @@ module.exports = function() {
 
     var removeFileCache = function() {
         fs.unlinkSync( _currentFilePath );
-    }
-
-
-    this.isFileCached = function() {
-        if ( fs.existsSync( _currentFilePath === false) {
-            return false;
-        }
-        if ( isCacheExpired() ) {
-            removeFileCache();
-            return false;
-        }
-        return true;
     };
 
-    this.getFileCached = function(url) {
-        return fs.readFileSync(_currentFilePath);
+
+    this.isCached = function() {
+        if (_config.type === 'none') {
+            return false;
+        }
+        if (_config.type === 'file') {
+
+            if ( fs.existsSync( _currentFilePath === false)) {
+                return false;
+            }
+            if ( isCacheExpired() ) {
+                removeFileCache();
+                return false;
+            }
+            return true;
+        }
+    };
+
+    this.getCached = function() {
+        if( _config.type === 'file') {
+            return fs.readFileSync(_currentFilePath);
+        }
     };
 
     this.cacheIt = function(html, force) {
 
-        switch(this.cacheConfig.type) {
+        switch(_config.type) {
             case 'none':
                 return false;
             case 'file':
@@ -137,7 +115,7 @@ module.exports = function() {
                     return true;
                 }
 
-                if (this.isFileCached()) {
+                if (isFileCached()) {
                     return false;
                 }
                 if (_currentCategory === 'never') {
@@ -150,4 +128,31 @@ module.exports = function() {
         }
     };
 
-}
+    this.removeCache = function() {
+        if (_config.type === 'file') {
+            removeFileCache();
+        }
+    };
+
+    // Init the object;
+    getCacheCategory();
+    if( _config.type === 'file') {
+        _currentFilePath = path.join( _config.fileDir, url + '__' + md5);
+    }
+
+
+};
+/**
+ *
+ * @param config {AngularServerConfig}
+ */
+exports.cacheEngine = function(config) {
+
+    var _config = config.cache;
+
+    this.loadUrl = function(html, url){
+
+        return new cacheUrl(crypto.createHash('md5').update(html).digest("hex"), url, _config);
+    };
+
+};

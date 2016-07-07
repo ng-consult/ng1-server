@@ -71,12 +71,10 @@ exports.getHTML = function(c_window, timeouts) {
 
     var scope = c_window.window.angular.element(c_window.document).scope();
     scope.$apply();
-    var html = '<html id="myApp">'
-        + c_window.window.document.children[0].innerHTML
-        + '</html>';
 
     for (var i in timeouts) {
         clearTimeout( timeouts[i]);
     }
-    return html;
+    
+    return c_window.window.document.children[0].innerHTML;
 };

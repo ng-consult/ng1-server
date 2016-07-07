@@ -45,6 +45,7 @@ module.export  = function(config) {
                     }
                 ]
             },
+            domain: {type: "string"},
             port: {type: "integer"},
             pre_render:{type: "boolean"},
             bootstrap_selector: {type: "string"},
@@ -117,6 +118,7 @@ module.export  = function(config) {
         "id": "/Config",
         "type": "object",
         "properties": {
+            "name": { type: "string"},
             "path": {"$ref": "/Path"},
             "server": { "$ref": "/Server"},
             "cache": { "$ref": "/Cache"}
