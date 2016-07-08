@@ -3,12 +3,18 @@
  */
 var crypto = require('crypto');
 var fs = require('fs');
+var path = require('path');
+var shell = require('shelljs');
 
-var cacheUrl = function(md5, url, config) {
+
+var cacheUrl = function(url, config) {
     var _config = config;
     var _currentUrl = url;
     var _currentFilePath = null;
+    var _currentMaxAge = null;
+    var _currentCategory = null;
 
+    console.log('New cacheUrl: ', url, config);
 
 
     var isFileCached = function() {
@@ -47,6 +53,7 @@ var cacheUrl = function(md5, url, config) {
                 return;
             }
         });
+        console.log(_config);
         _config.cacheTimestamp.forEach(function( u ) {
             if (getRegexTest (u) === true) {
                 _currentCategory = 'timestamp';
@@ -87,7 +94,7 @@ var cacheUrl = function(md5, url, config) {
         }
         if (_config.type === 'file') {
 
-            if ( fs.existsSync( _currentFilePath === false)) {
+            if ( fs.existsSync( _currentFilePath) === false) {
                 return false;
             }
             if ( isCacheExpired() ) {
@@ -137,7 +144,7 @@ var cacheUrl = function(md5, url, config) {
     // Init the object;
     getCacheCategory();
     if( _config.type === 'file') {
-        _currentFilePath = path.join( _config.fileDir, url + '__' + md5);
+        _currentFilePath = path.join( _config.fileDir, url );
     }
 
 
@@ -146,13 +153,17 @@ var cacheUrl = function(md5, url, config) {
  *
  * @param config {AngularServerConfig}
  */
-exports.cacheEngine = function(config) {
+module.exports = function(config) {
 
     var _config = config.cache;
 
+    if (_config.type === 'file') {
+        shell.mkdir('-p', _config.fileDir);
+    }
+
     this.loadUrl = function(html, url){
 
-        return new cacheUrl(crypto.createHash('md5').update(html).digest("hex"), url, _config);
+        return new cacheUrl(url, _config);
     };
 
 };

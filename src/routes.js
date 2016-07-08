@@ -30,8 +30,9 @@ export default function($routeProvider, $locationProvider, $sceProvider) {
         controllerAs: 'vm'
     });
 
-    $routeProvider.otherwise('/Main');
+    //$locationProvider.hashPrefix('!!!');
 
+    $routeProvider.otherwise('/Main');
 
     $locationProvider.html5Mode(true);
 

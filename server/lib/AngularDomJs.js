@@ -6,75 +6,65 @@ var contextify = require('contextify');
 var fs = require('fs');
 
 
-/**
- *
- * @param config {AngularServerConfig}
- * @returns {Array}
- */
-exports.getClientJS = function( config ) {
-    var javascriptFiles = config.getJavascriptFiles();
-    javascriptFiles.forEach( function (file) {
-        if (!fs.existsSync(file)) {
-            throw new Error('The file ' + file + 'does\t exists.');
-        }
-    });
+var AngularDomJS = function(config) {
 
-    var fileSrc = [];
-    for(var i in javascriptFiles) {
-        fileSrc[i] = fs.readFileSync(javascriptFiles[i] , 'utf8');
-    }
-    return fileSrc;
-};
-
-/**
- *
- * @returns {contextify}
- */
-exports.getContext = function(){
-    c_window = contextify({
+    this.config = config;
+    this.c_window = contextify({
         console : console
     });
-    c_window.window = c_window.getGlobal();
-    c_window.window.fs = fs;
-    return c_window;
-}
+    this.c_window.window = this.c_window.getGlobal();
+    this.c_window.window.fs = fs;
 
-/**
- *
- * @param c_window  {contextify}
- * @param window {window}
- */
-exports.closeSession = function( c_window, window ) {
-    if (!window) {
-        throw 'No window provided';
-    }
-    window.close();
-    if (c_window) {
-        try {
-            c_window.dispose();
+
+    this.getClientJS = function() {
+        var javascriptFiles = this.config.server.jsFiles;
+        javascriptFiles.forEach( function (file) {
+            if (!fs.existsSync(file)) {
+                throw new Error('The file ' + file + 'does\t exists.');
+            }
+        });
+
+        var fileSrc = [];
+        for(var i in javascriptFiles) {
+            fileSrc[i] = fs.readFileSync(javascriptFiles[i] , 'utf8');
         }
-        catch (e) {
-            console.error('c_window.dispose() error');
+        return fileSrc;
+    };
+
+    this.getContext = function(){
+        return this.c_window;
+    };
+
+    this.closeSession = function(window ) {
+        if (!window) {
+            throw 'No window provided';
         }
-    } else {
-        console.error('No c_window provided');
-    }
-}
+        window.close();
+        if (this.c_window) {
+            try {
+                this.c_window.dispose();
+            }
+            catch (e) {
+                console.error('c_window.dispose() error');
+            }
+        } else {
+            console.error('No c_window provided');
+        }
+    };
 
-/**
- *
- * @param c_window {contextify}
- * @param timeouts {Array}
- * @returns {string}
- */
-exports.getHTML = function(c_window, timeouts) {
+    this.getHTML = function(timeouts) {
 
-    var scope = c_window.window.angular.element(c_window.document).scope();
-    scope.$apply();
+        var scope = this.c_window.window.angular.element(this.c_window.document).scope();
+        scope.$apply();
 
-    for (var i in timeouts) {
-        clearTimeout( timeouts[i]);
-    }
-    
-    return c_window.window.document.children[0].innerHTML;
+        for (var i in timeouts) {
+            clearTimeout( timeouts[i]);
+        }
+
+        return this.c_window.window.document.children[0].innerHTML;
+    };
+
 };
+
+
+module.exports = AngularDomJS;

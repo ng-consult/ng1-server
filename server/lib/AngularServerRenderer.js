@@ -4,12 +4,12 @@
 
 var angularDomJs = require('./AngularDomJs');
 var cacheEngine = require('./CacheEngine');
-var Q = require('Q');
-
+var Q = require('q');
+var jsdom = require('jsdom');
 
 var AngularServerRenderer = function(config) {
-    var cache = cacheEngine(config.cache);
 
+    var cache = new cacheEngine(config);
 
     this.render = function(html, url) {
         var defer = Q.defer();
@@ -17,11 +17,13 @@ var AngularServerRenderer = function(config) {
         if( cacheUrl.isCached()) {
             defer.resolve( cacheUrl.getCached() );
         } else {
-            var c_window = angularDomJs.getContext();
+            var angularDom = new angularDomJs(config);
+            var c_window = angularDom.c_window;
+
             c_window.cacheUrl = cacheUrl;
-            var config = {
+            var jsDomConfig = {
                 html: html,
-                src: angularDomJs.getClientJS(config),
+                src: angularDom.getClientJS(),
                 features: {
                     FetchExternalResources :  false,
                     ProcessExternalResources:  false
@@ -50,7 +52,7 @@ var AngularServerRenderer = function(config) {
                         //@todo manually write inside serverConfig.logFiles.error.path
                         c_window.cacheUrl.removeCache();
                         c_window.console.error('ERR CATCHED IN DONE', err);
-                        angularDomJs.closeSession(c_window, window);
+                        angularDom.closeSession(window);
                         defer.reject(err);
                         return;
                     }
@@ -91,16 +93,16 @@ var AngularServerRenderer = function(config) {
                         c_window.console.error("AngularContextException caught on server");
                         c_window.console.error(e);
                         defer.reject(err);
-                        utils.closeSession(c_window, window);
+                        angularDom.closeSession(window);
                     });
 
                     $window.addEventListener('IdleState', function () {
                         c_window.console.log('IdleState event caught !');
                         if (rendering) return;
                         rendering = true;
-                        var html = angularDomJs.getHTML(c_window, [ serverTimeout ]);
+                        var html = angularDom.getHTML([ serverTimeout ]);
                         c_window.cacheUrl.cacheIt(html);
-                        angularDomJs.closeSession(c_window, window);
+                        angularDom.closeSession(window);
                         c_window.console.log('server done');
                         defer.resolve(html);
                     });
@@ -110,8 +112,8 @@ var AngularServerRenderer = function(config) {
                         c_window.console.error('SERVER TIMEOUT ! ! !');
                         //@todo Get the error URl here
                         rendering = true;
-                        const html = angularDomJs.getHTML(c_window, [ serverTimeout ]);
-                        angularDomJs.closeSession(c_window, window);
+                        var html = angularDomJs.getHTML( [ serverTimeout ]);
+                        angularDom.closeSession( window);
                         c_window.cacheUrl.removeCache();
                         defer.resolve( html );
                     }, serverConfig.timeout);
@@ -121,13 +123,14 @@ var AngularServerRenderer = function(config) {
                 document: {
                     referer: '',
                     cookie: 'key=value; expires=Wed, Sep 21 2011 12:00:00 GMT; path=/',
-                    cookieDomain: '127.0.0.1'
+                    cookieDomain: config.server.domain
                 }
             };
 
+            console.log('jsDomConfig', jsDomConfig);
 
             jsdom.debugMode = false;
-            jsdom.env(config);
+            jsdom.env(jsDomConfig);
 
         }
 

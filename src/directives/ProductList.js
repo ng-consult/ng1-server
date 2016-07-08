@@ -3,13 +3,12 @@ export default function($http) {
         restrict: 'E',
         replace: true,
         transclude: false,
-        //scope: { products: { data: [ { name: 'test', price: 1 }] } },
-        template: '<li ng-repeat="product in products">{{product.name}} {{product.price}}</li>',
+        template: '<div><span ng-show="loading">loading products</span> <li ng-repeat="product in products">{{product.name}} {{product.price}}</li></div>',
         link: function (scope, element, attrs) {
-
-            $http.get('/products').success(function (data) {
-                //console.log(data);
+            scope.loading = true;
+            $http.get('http://api.example:8080/products').success(function (data) {
                 scope.products = data;
+                scope.loading = false;
             });
         }
     };

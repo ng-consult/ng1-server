@@ -1,17 +1,23 @@
 /**
  * Created by antoine on 07/07/16.
  */
+var path = require('path');
+
 module.exports = {
     name: "myApp",
     path: {
         log: path.resolve( __dirname + '/logs'),
-        pid: path.resolve( __dirname + '/pids'),
-        scripts: [],
+        pid: path.resolve( __dirname + '/pids')
     },
     server: {
         domain: '',
         port: 3000,
-        pre_render: true,
+        jsFiles: [
+            path.resolve( __dirname + './../build-angular-engine/angular.js'),
+            path.resolve( __dirname + './../build-angular-engine/angular-resource.js'),
+            path.resolve( __dirname + './../build-angular-engine/angular-route.js'),
+            path.resolve( __dirname + './../dist/client/app.js')
+        ]
     },
     cache: {
         type: 'file',
@@ -21,6 +27,6 @@ module.exports = {
         cacheNever: [{
             regex: /.*/
         }],
-        cacheTimeStamp: []
+        cacheTimestamp: []
     }
 };
