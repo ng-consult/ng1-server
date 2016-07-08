@@ -62,7 +62,7 @@ var AngularDomJS = function(config) {
             clearTimeout( timeouts[i]);
         }
 
-        return this.c_window.window.document.children[0].innerHTML;
+        return this.c_window.window.document.body.innerHTML;
     };
 
 };
