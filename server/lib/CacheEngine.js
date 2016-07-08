@@ -84,7 +84,11 @@ var cacheUrl = function(url, config) {
 
 
     var removeFileCache = function() {
-        fs.unlinkSync( _currentFilePath );
+        try {
+            fs.unlinkSync( _currentFilePath );
+        } catch (e) {}
+
+
     };
 
 

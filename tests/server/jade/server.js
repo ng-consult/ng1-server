@@ -49,15 +49,18 @@ appServer.get('/*', function(req, res, next) {
     // Compile the template to a function string
     var url = req.url;
 
-    console.log(req);
     var jadeAngularHtml = jade.renderFile('./views/angular.jade', {});
 
-    console.log('jadeAngularHtml', jadeAngularHtml);
-
     var html = angularServer.render(jadeAngularHtml, url);
-    console.log('html', html);
+    html.then(function(result) {
+        console.log('html promise ok', result);
+        res.render('index', { angularServerHtml: result });
+    }).fail(function(err) {
+        console.log('html promise fail', err);
+        res.render('index', { angularServerHtml: err });
+    });
 
-    res.render('index', { angularServerHtml: html });
+
 });
 
 

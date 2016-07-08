@@ -31,10 +31,10 @@ apiServer.get("*", function(req, res, next) {
 
     var oneof = false;
     if(req.headers.origin) {
-        if (/noserver/.test(req.headers.origin)) {
+        //if (/noserver/.test(req.headers.origin) || /server/.test(req.headers.origin)) {
             res.header('Access-Control-Allow-Origin', req.headers.origin);
             oneof = true;
-        }
+        //}
     }
     if(req.headers['access-control-request-method']) {
         res.header('Access-Control-Allow-Methods', req.headers['access-control-request-method']);
@@ -53,6 +53,7 @@ apiServer.get("*", function(req, res, next) {
         res.send(200);
     }
     else {
+        console.log('Headers = ', res.headers);
         next();
     }
 });

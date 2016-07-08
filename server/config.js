@@ -10,8 +10,9 @@ module.exports = {
         pid: path.resolve( __dirname + '/pids')
     },
     server: {
-        domain: '',
+        domain: 'server.example',
         port: 3000,
+        timeout: 15000,
         jsFiles: [
             path.resolve( __dirname + './../build-angular-engine/angular.js'),
             path.resolve( __dirname + './../build-angular-engine/angular-resource.js'),

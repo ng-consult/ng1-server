@@ -13,6 +13,7 @@ var AngularDomJS = function(config) {
         console : console
     });
     this.c_window.window = this.c_window.getGlobal();
+    this.c_window.window.config = config;
     this.c_window.window.fs = fs;
 
 

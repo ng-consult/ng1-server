@@ -11,6 +11,10 @@ var AngularServerRenderer = function(config) {
 
     var cache = new cacheEngine(config);
 
+    this.generateDoc = function(html) {
+        return '<html id="'+config.name+'"><head><base href="/"/></head><body>'+html+'</body></html>';
+    }
+
     this.render = function(html, url) {
         var defer = Q.defer();
         var cacheUrl = cache.loadUrl(html, url);
@@ -22,13 +26,13 @@ var AngularServerRenderer = function(config) {
 
             c_window.cacheUrl = cacheUrl;
             var jsDomConfig = {
-                html: html,
+                html: this.generateDoc(html),
                 src: angularDom.getClientJS(),
                 features: {
                     FetchExternalResources :  false,
                     ProcessExternalResources:  false
                 },
-                url: 'http://' + config.server.domain +':' + config.server.port + '/' + url,
+                url: 'http://' + config.server.domain +':' + config.server.port +  url,
                 virtualConsole: jsdom.createVirtualConsole().sendTo(c_window.console),
                 created: function (err, window) {
                     if (err) {
@@ -96,8 +100,8 @@ var AngularServerRenderer = function(config) {
                         angularDom.closeSession(window);
                     });
 
-                    $window.addEventListener('IdleState', function () {
-                        c_window.console.log('IdleState event caught !');
+                    $window.addEventListener('StackQueueEmpty', function () {
+                        c_window.console.log('StackQueueEmpty event caught !');
                         if (rendering) return;
                         rendering = true;
                         var html = angularDom.getHTML([ serverTimeout ]);
@@ -112,11 +116,11 @@ var AngularServerRenderer = function(config) {
                         c_window.console.error('SERVER TIMEOUT ! ! !');
                         //@todo Get the error URl here
                         rendering = true;
-                        var html = angularDomJs.getHTML( [ serverTimeout ]);
+                        var html = angularDom.getHTML( [ serverTimeout ]);
                         angularDom.closeSession( window);
                         c_window.cacheUrl.removeCache();
                         defer.resolve( html );
-                    }, serverConfig.timeout);
+                    }, config.server.timeout);
 
 
                 },
@@ -127,11 +131,14 @@ var AngularServerRenderer = function(config) {
                 }
             };
 
-            console.log('jsDomConfig', jsDomConfig);
 
             jsdom.debugMode = false;
             jsdom.env(jsDomConfig);
 
+
+            var test = jsDomConfig;
+            test.src = null
+            console.log('jsDomConfig', test);
         }
 
         return defer.promise;
