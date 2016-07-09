@@ -6,89 +6,17 @@ var express = require('express');
 var angularDomServer = require('./../../../server/lib/AngularServerRenderer');
 var vhost = require('vhost');
 var path = require('path');
+var classicServer = require('./classic.server');
+var preRenderServer = require('./pre-render.server');
 
 var server = express();
-var appClient = express();
-var appServer = express();
-
-
-appClient.set('views', __dirname + '/views');
-appClient.set('view engine', 'jade');
-
-appClient.use(express.static( path.resolve(__dirname + '/../../../')));
-appClient.use('/views', express.static( path.resolve(__dirname + '/../../../src/views')));
-appClient.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/client')));
-
-
-appClient.get("*", function(req, res, next) {
-    var url = req.url;
-    console.log('API SERVER REQUESTING ', url);
-    next();
-});
-
-
-appClient.get('/*', function(req, res, next) {
-    // Compile the template to a function string
-    res.render('index-no-server');
-});
-
-
-
-var config = require('./../../../server/config');
-var angularServer = new angularDomServer(config);
-
-appServer.set('views', __dirname + '/views');
-appServer.set('view engine', 'jade');
-appServer.use(express.static( path.resolve(__dirname + '/../../../')));
-appServer.use('/views', express.static( path.resolve(__dirname + '/../../../src/views')));
-appServer.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/client')));
-appServer.get('/*', function(req, res, next) {
-
-    var jade = require('jade');
-
-    // Compile the template to a function string
-    var url = req.url;
-
-    var jadeAngularHtml = jade.renderFile('./views/angular.jade', {});
-
-    var html = angularServer.render(jadeAngularHtml, url);
-    html.then(function(result) {
-        console.log('html promise ok', result);
-        res.render('index', { angularServerHtml: result });
-    }).fail(function(err) {
-        console.log('html promise fail', err);
-        res.render('index', { angularServerHtml: err });
-    });
-
-
-});
-
 
 // add vhost routing to main app for mail
-server.use(vhost('noserver.example', appClient));
-server.use(vhost('server.example', appServer));
+server.use(vhost('noserver.example', classicServer));
+server.use(vhost('server.example', preRenderServer));
 
 server.set('port', 3000);
 server.listen(server.get('port'));
+
 console.log('server started on noserver.example:3000 ');
-
-/*
-
-var angularServer = angularDomServer.init(config);
-
-app.set('views', __dirname + '/views');
-app.set('view engine', 'jade');
-app.use(express.static(__dirname + '/public'));
-
-app.get('/index.html', function(req, res, next) {
-
-    // Compile the template to a function string
-    var url = getPageUrl();
-
-    var jadeAngularHtml = jade.renderFile('./views/angular.jade', options);
-
-    var html = angularServer.render(jadeAngularHtml, url);
-
-    res.render('index', { angularServerHtml: html });
-});
-*/
+console.log('server started on server.example:3000 ');

@@ -134,11 +134,6 @@ var AngularServerRenderer = function(config) {
 
             jsdom.debugMode = false;
             jsdom.env(jsDomConfig);
-
-
-            var test = jsDomConfig;
-            test.src = null
-            console.log('jsDomConfig', test);
         }
 
         return defer.promise;

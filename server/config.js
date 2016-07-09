@@ -23,11 +23,12 @@ module.exports = {
     cache: {
         type: 'file',
         fileDir: path.resolve( __dirname + '/cache'),
-        cacheMaxAge: [],
-        cacheAlways: [],
-        cacheNever: [{
-            regex: /.*/
+        cacheMaxAge: [{
+            regex: /.*/,
+            maxAge: 120
         }],
+        cacheAlways: [],
+        cacheNever: [],
         cacheTimestamp: []
     }
 };

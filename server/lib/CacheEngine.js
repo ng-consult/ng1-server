@@ -14,64 +14,62 @@ var cacheUrl = function(url, config) {
     var _currentMaxAge = null;
     var _currentCategory = null;
 
-    console.log('New cacheUrl: ', url, config);
-
 
     var isFileCached = function() {
         return fs.existsSync(_currentFilePath);
     };
 
     var getRegexTest = function( u ) {
-        var re;
-        if (typeof u.regex !== 'RegExp') {
-            re = new RegExp(u.regex);
-        } else {
-            re =  u.regex;
+        if ( (u.regex instanceof RegExp) === false) {
+            throw new Error('The following is not a valid Regexp: ' + u.regex);
         }
-
-        return re.test(_currentUrl);
+        return u.regex.test(_currentUrl);
     };
 
     //return always|never|maxAge|timestamp|default
     var getCacheCategory = function() {
-        _config.cacheNever.forEach(function( u ) {
-            if (getRegexTest (u) === true) {
+        var i;
+        for (i in _config.cacheNever) {
+            if (getRegexTest (_config.cacheNever[i]) === true) {
                 _currentCategory = 'never';
                 return;
             }
-        });
-        _config.cacheAlways.forEach(function( u ) {
-            if (getRegexTest (u) === true) {
+        }
+
+        for (i in _config.cacheAlways) {
+            if (getRegexTest (_config.cacheAlways[i]) === true) {
                 _currentCategory = 'always';
-                return;
+                return true;
             }
-        });
-        _config.cacheMaxAge.forEach(function( u ) {
-            if (getRegexTest (u) === true) {
+        }
+
+        for (i in _config.cacheMaxAge) {
+            if (getRegexTest (_config.cacheMaxAge[i]) === true) {
                 _currentCategory = 'maxAge';
-                _currentMaxAge = u.maxAge;
-                return;
+                _currentMaxAge = _config.cacheMaxAge[i].maxAge;
+                return true;
             }
-        });
-        console.log(_config);
-        _config.cacheTimestamp.forEach(function( u ) {
-            if (getRegexTest (u) === true) {
+        }
+
+        for (i in _config.cacheTimestamp) {
+            if (getRegexTest (_config.cacheTimestamp[i]) === true) {
                 _currentCategory = 'timestamp';
-                return;
+                return true;
             }
-        });
+        }
+
         _currentCategory = 'default';
     };
-
 
     var isCacheExpired = function() {
         if ( _currentCategory === 'maxAge' ) {
             if (_config.type === 'file') {
                 var stats = fs.statSync( _currentFilePath );
-                var modificationTime = stats.mtime.getTime();
-                var expiration = modificationTime + _currentMaxAge;
                 var nowTimestamp = new Date().getTime();
-                return nowTimestamp > expiration;
+                var modificationTime = stats.mtime.getTime();
+                var expiration = modificationTime + _currentMaxAge*1000;
+                var diff = (nowTimestamp - expiration);
+                return diff > 0;
             }
         }
         if (_currentCategory === 'always' ) {
@@ -82,15 +80,11 @@ var cacheUrl = function(url, config) {
         }
     };
 
-
     var removeFileCache = function() {
         try {
             fs.unlinkSync( _currentFilePath );
         } catch (e) {}
-
-
     };
-
 
     this.isCached = function() {
         if (_config.type === 'none') {
@@ -98,9 +92,15 @@ var cacheUrl = function(url, config) {
         }
         if (_config.type === 'file') {
 
+            if ( _currentCategory === 'never') {
+                removeFileCache();
+                return false;
+            }
+
             if ( fs.existsSync( _currentFilePath) === false) {
                 return false;
             }
+            
             if ( isCacheExpired() ) {
                 removeFileCache();
                 return false;
@@ -147,6 +147,8 @@ var cacheUrl = function(url, config) {
 
     // Init the object;
     getCacheCategory();
+    console.log('New cacheUrl: ',  _currentUrl, _currentCategory);
+
     if( _config.type === 'file') {
         _currentFilePath = path.join( _config.fileDir, url );
     }
