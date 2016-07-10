@@ -4,6 +4,7 @@
 
 var contextify = require('contextify');
 var fs = require('fs');
+var glob = require("glob")
 
 
 var AngularDomJS = function(config) {
@@ -18,17 +19,19 @@ var AngularDomJS = function(config) {
 
 
     this.getClientJS = function() {
-        var javascriptFiles = this.config.server.jsFiles;
-        javascriptFiles.forEach( function (file) {
-            if (!fs.existsSync(file)) {
-                throw new Error('The file ' + file + 'does\t exists.');
-            }
-        });
 
         var fileSrc = [];
-        for(var i in javascriptFiles) {
-            fileSrc[i] = fs.readFileSync(javascriptFiles[i] , 'utf8');
-        }
+        
+        this.config.server.jsFiles.forEach( function (fileGlob) {
+            var files = glob.sync(fileGlob, {});
+            files.forEach(function(file) {
+                if (!fs.existsSync(file)) {
+                    throw new Error('The file ' + file + 'does\t exists.');
+                }
+                fileSrc.push( fs.readFileSync(file , 'utf8'));
+            });
+        });
+
         return fileSrc;
     };
 

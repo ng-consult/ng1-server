@@ -25,7 +25,7 @@ module.exports = {
         fileDir: path.resolve( __dirname + '/cache'),
         cacheMaxAge: [{
             regex: /.*/,
-            maxAge: 120
+            maxAge: 10
         }],
         cacheAlways: [],
         cacheNever: [],
