@@ -120,5 +120,9 @@ ad add the following lines:
 
 All the client code is written in ES6.
 
+# Current main issue :
+
+Crashes when loading minified version of angular
+
 
 

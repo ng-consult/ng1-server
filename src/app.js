@@ -29,10 +29,10 @@ window[moduleName].config(function( $injector, $httpProvider, $cacheFactoryProvi
 
 
     var myInjector = angular.injector(['ng']);
-    console.log('myInjector = ', myInjector);
+    //console.log('myInjector = ', myInjector);
 
     var cacheFactory = $cacheFactoryProvider.$get;
-    console.log(cacheFactory);
+    //console.log(cacheFactory);
 
     var serverCache = cacheFactory('server');
 
@@ -51,7 +51,7 @@ window[moduleName].config(function( $injector, $httpProvider, $cacheFactoryProvi
         });
 
         function request( config ) {
-            console.log('Stating request', config);
+            //console.log('Stating request', config);
             if (!config.cache) {
                 config.cache = serverCache;
             }
@@ -63,11 +63,11 @@ window[moduleName].config(function( $injector, $httpProvider, $cacheFactoryProvi
         }
 
         function response( response ) {
-            console.log('getting response', response);
+            //console.log('getting response', response);
 
             if (typeof response.config.cache !== 'undefined') {
                 var cache = response.config.cache;
-                console.log(cache.info());
+                //console.log(cache.info());
             }
             return( response );
         }

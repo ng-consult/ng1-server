@@ -49,6 +49,7 @@ appServer.get('/*', function(req, res, next) {
 
     html.then(function(result) {
 
+        console.log(result);
         res.send(tpl({ angularServerHtml: result }));
 
     }).fail(function(err) {

@@ -21,9 +21,10 @@ var AngularDomJS = function(config) {
     this.getClientJS = function() {
 
         var fileSrc = [];
-        
+
         this.config.server.jsFiles.forEach( function (fileGlob) {
             var files = glob.sync(fileGlob, {});
+            console.log(files);
             files.forEach(function(file) {
                 if (!fs.existsSync(file)) {
                     throw new Error('The file ' + file + 'does\t exists.');
