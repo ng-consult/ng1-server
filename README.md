@@ -44,31 +44,33 @@ module.exports = {
 ```
 ## server
 
-`jsFiles` must encapsulate all the JS files necessary for running your angular App.
-`timeout` is the number in seconds before the server consider the request timedout. If it is reached, the current (and possibly incomplete) rendered HTML will be sent to the client.
+```jsFiles``` must encapsulate all the JS files necessary for running your angular App.
+```timeout``` is the number in seconds before the server consider the request timedout. If it is reached, the current (and possibly incomplete) rendered HTML will be sent to the client.
 
 ## cache
 
 This is  a very basic cache engine that takes 4 types of caches
 
 cacheMaxAge is an array of objects of type:
+```
 {
     regex: reguar Expression
     maxAge: integer (Seconds)
 }
+```
 
 cacheAlways and cache Never are array of js objects
-
+```
 {
     regex: reguar Expression
 }
-
+```
 cacheTimestamp:
 TODO To be implemented
 
 ## name:
 
-This is the name of the angularJS application present in the ng-app tag.
+This is the name of the angularJS application present in the `ng-app` tag.
 
 ## restriction
 
@@ -78,14 +80,14 @@ It is better if your API server is using a different url than the static server 
 # Usage:
 
 1- make sure the folders for views, external scripts, as well as the custom build-angular are accessible.
-
+```
 appServer.use('/views', express.static( path.resolve(__dirname + '/../../../src/views')));
 appServer.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/client')));
-
+```
 2-Jade:
 
 Put your Angular code into a .jade file, and then, pre-render it with AngularSever
-
+```
  //Get Jade to pre-render
  var jadeAngularHtml = jade.renderFile('./views/angular.jade', {});
 
@@ -97,6 +99,9 @@ Put your Angular code into a .jade file, and then, pre-render it with AngularSev
  }).fail(function(err) {
     res.render('index-pre-render', { angularServerHtml: err });
  });
+```
+3- Swig
+
 
 #TODO
 
@@ -112,11 +117,11 @@ This work is incomplete. I published it to npm so I can start testig it on well 
 
 They are located in test. To run them, you must edit your /etc/hosts file
 ad add the following lines:
-
+```
 127.0.0.1   noserver.example    // render the app witouth server rendering
 127.0.0.1   server.example      // render the app with server rendering and caching (if enabled)
 127.0.0.1   api.example         // the api url
-
+```
 
 All the client code is written in ES6.
 
