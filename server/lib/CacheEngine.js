@@ -100,7 +100,7 @@ var cacheUrl = function(url, config) {
             if ( fs.existsSync( _currentFilePath) === false) {
                 return false;
             }
-            
+
             if ( isCacheExpired() ) {
                 removeFileCache();
                 return false;

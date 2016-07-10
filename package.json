@@ -39,6 +39,7 @@
     "yargs": "^3.32.0"
   },
   "devDependencies": {
+    "angular-cache": "latest",
     "babel-plugin-syntax-decorators": "^6.5.0",
     "babel-plugin-transform-class-properties": "^6.5.0",
     "babel-plugin-transform-decorators": "^6.5.0",
