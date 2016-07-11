@@ -6,14 +6,21 @@ var angularDomJs = require('./AngularDomJs');
 var cacheEngine = require('./CacheEngine');
 var Q = require('q');
 var jsdom = require('jsdom');
+var configValidation = require('./configValidation');
 
 var AngularServerRenderer = function(config) {
+
+    var valid = configValidation(config);
+    if (valid.errors.length !== 0) {
+        console.log('valid config = ', valid);
+        throw 'invalid config';
+    }
 
     var cache = new cacheEngine(config);
 
     this.generateDoc = function(html) {
         return '<html id="'+config.name+'"><head><base href="/"/></head><body>'+html+'</body></html>';
-    }
+    };
 
     this.render = function(html, url) {
         var defer = Q.defer();

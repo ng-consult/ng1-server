@@ -22,7 +22,7 @@ appServer.set('views', __dirname + '/views');
 appServer.set('view engine', 'jade');
 
 appServer.use('/public', express.static( path.resolve(__dirname + '/../../../tests/bower')));
-appServer.use('/views', express.static( path.resolve(__dirname + '/../../../src/views')));
+appServer.use('/views', express.static( path.resolve(__dirname + '/../../../client/views')));
 appServer.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/client')));
 
 appServer.get('/*', function(req, res, next) {

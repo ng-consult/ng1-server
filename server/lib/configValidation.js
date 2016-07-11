@@ -3,62 +3,34 @@
  */
 var Validator = require('jsonschema').Validator;
 
-module.export  = function(config) {
+module.exports  = function(config) {
     if (!config) {
         console.error(config);
         throw new Error("Config object not provided " + config);
     }
     
     var v = new Validator();
-    
-    var pathSchema = {
-        id: "/Path",
-        type: "object",
-        properties: {
-            log: {type: "string"},
-            pid: {type: "string"},
-            html_views: {
-                type: "array",
-                items: {"type": "string"}
-            },
-            statics: {
-                type: "array",
-                items: {"type": "string"}
-            },
-            scripts: {
-                type: "array",
-                items: {"type": "string"}
-            }
-        }
-    };
 
     var serverSchema = {
         id: "/Server",
         type: "object",
         properties: {
-            type:  {
-                "enum": [
-                    "value",
-                    {
-                        "server": "server",
-                        "client": "client"
-                    }
-                ]
-            },
             domain: {type: "string"},
             port: {type: "integer"},
-            pre_render:{type: "boolean"},
-            bootstrap_selector: {type: "string"},
-            index_html: {type: "string"},
-            doc: {type: "string"}
+            timeout: {type: "integer"},
+            jsFiles: {
+                type: "array",
+                "items": {"type": "string"}
+            }
         }
     };
+
 
     var cacheRuleMaxAgeSchema = {
         "id": "/CacheRuleMaxAge",
         "type": "object",
         "properties": {
-            "regex": {"type": "string"},
+            "regex": {"type": "object"},
             "maxAge": {"type": "integer"}
         }
     };
@@ -67,7 +39,7 @@ module.export  = function(config) {
         id: "/CacheRuleAggressive",
         type: "object",
         properties: {
-            "regex": {type: "string"}
+            "regex": {type: "object"}
         }
     };
 
@@ -75,7 +47,7 @@ module.export  = function(config) {
         id: "/CacheRuleTimestamp",
         type: "object",
         properties: {
-            "regex": {type: "string"},
+            "regex": {type: "object"},
             timestamp: {type: "function"}
         }
     };
@@ -85,30 +57,25 @@ module.export  = function(config) {
         "type": "object",
         "properties": {
             type: {
-                enum: {
-                    value: {
-                        none: "none",
-                        file: "file"
-                    }
-                }
+                enum: ["none", "file"]
             },
             fileDir: { type: "string"},
             cacheMaxAge: {
                 type: "array",
-                "$ref": "/CacheRuleMaxAge"
+                items: {"$ref": "/CacheRuleMaxAge"}
             },
             cacheAlways: {
                 type: "array",
-                "$ref": "/CacheRuleAggressive"
+                items: {"$ref": "/CacheRuleAggressive"}
             },
 
             cacheNever: {
                 type: "array",
-                "$ref": "/CacheRuleAggressive"
+                items: {"$ref": "/CacheRuleAggressive"}
             },
             cacheTimestamp: {
                 type: "array",
-                "$ref": "/CacheRuleTimestamp"
+                items: {"$ref": "/CacheRuleTimestamp"}
             }
         }
     };
@@ -118,14 +85,13 @@ module.export  = function(config) {
         "id": "/Config",
         "type": "object",
         "properties": {
-            "name": { type: "string"},
-            "path": {"$ref": "/Path"},
+            "name": { "type": "string"},
+            "log": {"type": "string"},
             "server": { "$ref": "/Server"},
             "cache": { "$ref": "/Cache"}
         }
     };
 
-    v.addSchema(pathSchema, '/Path');
     v.addSchema(serverSchema, '/Server');
     v.addSchema(cacheRuleMaxAgeSchema, '/CacheRuleMaxAge');
     v.addSchema(cacheRuleAggressiveSchema, '/CacheRuleAggressive');

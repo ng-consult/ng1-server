@@ -5,10 +5,7 @@ var path = require('path');
 
 module.exports = {
     name: "myApp",
-    path: {
-        log: path.resolve( __dirname + '/logs'),
-        pid: path.resolve( __dirname + '/pids')
-    },
+    log: path.resolve( __dirname + './../logs'),
     server: {
         domain: 'server.example',
         port: 3000,
@@ -22,7 +19,7 @@ module.exports = {
     },
     cache: {
         type: 'file',
-        fileDir: path.resolve( __dirname + '/cache'),
+        fileDir: path.resolve( __dirname + './../cache'),
         cacheMaxAge: [{
             regex: /.*/,
             maxAge: 10

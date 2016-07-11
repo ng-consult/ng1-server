@@ -1,6 +1,5 @@
 node_modules
-server/logs
-server/pid
-server/cache
+tests/logs
+tests/cache
 tests/bower
 .idea

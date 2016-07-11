@@ -22,6 +22,8 @@ appServer.use(favicon(__dirname + '/favicon.ico'));
 
 var angularServer = new angularDomServer(config);
 
+console.log('angularServer = ', angularServer);
+
 //view renderer
 appServer.engine('html', swig.renderFile);
 appServer.set('view engine', 'html');
@@ -30,8 +32,9 @@ appServer.set('view engine', 'html');
 appServer.set('views', __dirname + '/views');
 
 //static definition
+console.log(path.resolve(__dirname + '/../../../src/views'));
 appServer.use('/public', express.static( path.resolve(__dirname + '/../../../tests/bower')));
-appServer.use('/views', express.static( path.resolve(__dirname + '/../../../src/views')));
+appServer.use('/views', express.static( path.resolve(__dirname + '/../../../client/views')));
 appServer.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/client')));
 
 //all urls
