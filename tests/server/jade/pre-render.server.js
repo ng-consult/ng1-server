@@ -20,7 +20,7 @@ var angularServer = new angularDomServer(config);
 
 appServer.set('views', __dirname + '/views');
 appServer.set('view engine', 'jade');
-appServer.use(express.static( path.resolve(__dirname + '/../../../')));
+appServer.use(express.static( path.resolve(__dirname + '/../../../tests/bower')));
 appServer.use('/views', express.static( path.resolve(__dirname + '/../../../src/views')));
 appServer.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/client')));
 

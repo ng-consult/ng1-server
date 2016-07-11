@@ -1,0 +1,8 @@
+{
+  "name": "angular.js-server",
+  "dependencies": {
+    "angular": "git://github.com/a-lucas/bower-angular.git",
+    "angular-resource": "~1.5.0",
+    "angular-route": "~1.5.0"
+  }
+}

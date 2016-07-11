@@ -30,7 +30,7 @@ appServer.set('view engine', 'html');
 appServer.set('views', __dirname + '/views');
 
 //static definition
-appServer.use(express.static( path.resolve(__dirname + '/../../../')));
+appServer.use(express.static( path.resolve(__dirname + '/../../../tests/server')));
 appServer.use('/views', express.static( path.resolve(__dirname + '/../../../src/views')));
 appServer.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/client')));
 
@@ -42,13 +42,12 @@ appServer.get('/*', function(req, res, next) {
 
     var html = angularServer.render(swigAngularHtml, req.url);
 
-    var tpl = swig.compileFile('./views/index-pre-render.html', {
+    var tpl = swig.compileFile('./views/angular-block.html', {
         cache: false,
         varControls: ['{[', ']}'] //Avoid angularJS moustache conflict
     });
 
     html.then(function(result) {
-
         console.log(result);
         res.send(tpl({ angularServerHtml: result }));
 

@@ -59,6 +59,9 @@ var AngularDomJS = function(config) {
 
     this.getHTML = function(timeouts) {
 
+
+        console.log('EVENT???', this.c_window.window.Event);
+        
         var scope = this.c_window.window.angular.element(this.c_window.document).scope();
         scope.$apply();
 
