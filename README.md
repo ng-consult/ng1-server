@@ -4,43 +4,53 @@
 
 So for example, rendering on the server side http://domain.com/url#blah will just render http://domain.com/url.
 
-2- You must use a modified version of AngularJS ( while I get the time to write the tests to contribute to Angular source code. )
+2- If you are using angular.bootstrap() to kickoff your angular app, add the following condition:
+
+```
+if (!window.onServer) {
+ angular.bootstrap(...)
+}
+```
+
+3- You must use a modified version of AngularJS ( while I get the time to write the tests to contribute to Angular source code. )
+
 
 
 # Config object
 
 ```
+/**
+ * Created by antoine on 07/07/16.
+ */
 var path = require('path');
 
 module.exports = {
     name: "myApp",
-    path: {
-        log: path.resolve( __dirname + '/logs'),
-        pid: path.resolve( __dirname + '/pids')
-    },
+    log: path.resolve( __dirname + './../logs'),
     server: {
         domain: 'server.example',
         port: 3000,
         timeout: 15000,
         jsFiles: [
-            path.resolve( __dirname + './../build-angular-engine/angular.js'),
-            path.resolve( __dirname + './../build-angular-engine/angular-resource.js'),
-            path.resolve( __dirname + './../build-angular-engine/angular-route.js'),
-            path.resolve( __dirname + './../dist/client/app.js')
+            path.resolve( __dirname + './../bower/angular') + '/angular.js',
+            path.resolve( __dirname + './../bower/angular-resource') + '/angular-resource.js',
+            path.resolve( __dirname + './../bower/angular-route') + '/angular-route.js',
+            path.resolve( __dirname + './../../dist/client') + '/*.js'
         ]
     },
     cache: {
         type: 'file',
-        fileDir: path.resolve( __dirname + '/cache'),
+        fileDir: path.resolve( __dirname + './../cache'),
         cacheMaxAge: [{
             regex: /.*/,
-            maxAge: 120
+            maxAge: 10
         }],
         cacheAlways: [],
         cacheNever: [],
         cacheTimestamp: []
     }
 };
+
 ```
 ## server
 
@@ -54,7 +64,7 @@ This is  a very basic cache engine that takes 4 types of caches
 cacheMaxAge is an array of objects of type:
 ```
 {
-    regex: reguar Expression
+    regex: regular Expression
     maxAge: integer (Seconds)
 }
 ```
@@ -62,7 +72,7 @@ cacheMaxAge is an array of objects of type:
 cacheAlways and cache Never are array of js objects
 ```
 {
-    regex: reguar Expression
+    regex: regular Expression
 }
 ```
 cacheTimestamp:
@@ -74,7 +84,7 @@ This is the name of the angularJS application present in the `ng-app` tag.
 
 ## restriction
 
-It is better if your API server is using a different url than the static server page, or if each URL in each $http calls include the domain name instead of relative URL.
+It is better if your API server uses a different url than the static server page, or if each URL in each $http calls include the domain name instead of relative URL.
 
 
 # Usage:
@@ -103,17 +113,11 @@ Put your Angular code into a .jade file, and then, pre-render it with AngularSev
 3- Swig
 
 
-#TODO
+#WIP
 
-This work is incomplete. I published it to npm so I can start testig it on well known AngularJS projects.
+This work is incomplete and totally in progress - DON'T use it on prod.
 
-- CacheTimestamp
-- Logging
-- Better Exception support
-- $http caching (replay all $http made on the server into the client to speed up client load)
-- Testing
-
-# Examples
+#Examples
 
 They are located in test. To run them, you must edit your /etc/hosts file
 ad add the following lines:
