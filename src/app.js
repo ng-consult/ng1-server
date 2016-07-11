@@ -11,18 +11,16 @@ import ProductList from './directives/ProductList';
 var moduleName='myApp';
 
 window[moduleName] = angular
-                        .module(moduleName, ['ngResource', 'ngRoute'/*, 'angular-cache'*/])
+                        .module(moduleName, ['ngResource', 'ngRoute'])
                         .config(Routes)
                         .controller('MainCtrl', MainCtrl)
                         .controller('TodoCtrl', TodoCtrl)
                         .controller('ErrorCtrl', ErrorCtrl)
                         .directive('productList',ProductList);
 
+console.log('Angular = ', window[moduleName]);
 
-
-window[moduleName].config(function() {
-    window[moduleName].requires.push('angular-cache');
-});
+/*
 
 
 window[moduleName].config(function( $injector, $httpProvider, $cacheFactoryProvider) {
@@ -80,6 +78,7 @@ window[moduleName].config(function( $injector, $httpProvider, $cacheFactoryProvi
     $httpProvider.interceptors.push( interceptHttp );
 });
 
+*/
 /** Dream
 
 if ( typeof window.onServer === 'undefined') {

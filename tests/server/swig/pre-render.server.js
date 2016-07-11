@@ -15,7 +15,7 @@ swig.setDefaults({ cache: false });
 swig.setDefaults({ autoescape: false });
 
 var angularDomServer = require('./../../../server/lib/AngularServerRenderer');
-var config = require('./../../../server/config');
+var config = require('./../config');
 
 var appServer = express();
 appServer.use(favicon(__dirname + '/favicon.ico'));
@@ -30,7 +30,7 @@ appServer.set('view engine', 'html');
 appServer.set('views', __dirname + '/views');
 
 //static definition
-appServer.use(express.static( path.resolve(__dirname + '/../../../tests/server')));
+appServer.use('/public', express.static( path.resolve(__dirname + '/../../../tests/bower')));
 appServer.use('/views', express.static( path.resolve(__dirname + '/../../../src/views')));
 appServer.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/client')));
 

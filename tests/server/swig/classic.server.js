@@ -18,7 +18,7 @@ appClient.set('view engine', 'html');
 
 appClient.set('views', __dirname + '/views');
 
-appClient.use(express.static( path.resolve(__dirname + '/../../../tests/bower')));
+appClient.use('/public', express.static( path.resolve(__dirname + '/../../../tests/bower')));
 appClient.use('/views', express.static( path.resolve(__dirname + '/../../../src/views')));
 appClient.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/client')));
 

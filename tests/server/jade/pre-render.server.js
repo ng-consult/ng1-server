@@ -11,7 +11,7 @@ var favicon = require('express-favicon');
 var jade = require('jade');
 
 var angularDomServer = require('./../../../server/lib/AngularServerRenderer');
-var config = require('./../../../server/config');
+var config = require('./../config');
 
 var appServer = express();
 appServer.use(favicon(__dirname + '/favicon.ico'));
@@ -20,7 +20,8 @@ var angularServer = new angularDomServer(config);
 
 appServer.set('views', __dirname + '/views');
 appServer.set('view engine', 'jade');
-appServer.use(express.static( path.resolve(__dirname + '/../../../tests/bower')));
+
+appServer.use('/public', express.static( path.resolve(__dirname + '/../../../tests/bower')));
 appServer.use('/views', express.static( path.resolve(__dirname + '/../../../src/views')));
 appServer.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/client')));
 

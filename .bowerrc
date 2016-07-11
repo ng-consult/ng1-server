@@ -1,4 +1,4 @@
 {
   "directory": "tests/bower",
-  "interactive": false 
+  "interactive": true
 }

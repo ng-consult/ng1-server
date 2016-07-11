@@ -1,0 +1,7 @@
+<div id="msg"></div><div ng-controller="MainCtrl as vm" id="mainDiv" class="ng-scope"><choose></choose><a href="/Todo">Todo |</a><a href="/Main" class="ng-binding">Angular Es6 revisited |</a><a href="/Error">Error</a><!-- ngView: ng-view --><div ng-view="ng-view" id="prerendered" class="ng-scope"><button ng-click="vm.throwError('Fail!')" class="ng-scope">
+    Throw a Fail! Error
+</button>
+
+<button ng-click="vm.throwException('Fail!')" class="ng-scope">
+    Throw a Fail! Exception
+</button></div></div>
