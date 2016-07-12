@@ -8,7 +8,24 @@ module.exports  = function(config) {
         console.error(config);
         throw new Error("Config object not provided " + config);
     }
-    
+
+
+    var types = Validator.prototype.types;
+
+    types.regex = function testRegex (instance) {
+        return instance instanceof RegExp;
+    };
+
+    types.file = function(instance) {
+        if (typeof instance !== 'string') {
+            return false;
+        }
+        if (instance.length === 0) {
+            return false;
+        }
+        return true;
+    };
+
     var v = new Validator();
 
     var serverSchema = {
@@ -20,9 +37,25 @@ module.exports  = function(config) {
             timeout: {type: "integer"},
             jsFiles: {
                 type: "array",
-                "items": {"type": "string"}
+                items: {type: "file"}
             }
-        }
+        },
+        required: ['domain', 'port', 'timeout', 'jsFiles']
+    };
+
+    var renderSchema = {
+        id: "/Render",
+        type: "object",
+        properties: {
+            strategy: {type: {
+                enum: ["all", "none", "include", "exclude"]
+            }},
+            rules: {
+                type: "array",
+                items: {type: "regex"}
+            }
+        },
+        required: ['strategy', 'rules']
     };
 
 
@@ -30,16 +63,17 @@ module.exports  = function(config) {
         "id": "/CacheRuleMaxAge",
         "type": "object",
         "properties": {
-            "regex": {"type": "object"},
+            "regex": {"type": "regex"},
             "maxAge": {"type": "integer"}
-        }
+        },
+        required: ['regex', 'maxAge']
     };
 
     var cacheRuleAggressiveSchema = {
         id: "/CacheRuleAggressive",
         type: "object",
         properties: {
-            "regex": {type: "object"}
+            regex: {type: "regex"}
         }
     };
 
@@ -47,15 +81,16 @@ module.exports  = function(config) {
         id: "/CacheRuleTimestamp",
         type: "object",
         properties: {
-            "regex": {type: "object"},
+            regex: {type: "regex"},
             timestamp: {type: "function"}
-        }
+        },
+        required: ['regex', 'timestamp']
     };
 
     var cacheSchema = {
-        "id": "/Cache",
-        "type": "object",
-        "properties": {
+        id: "/Cache",
+        type: "object",
+        properties: {
             type: {
                 enum: ["none", "file"]
             },
@@ -68,7 +103,6 @@ module.exports  = function(config) {
                 type: "array",
                 items: {"$ref": "/CacheRuleAggressive"}
             },
-
             cacheNever: {
                 type: "array",
                 items: {"$ref": "/CacheRuleAggressive"}
@@ -77,7 +111,8 @@ module.exports  = function(config) {
                 type: "array",
                 items: {"$ref": "/CacheRuleTimestamp"}
             }
-        }
+        },
+        required: ['type', 'fileDir', 'cacheAlways', 'cacheNever', 'cacheMaxAge', 'cacheTimestamp']
     };
 
 
@@ -88,10 +123,13 @@ module.exports  = function(config) {
             "name": { "type": "string"},
             "log": {"type": "string"},
             "server": { "$ref": "/Server"},
-            "cache": { "$ref": "/Cache"}
-        }
+            "cache": { "$ref": "/Cache"},
+            "render": { "$ref": "/Render"}
+        },
+        required: ['name', 'server', 'cache', 'render']
     };
 
+    v.addSchema(renderSchema, '/Render');
     v.addSchema(serverSchema, '/Server');
     v.addSchema(cacheRuleMaxAgeSchema, '/CacheRuleMaxAge');
     v.addSchema(cacheRuleAggressiveSchema, '/CacheRuleAggressive');

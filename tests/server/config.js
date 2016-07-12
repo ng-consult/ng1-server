@@ -17,6 +17,13 @@ module.exports = {
             path.resolve( __dirname + './../../dist/client') + '/*.js'
         ]
     },
+    render: {
+        strategy: 'include',
+        rules: [
+            /Main/,
+            /Todo/
+        ]
+    },
     cache: {
         type: 'file',
         fileDir: path.resolve( __dirname + './../cache'),
