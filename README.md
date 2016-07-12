@@ -39,7 +39,7 @@ module.exports = {
         ]
     },
     cache: {
-        type: 'file',
+        type: 'file', // possible values: none, file
         fileDir: path.resolve( __dirname + './../cache'),
         cacheMaxAge: [{
             regex: /.*/,
@@ -48,6 +48,13 @@ module.exports = {
         cacheAlways: [],
         cacheNever: [],
         cacheTimestamp: []
+    },
+    render: {
+        strategy: 'exclude',  // possible values: all, none, include, exclude
+        rules: [
+            /Error/,
+            /Main/
+        ] // Don't pre-render the two urls /Error and /Main
     }
 };
 
