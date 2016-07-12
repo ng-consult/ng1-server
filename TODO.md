@@ -1,38 +1,27 @@
-### simple to use angularRendere middle ware
+### Benchmark
 
-### record execution time server vs client
+- record execution time server vs client
+- load testing
+- memeory leak testing
 
-### cors
+### Ajax calls caching
 
-- inject origial domain
+Modify the angular.JS cache (natively or via injectors)
 
-### AngularJS hack
+1- When the server pre-render the page, it should serialize all the requested ajax calls (templates & REST) and stores them in a JSON file
 
-- ajax calls caching???
+```
+[{
+   url: string,
+   type: string, //template | other
+   headers_md5: string,
+   count: integer, //number of time this url ahs been called during rendering
+   response: string
+}]
+```
 
+2- On render, the server injects this JSON file into the rendered HTML and assign a global var to it.
 
-### fixes
-
-- double slashes on ajax calls and views
-
-### httpBackend Caching (HardCore caching)
-
-Define the httpBackend caching strategy
-
- - REST Routes
-    - local / remote
-    - caching strategy : 
-        - periodic
-        - never
-        - custom
-            - shouldUseCache: function
-
- - HTML Templates
-    - Always cache in prod ( no more filesystem access )
-    - don't cache in development
-    
-In case the caching strategy is 'never', we should modify the httpBackend so it uses exactly the same result the server used to generate the HTML.
-Angular Server should then wait for the client to finish rendering as well before purging memory.
-
-- <div ng-app="myApp" ng-strict-di>
-https://github.com/olov/ng-annotate
+2- Once the client bootstraps, each ajax calls checks on this JSON object, and decrement the count.
+ Once each element's count is zero, remove the caching functionality and resume normal behavior.
+ Set a timeout to notify and logs the server if some requests are never replayed.
