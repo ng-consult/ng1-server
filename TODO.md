@@ -26,7 +26,7 @@ Modify the angular.JS cache (natively or via injectors)
  Once each element's count is zero, remove the caching functionality and resume normal behavior.
  Set a timeout to notify and logs the server if some requests are never replayed.
 
-# Redis Caching
+# Better Caching
 
-Implement file cache in redis (And http cache too)
+use https://www.npmjs.com/package/cache-manager instead
 
