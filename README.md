@@ -119,7 +119,20 @@ This work is incomplete and totally in progress - DON'T use it on prod.
 
 #MEAN.js
 
-A working version with server side rendering is at this url:
+A hacky working version with server side rendering is at this url: https://github.com/a-lucas/mean
+
+Because this package hasn't been published to npm (yet), to make it work, just do like this:
+
+```
+mkdir ng-server
+cd ng-server
+git clone https://github.com/a-lucas/mean
+git clone https://github.com/a-lucas/angular.js-server
+cd angular.js-server ; npm install
+cd ../mean ; npm install ; bower install
+grunt
+```
+
 
 #Examples
 
