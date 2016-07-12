@@ -30,13 +30,7 @@ module.exports = {
     server: {
         domain: 'server.example',
         port: 3000,
-        timeout: 15000,
-        jsFiles: [
-            path.resolve( __dirname + './../bower/angular') + '/angular.js',
-            path.resolve( __dirname + './../bower/angular-resource') + '/angular-resource.js',
-            path.resolve( __dirname + './../bower/angular-route') + '/angular-route.js',
-            path.resolve( __dirname + './../../dist/client') + '/*.js'
-        ]
+        timeout: 15000
     },
     cache: {
         type: 'file', // possible values: none, file
@@ -61,7 +55,6 @@ module.exports = {
 ```
 ## server
 
-```jsFiles``` must encapsulate all the JS files necessary for running your angular App.
 ```timeout``` is the number in seconds before the server consider the request timedout. If it is reached, the current (and possibly incomplete) rendered HTML will be sent to the client.
 
 ## cache
@@ -123,6 +116,10 @@ Put your Angular code into a .jade file, and then, pre-render it with AngularSev
 #WIP
 
 This work is incomplete and totally in progress - DON'T use it on prod.
+
+#MEAN.js
+
+A working version with server side rendering is at this url:
 
 #Examples
 

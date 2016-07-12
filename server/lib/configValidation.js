@@ -15,17 +15,7 @@ module.exports  = function(config) {
     types.regex = function testRegex (instance) {
         return instance instanceof RegExp;
     };
-
-    types.file = function(instance) {
-        if (typeof instance !== 'string') {
-            return false;
-        }
-        if (instance.length === 0) {
-            return false;
-        }
-        return true;
-    };
-
+    
     var v = new Validator();
 
     var serverSchema = {
@@ -34,13 +24,9 @@ module.exports  = function(config) {
         properties: {
             domain: {type: "string"},
             port: {type: "integer"},
-            timeout: {type: "integer"},
-            jsFiles: {
-                type: "array",
-                items: {type: "file"}
-            }
+            timeout: {type: "integer"}
         },
-        required: ['domain', 'port', 'timeout', 'jsFiles']
+        required: ['domain', 'port', 'timeout']
     };
 
     var renderSchema = {

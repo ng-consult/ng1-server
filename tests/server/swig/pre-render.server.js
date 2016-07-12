@@ -39,23 +39,18 @@ appServer.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/
 
 //all urls
 appServer.get('/*', function(req, res, next) {
-
-
-    var swigAngularHtml = swig.renderFile( './views/angular.html' , {} );
-
-    var html = angularServer.render(swigAngularHtml, req.url);
-
-    var tpl = swig.compileFile('./views/angular-block.html', {
-        cache: false,
-        varControls: ['{[', ']}'] //Avoid angularJS moustache conflict
+    
+    var tpl = swig.compileFile('./views/index-classic.html', {
+        cache: false
     });
+    var prehtml = tpl({});
+
+    var html = angularServer.render(prehtml, req.url);
 
     html.then(function(result) {
-        console.log(result);
-        res.send(tpl({ angularServerHtml: result }));
-
+        res.send(result);
     }).fail(function(err) {
-        res.send(tpl({ angularServerHtml: err }));
+        res.send(err);
     });
 
 });

@@ -2,7 +2,7 @@
   "name": "angular.js-server",
   "author": "Antoine LUCAS <antoine.lucas.australia@gmail.com>",
   "scripts": {},
-  "main": "./server/angular.js-server.js",
+  "main": "server/lib/AngularServerRenderer.js",
   "version": "0.0.1",
   "license": "MIT",
   "repository": {

@@ -2,7 +2,6 @@
  * Created by antoine on 07/07/16.
  */
 
-var angularDomJs = require('./AngularDomJs');
 var cacheEngine = require('./CacheEngine');
 var Q = require('q');
 var jsdom = require('jsdom');
@@ -19,7 +18,7 @@ var AngularServerRenderer = function(config) {
     var cache = new cacheEngine(config);
 
     this.generateDoc = function(html) {
-        return '<html id="'+config.name+'"><head><base href="/"/></head><body>'+html+'</body></html>';
+        return '<html><head><base href="/"/></head><body>'+html+'</body></html>';
     };
 
     var shouldRender = function(url) {
@@ -49,133 +48,120 @@ var AngularServerRenderer = function(config) {
         }
     };
 
+    var getHTML = function(window, timeouts) {
+
+        var AngularDocument = window.angular.element(window.document);
+        var scope = AngularDocument.scope()
+        scope.$apply();
+        for (var i in timeouts) {
+            clearTimeout( timeouts[i]);
+        }
+
+        return window.document.documentElement.outerHTML;
+    };
+
     this.render = function(html, url) {
-        
+
         var defer = Q.defer();
 
         if (shouldRender(url) === false) {
+            console.log('No rendering for this URL');
             defer.resolve( html );
         } else {
             var cacheUrl = cache.loadUrl(html, url);
             if (cacheUrl.isCached()) {
+                console.log('THIS Url is cached: bingo!');
                 defer.resolve(cacheUrl.getCached());
             } else {
-                var angularDom = new angularDomJs(config);
-                var c_window = angularDom.c_window;
 
-                c_window.cacheUrl = cacheUrl;
-                var jsDomConfig = {
-                    html: this.generateDoc(html),
-                    src: angularDom.getClientJS(),
+                /* Get rid of the exception Handler issue
+                 * https://github.com/angular/zone.js/issues/29
+                 * */
+                /*
+                 module.config(function($provide) {
+                 $provide.decorator('$exceptionHandler', function($exceptionHandler) {
+                 return function(error, cause) {
+                 $exceptionHandler(error, cause);
+                 throw error;
+                 };
+                 });
+                 });*/
+
+
+
+                jsdom.debugMode = true;
+
+                var rendering = false;
+
+                var document  = jsdom.jsdom(html, {
                     features: {
-                        FetchExternalResources: false,
-                        ProcessExternalResources: false
+                        FetchExternalResources: ['script'],
+                        ProcessExternalResources: ['script']
                     },
                     url: 'http://' + config.server.domain + ':' + config.server.port + url,
-                    virtualConsole: jsdom.createVirtualConsole().sendTo(c_window.console),
-                    created: function (err, window) {
-                        if (err) {
-                            c_window.cacheEngine.removeCache();
-                            c_window.console.error('ERR CATCHED IN CREATED', err);
-                            defer.reject(err);
-                            return;
-                        }
-                        window.scrollTo = function () {
-                        };
-                        window.onServer = true;
-                        window.appName = config.name;
-
-                        window.addEventListener('error', function (err) {
-                            c_window.cacheUrl.removeCache();
-                            c_window.console.log('EVENT LISTENER ON ERROR CATCHED', err);
-                            defer.reject(err);
-                        });
-                    },
-                    done: function (err, window) {
-                        if (err) {
-                            //@todo manually write inside serverConfig.logFiles.error.path
-                            c_window.cacheUrl.removeCache();
-                            c_window.console.error('ERR CATCHED IN DONE', err);
-                            angularDom.closeSession(window);
-                            defer.reject(err);
-                            return;
-                        }
-
-                        c_window.window = Object.assign(c_window.window, window);
-
-
-                        var angularApp = c_window.angular.bootstrap(c_window.document, [config.name]);
-
-                        //var $log = angularApp.invoke( function($log) {return $log;} );
-                        var $window = angularApp.invoke(function ($window) {
-                            return $window;
-                        });
-
-                        var rendering = false;
-
-
-                        /* Get rid of the exception Handler issue
-                         * https://github.com/angular/zone.js/issues/29
-                         * */
-                        /*
-                         module.config(function($provide) {
-                         $provide.decorator('$exceptionHandler', function($exceptionHandler) {
-                         return function(error, cause) {
-                         $exceptionHandler(error, cause);
-                         throw error;
-                         };
-                         });
-                         });*/
-                        $window.addEventListener('AngularContextException', function (e) {
-                            rendering = true;
-                            StackTrace.get()
-                                .then(function (stack) {
-                                    c_window.console.log('StackTrace.get', stack);
-                                })
-                                .catch(function (err) {
-                                    c_window.console.log('StackTrace.catch', err);
-                                });
-                            c_window.cacheUrl.removeCache();
-                            c_window.console.error("AngularContextException caught on server");
-                            c_window.console.error(e);
-                            defer.reject(err);
-                            angularDom.closeSession(window);
-                        });
-
-                        $window.addEventListener('StackQueueEmpty', function () {
-                            c_window.console.log('StackQueueEmpty event caught !');
-                            if (rendering) return;
-                            rendering = true;
-                            var html = angularDom.getHTML([serverTimeout]);
-                            c_window.cacheUrl.cacheIt(html);
-                            angularDom.closeSession(window);
-                            c_window.console.log('server done');
-                            defer.resolve(html);
-                        });
-
-                        var serverTimeout = setTimeout(function () {
-                            if (rendering) return;
-                            c_window.console.error('SERVER TIMEOUT ! ! !');
-                            //@todo Get the error URl here
-                            rendering = true;
-                            var html = angularDom.getHTML([serverTimeout]);
-                            angularDom.closeSession(window);
-                            c_window.cacheUrl.removeCache();
-                            defer.resolve(html);
-                        }, config.server.timeout);
-
-
-                    },
+                    virtualConsole: jsdom.createVirtualConsole().sendTo(console),
                     document: {
                         referer: '',
                         cookie: 'key=value; expires=Wed, Sep 21 2011 12:00:00 GMT; path=/',
                         cookieDomain: config.server.domain
                     }
-                };
+                });
+
+                var window = document.defaultView;
+                window.onServer = true;
+
+                var serverTimeout = setTimeout(function () {
+                    if (rendering) return;
+                    console.error('SERVER TIMEOUT ! ! !');
+                    //@todo Get the error URl here
+                    rendering = true;
+                    var html = getHTML(window, [serverTimeout]);
+                    cacheUrl.removeCache();
+                    defer.resolve(html);
+                    window.close();
+                    window.dispose();
+                }, config.server.timeout);
 
 
-                jsdom.debugMode = false;
-                jsdom.env(jsDomConfig);
+                window.addEventListener('error', function (err) {
+                    cacheUrl.removeCache();
+                    console.log('EVENT LISTENER ON ERROR CATCHED', err);
+                    defer.reject(err);
+                    window.close();
+                    window.dispose();
+                });
+
+                window.addEventListener('AngularContextException', function (e) {
+                    rendering = true;
+                    StackTrace.get()
+                        .then(function (stack) {
+                            console.log('StackTrace.get', stack);
+                        })
+                        .catch(function (err) {
+                            console.log('StackTrace.catch', err);
+                        });
+                    cacheUrl.removeCache();
+                    window.console.error("AngularContextException caught on server");
+                    window.console.error(e);
+                    window.close();
+                    window.dispose();
+                    defer.reject(err);
+                });
+
+                window.addEventListener('StackQueueEmpty', function () {
+                    if (rendering) return;
+                    rendering = true;
+                    var html = getHTML(window, [serverTimeout]);
+                    cacheUrl.cacheIt(html);
+                    defer.resolve(html);
+                    window.close();
+                    window.dispose();
+                });
+
+                window.addEventListener('load', function() {
+                    var angularApp = window.angular.bootstrap(window.document, [config.name]);
+                });
+
             }
         }
 
