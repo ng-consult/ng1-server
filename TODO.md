@@ -1,10 +1,10 @@
-### Benchmark
+# Benchmark
 
 - record execution time server vs client
 - load testing
 - memeory leak testing
 
-### Ajax calls caching
+# Ajax calls caching
 
 Modify the angular.JS cache (natively or via injectors)
 
@@ -22,6 +22,11 @@ Modify the angular.JS cache (natively or via injectors)
 
 2- On render, the server injects this JSON file into the rendered HTML and assign a global var to it.
 
-2- Once the client bootstraps, each ajax calls checks on this JSON object, and decrement the count.
+3- Once the client bootstraps, each ajax calls checks on this JSON object, and decrement the count.
  Once each element's count is zero, remove the caching functionality and resume normal behavior.
  Set a timeout to notify and logs the server if some requests are never replayed.
+
+# Redis Caching
+
+Implement file cache in redis (And http cache too)
+
