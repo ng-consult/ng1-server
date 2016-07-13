@@ -3,3 +3,4 @@ tests/logs
 tests/cache
 tests/bower
 .idea
+npm-debug.log
