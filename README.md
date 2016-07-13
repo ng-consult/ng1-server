@@ -4,7 +4,7 @@
 
    So for example, rendering on the server side http://domain.com/url#blah will just render http://domain.com/url.
 
-2- If you are using angular.bootstrap() to kickoff your angular app, add the following condition:
+2- If you are using ```angular.bootstrap()``` to kickoff your angular app, add the following condition:
 
 ```
 if (!window.onServer) {
@@ -113,30 +113,14 @@ ad add the following lines:
 
 All the client code is written in ES6.
 
+#MEAN.js
+
+A hacky working version with server side rendering is at this url: https://github.com/a-lucas/mean
 
 #WIP
 
 This work is incomplete and totally in progress - DON'T use it on prod.
 
-#MEAN.js
-
-A hacky working version with server side rendering is at this url: https://github.com/a-lucas/mean
-
-Because this package hasn't been published to npm (yet), to make it work, just do like this:
-
-```
-mkdir ng-server
-cd ng-server
-git clone https://github.com/a-lucas/mean
-git clone https://github.com/a-lucas/angular.js-server
-cd angular.js-server ; npm install
-cd ../mean ; npm install ; bower install
-grunt
-```
-
-# Current main issue :
-
-Crashes when loading minified version of angular
 
 
 
