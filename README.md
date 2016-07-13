@@ -89,7 +89,19 @@ This is the name of the angularJS application present in the `ng-app` tag.
 appServer.use('/views', express.static( path.resolve(__dirname + '/../../../src/views')));
 appServer.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/client')));
 ```
-2-Jade & Swig examples
+
+2- Generate the HTML
+
+
+```
+var AngularServer = require('angular.js-server');
+
+var renderer = new AngularServer(config);
+
+var renderedHtml = renderer.rende(html, url);
+```
+
+3-Jade & Swig examples
 
 
 They are located in test. To run them, you must edit your /etc/hosts file
