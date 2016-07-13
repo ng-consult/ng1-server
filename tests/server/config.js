@@ -14,16 +14,15 @@ module.exports = {
     render: {
         strategy: 'include',
         rules: [
-            /Main/,
-            /Todo/
+            /.*/ // render everything
         ]
     },
     cache: {
         type: 'file',
         fileDir: path.resolve( __dirname + './../cache'),
         cacheMaxAge: [{
-            regex: /.*/,
-            maxAge: 10
+            regex: /.*/, //cache everyting
+            maxAge: 10 //ttl = 10 seconds
         }],
         cacheAlways: [],
         cacheNever: [],

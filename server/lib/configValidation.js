@@ -34,7 +34,7 @@ module.exports  = function(config) {
         type: "object",
         properties: {
             strategy: {type: {
-                enum: ["all", "none", "include", "exclude"]
+                enum: ["include", "exclude"]
             }},
             rules: {
                 type: "array",

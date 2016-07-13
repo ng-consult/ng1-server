@@ -2,7 +2,7 @@
 
 1- Your angular app must use html5mode. The reason behind this requirement is that browsers don't send the hashbang fragment to the server.
 
-So for example, rendering on the server side http://domain.com/url#blah will just render http://domain.com/url.
+   So for example, rendering on the server side http://domain.com/url#blah will just render http://domain.com/url.
 
 2- If you are using angular.bootstrap() to kickoff your angular app, add the following condition:
 
@@ -44,11 +44,10 @@ module.exports = {
         cacheTimestamp: []
     },
     render: {
-        strategy: 'exclude',  // possible values: all, none, include, exclude
+        strategy: 'include',  // possible values: include, exclude
         rules: [
-            /Error/,
-            /Main/
-        ] // Don't pre-render the two urls /Error and /Main
+            /.*/, //pre-render it all !
+        ]
     }
 };
 
