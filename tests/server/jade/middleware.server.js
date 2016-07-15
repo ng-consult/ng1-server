@@ -1,4 +1,7 @@
 /**
+ * Created by antoine on 15/07/16.
+ */
+/**
  * Created by antoine on 08/07/16.
  */
 /**
@@ -19,18 +22,8 @@ var angularServer = new angularDomServer(config);
 
 app = utils(app, 'jade');
 
-app.get('/*', function(req, res) {
-
-    var jadeHtml = jade.renderFile('./jade/views/index-classic.jade', {});
-
-    var html = angularServer.render(jadeHtml, req.url);
-
-    html.then(function(result) {
-        res.send(result);
-    }).fail(function(err) {
-        res.send(err);
-    });
-
+app.get('/*', angularServer.middleware, function(req, res) {
+    res.render('index-classic');
 });
 
 module.exports = app;

@@ -13,24 +13,22 @@ export default function($routeProvider, $locationProvider, $sceProvider) {
     $sceProvider.enabled(false);
 
     $routeProvider.when('/Main', {
-        templateUrl: './views/products.html',
+        templateUrl: '/views/products.html',
         controller: MainCtrl,
         controllerAs: 'vm'
     });
 
     $routeProvider.when('/Todo', {
-        templateUrl: './views/todos.html',
+        templateUrl: '/views/todos.html',
         controller: TodoCtrl,
         controllerAs: 'vm'
     });
 
     $routeProvider.when('/Error', {
-        templateUrl: './views/error.html',
+        templateUrl: '/views/error.html',
         controller: ErrorCtrl,
         controllerAs: 'vm'
     });
-
-    //$locationProvider.hashPrefix('!!!');
 
     $routeProvider.otherwise('/Main');
 

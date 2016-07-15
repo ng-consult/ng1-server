@@ -3,20 +3,22 @@
  */
 
 var express = require('express');
-var angularDomServer = require('./../../../server/lib/AngularServerRenderer');
 var vhost = require('vhost');
-var path = require('path');
 var classicServer = require('./classic.server');
 var preRenderServer = require('./pre-render.server');
+var middlewareServer = require('./middleware.server');
 
-var server = express();
+module.exports = function(port) {
+    var server = express();
 
-// add vhost routing to main app for mail
-server.use(vhost('noserver.example', classicServer));
-server.use(vhost('server.example', preRenderServer));
+    server.use(vhost('noserver.example', classicServer));
+    server.use(vhost('server.example', preRenderServer));
+    server.use(vhost('server-middleware.example', middlewareServer));
 
-server.set('port', 3000);
-server.listen(server.get('port'));
+    server.set('port', port);
+    server.listen(server.get('port'));
 
-console.log('server started on noserver.example:3000 ');
-console.log('server started on server.example:3000 ');
+    console.log('server (swig) started on noserver.example:' + port);
+    console.log('server (swig) started on server.example:' + port);
+    console.log('server (swig) started on server-middleware.example:' + port);
+};

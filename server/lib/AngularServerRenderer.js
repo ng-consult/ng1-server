@@ -6,29 +6,27 @@ var cacheEngine = require('./CacheEngine');
 var Q = require('q');
 var jsdom = require('jsdom');
 var configValidation = require('./configValidation');
+var debug = require('debug')('angular.js-server');
 
 var AngularServerRenderer = function(config) {
 
     var valid = configValidation(config);
     if (valid.errors.length !== 0) {
-        console.log('valid config = ', valid);
+        debug('invalid config = ', valid);
+        console.error(valid.errors);
         throw 'invalid config';
     }
 
     var cache = new cacheEngine(config);
 
-    this.generateDoc = function(html) {
-        return '<html><head><base href="/"/></head><body>'+html+'</body></html>';
-    };
-
     var shouldRender = function(url) {
+        var i,regex;
         switch (config.render.strategy) {
             case 'none':
                 return false;
             case 'all':
                 return true;
             case 'include':
-                var i,regex;
                 for (i in config.render.rules) {
                     regex = config.render.rules[i];
                     if(regex.test(url)) {
@@ -37,7 +35,6 @@ var AngularServerRenderer = function(config) {
                 }
                 return false;
             case 'exclude':
-                var i,regex;
                 for (i in config.render.rules) {
                     regex = config.render.rules[i];
                     if(regex.test(url)) {
@@ -49,28 +46,69 @@ var AngularServerRenderer = function(config) {
     };
 
     var getHTML = function(window, timeouts) {
-
+        debug('Getting HTML.');
         var AngularDocument = window.angular.element(window.document);
-        var scope = AngularDocument.scope()
+        var scope = AngularDocument.scope();
         scope.$apply();
         for (var i in timeouts) {
             clearTimeout( timeouts[i]);
         }
-
-        return window.document.documentElement.outerHTML;
+        var html = window.document.documentElement.outerHTML;
+        debug('returned HTML length: ', html.length);
+        return html;
     };
+    
+    this.middleware = (function(self) {
+
+        return function(req, res, next) {
+            debug('MiddleWare called with URL ', req.url);
+
+            if (req.method !== 'GET') {
+                next();
+            }
+            if (req.xhr === true) {
+                next();
+            }
+            if( /text\/html/.test(req.get('accept')) !== true) {
+                next();
+            }
+
+            var send = res.send.bind(res);
+
+            res.send = function (body) {
+                if(typeof body === 'string') {
+                    self.render(body, req.url).then(function(result) {
+                        debug('MiddleWare successfully rendered');
+                        res.location(req.url);
+                        res.status(200);
+                        return send.apply(this, [result]);
+                    }).fail(function(err) {
+                        debug('MidleWare error rendering');
+                        res.status(500);
+                        res.location(req.url);
+                        return send.apply(this,[err]);
+                    });
+                } else {
+                    return send.apply(this, [body]);
+                }
+            };
+
+            next();
+            
+        };
+    })(this);
 
     this.render = function(html, url) {
 
         var defer = Q.defer();
 
         if (shouldRender(url) === false) {
-            console.log('No rendering for this URL');
+            debug('This Angular URL should not be pre-rendered', url);
             defer.resolve( html );
         } else {
             var cacheUrl = cache.loadUrl(html, url);
             if (cacheUrl.isCached()) {
-                console.log('THIS Url is cached: bingo!');
+                debug('This URL is cached', url);
                 defer.resolve(cacheUrl.getCached());
             } else {
 
@@ -112,7 +150,7 @@ var AngularServerRenderer = function(config) {
 
                 var serverTimeout = setTimeout(function () {
                     if (rendering) return;
-                    console.error('SERVER TIMEOUT ! ! !');
+                    debug('SERVER TIMEOUT ! ! !');
                     //@todo Get the error URl here
                     rendering = true;
                     var html = getHTML(window, [serverTimeout]);
@@ -125,7 +163,7 @@ var AngularServerRenderer = function(config) {
 
                 window.addEventListener('error', function (err) {
                     cacheUrl.removeCache();
-                    console.log('EVENT LISTENER ON ERROR CATCHED', err);
+                    debug('EVENT LISTENER ON ERROR CATCHED', err);
                     defer.reject(err);
                     window.close();
                     window.dispose();
@@ -141,14 +179,15 @@ var AngularServerRenderer = function(config) {
                             console.log('StackTrace.catch', err);
                         });
                     cacheUrl.removeCache();
-                    window.console.error("AngularContextException caught on server");
+                    debug("AngularContextException caught on server");
                     window.console.error(e);
+                    defer.reject(err);
                     window.close();
                     window.dispose();
-                    defer.reject(err);
                 });
 
                 window.addEventListener('StackQueueEmpty', function () {
+                    debug('StackQueueEmpty event caught');
                     if (rendering) return;
                     rendering = true;
                     var html = getHTML(window, [serverTimeout]);
@@ -159,9 +198,9 @@ var AngularServerRenderer = function(config) {
                 });
 
                 window.addEventListener('load', function() {
-                    var angularApp = window.angular.bootstrap(window.document, [config.name]);
+                    debug('Application is laoded in JSDOM');
+                    return;
                 });
-
             }
         }
 

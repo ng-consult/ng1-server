@@ -18,8 +18,7 @@ window[moduleName] = angular
                         .controller('ErrorCtrl', ErrorCtrl)
                         .directive('productList',ProductList);
 
-console.log('Angular = ', window[moduleName]);
-
+console.log('URL = ', window.location.href);
 /*
 
 

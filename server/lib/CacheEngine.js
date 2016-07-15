@@ -147,7 +147,7 @@ var cacheUrl = function(url, config) {
 
     // Init the object;
     getCacheCategory();
-    console.log('New cacheUrl: ',  _currentUrl, _currentCategory);
+    //console.log('New cacheUrl: ',  _currentUrl, _currentCategory);
 
     if( _config.type === 'file') {
         _currentFilePath = path.join( _config.fileDir, url );

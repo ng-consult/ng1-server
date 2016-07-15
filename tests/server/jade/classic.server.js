@@ -6,26 +6,15 @@
  */
 
 var express = require('express');
-var path = require('path');
+var utils = require('./../utils');
 
-var appClient = express();
+var app = express();
 
-appClient.set('views', __dirname + '/views');
-appClient.set('view engine', 'jade');
-appClient.use('/public', express.static( path.resolve(__dirname + '/../../../tests/bower')));
-appClient.use('/views', express.static( path.resolve(__dirname + '/../../../client/views')));
-appClient.use('/dist', express.static( path.resolve(__dirname + '/../../../dist/client')));
+app = utils(app, 'jade');
 
-appClient.get("*", function(req, res, next) {
-    var url = req.url;
-    console.log('API SERVER REQUESTING ', url);
-    next();
-});
-
-appClient.get('/*', function(req, res, next) {
-    // Compile the template to a function string
+app.get('/*', function(req, res) {
     res.render('index-classic');
 });
 
 
-module.exports = appClient;
+module.exports = app;
