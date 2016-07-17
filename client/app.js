@@ -16,27 +16,4 @@ var mainApp = angular.module('myApp', ['ngResource', 'ngRoute'])
 
 console.log('URL = ', window.location.href);
 
-AngularServerDecorator(mainApp);
-
-/* old
-app.config(function($windowProvider, $httpProvider, $cacheFactoryProvider) {
-
-    $httpProvider.defaults.cache = true;
-
-    var $window = $windowProvider.$get();
-
-    if ($window.onServer && $window.onServer === true) {
-        $window.$cacheFactoryProvider = $cacheFactoryProvider;
-    }
-
-    if (typeof $window.onServer === 'undefined' &&  typeof $window.$angularServerCache !== 'undefined' ) {
-
-        $cacheFactoryProvider.importAll($window.$angularServerCache);
-
-        $window.addEventListener('StackQueueEmpty', function() {
-            $cacheFactoryProvider.remove('$http');
-            $httpProvider.defaults.cache = true;
-        });
-    }
-
-});*/
+//No Config necessary on Client

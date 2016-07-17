@@ -9,6 +9,10 @@ export default function AngularServerDecorator( _window, module ) {
     module.provider('$cacheFactory', $CacheFactoryProvider);
     module.provider('$templateCache', $TemplateCacheProvider);
 
+    debug('Assigning Windows');
+    window = Object.assign(_window, window);
+    debug(window);
+
     return module.config(function($windowProvider, $httpProvider, $cacheFactoryProvider) {
 
         $httpProvider.defaults.cache = true;
