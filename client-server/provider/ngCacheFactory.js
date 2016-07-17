@@ -1,4 +1,4 @@
-export function $CacheFactoryProvider() {
+export default function $CacheFactoryProvider() {
 
     var caches = {};
 
@@ -11,7 +11,6 @@ export function $CacheFactoryProvider() {
             throw new Error('$cacheFactory - iid - CacheId '+cacheId+' is not defined!');
         }
         return caches[cacheId].export();
-
     };
 
     this.exportAll = function() {

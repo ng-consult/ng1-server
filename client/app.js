@@ -4,23 +4,21 @@ import TodoCtrl  from './controllers/Todo';
 import Routes from './routes';
 import ProductList from './directives/ProductList';
 import {$CacheFactoryProvider, $TemplateCacheProvider} from './provider/ngCacheFactory';
+import AngularServerDecorator from './AngularServerDecorator';
 
 
-// dream
-//import { AngularClient } from './client';
-
-
-var app = angular.module(moduleName, ['ngResource', 'ngRoute'])
+var mainApp = angular.module('myApp', ['ngResource', 'ngRoute'])
     .config(Routes)
     .controller('MainCtrl', MainCtrl)
     .controller('TodoCtrl', TodoCtrl)
     .controller('ErrorCtrl', ErrorCtrl)
-    .provider('$cacheFactory', $CacheFactoryProvider)
-    .provider('$templateCache', $TemplateCacheProvider)
     .directive('productList', ProductList);
 
 console.log('URL = ', window.location.href);
 
+AngularServerDecorator(mainApp);
+
+/* old
 app.config(function($windowProvider, $httpProvider, $cacheFactoryProvider) {
 
     $httpProvider.defaults.cache = true;
@@ -41,4 +39,4 @@ app.config(function($windowProvider, $httpProvider, $cacheFactoryProvider) {
         });
     }
 
-});
+});*/

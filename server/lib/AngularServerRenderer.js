@@ -13,6 +13,7 @@ var AngularServerRenderer = function(config) {
     var valid = configValidation(config);
     if (valid.errors.length !== 0) {
         debug('invalid config = ', valid);
+        console.log('invalid config');
         console.error(valid.errors);
         throw 'invalid config';
     }
@@ -50,12 +51,8 @@ var AngularServerRenderer = function(config) {
         var AngularDocument = window.angular.element(window.document);
 
         //debug('AngularDocument = ', window['myApp']);
-
-
         //debug('angular injetor cache: ', window.angular.injector);
-
         //debug('angular injetor cache: ', window.angular.injector.get('cacheFactory'));
-
 
         var scope = AngularDocument.scope();
 
@@ -70,7 +67,10 @@ var AngularServerRenderer = function(config) {
         if (typeof window.$cacheFactoryProvider !== 'undefined') {
             var cachedData = window.$cacheFactoryProvider.exportAll();
 
-            var script = "<script type='text/javascript'> window.$angularServerCache = " + JSON.stringify(cachedData) + ";</script></head>";
+            var script = "<script type='text/javascript'> " +
+                "//No read only needed " +
+                "//Object.defineProperty (window,'$angularServerCache', {value :  " + JSON.stringify(cachedData)  + ",writable: false});"
+                + "window.$angularServerCache = " + JSON.stringify(cachedData) + ";</script></head>";
             debug('inserting the script: ',script);
 
             var html = html.replace(/<\/head>/i, script);
@@ -135,21 +135,6 @@ var AngularServerRenderer = function(config) {
                 defer.resolve(cacheUrl.getCached());
             } else {
 
-                /* Get rid of the exception Handler issue
-                 * https://github.com/angular/zone.js/issues/29
-                 * */
-                /*
-                 module.config(function($provide) {
-                 $provide.decorator('$exceptionHandler', function($exceptionHandler) {
-                 return function(error, cause) {
-                 $exceptionHandler(error, cause);
-                 throw error;
-                 };
-                 });
-                 });*/
-
-
-
                 jsdom.debugMode = true;
 
                 var rendering = false;
@@ -193,7 +178,7 @@ var AngularServerRenderer = function(config) {
                     window.close();
                     window.dispose();
                 });
-
+/* OLD
                 window.addEventListener('AngularContextException', function (e) {
                     rendering = true;
                     StackTrace.get()
@@ -210,7 +195,7 @@ var AngularServerRenderer = function(config) {
                     window.close();
                     window.dispose();
                 });
-
+*/
                 window.addEventListener('StackQueueEmpty', function () {
                     debug('StackQueueEmpty event caught');
                     if (rendering) return;
@@ -222,10 +207,39 @@ var AngularServerRenderer = function(config) {
                     window.dispose();
                 });
 
+
                 window.addEventListener('load', function() {
-                    debug('Application is laoded in JSDOM');
-                    return;
+                    debug('Application is loaded in JSDOM');
+                    debug('LISTING ALL EVENT LISTENERS')
+                    var i=0;
+                    Event.observers.each(function(item) {
+                        debug(i + '-------============--------');
+                        debug(item);
+                    });
+                    debug('IS Angular bootstrapped?');
+
+                    var originalBootstrap = window.angular.bootstrap;
+
+                    window.angular.bootstrap = function() {
+                        debug('Starting Angular');
+                        originalBootstrap.apply(this, arguments);
+                        debug('Angular started');
+                    };
                 });
+
+                var afterAngularStarted = function() {
+                    var windowApp = window[config.name];
+                    windowApp.config(function($provide) {
+                        $provide.decorator('$exceptionHandler', function($exceptionHandler) {
+                            return function(error, cause) {
+                                debug('Throwing error = ', error);
+                                debug('cause', cause);
+                                $exceptionHandler(error, cause);
+                                throw error;
+                            };
+                        });
+                    });
+                }
             }
         }
 
