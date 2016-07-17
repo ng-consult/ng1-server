@@ -48,12 +48,35 @@ var AngularServerRenderer = function(config) {
     var getHTML = function(window, timeouts) {
         debug('Getting HTML.');
         var AngularDocument = window.angular.element(window.document);
+
+        //debug('AngularDocument = ', window['myApp']);
+
+
+        //debug('angular injetor cache: ', window.angular.injector);
+
+        //debug('angular injetor cache: ', window.angular.injector.get('cacheFactory'));
+
+
         var scope = AngularDocument.scope();
+
         scope.$apply();
         for (var i in timeouts) {
             clearTimeout( timeouts[i]);
         }
         var html = window.document.documentElement.outerHTML;
+
+        debug('$cacheFactoryProvider', window.$cacheFactoryProvider);
+
+        if (typeof window.$cacheFactoryProvider !== 'undefined') {
+            var cachedData = window.$cacheFactoryProvider.exportAll();
+
+            var script = "<script type='text/javascript'> window.$angularServerCache = " + JSON.stringify(cachedData) + ";</script></head>";
+            debug('inserting the script: ',script);
+
+            var html = html.replace(/<\/head>/i, script);
+
+        }
+
         debug('returned HTML length: ', html.length);
         return html;
     };
@@ -147,6 +170,8 @@ var AngularServerRenderer = function(config) {
 
                 var window = document.defaultView;
                 window.onServer = true;
+                debug('SERVER myApp = ', window['myApp']);
+
 
                 var serverTimeout = setTimeout(function () {
                     if (rendering) return;
