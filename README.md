@@ -165,15 +165,15 @@ var AngularServer = require('angular.js-server');
 
 var renderer = new AngularServer(config);
 
-var renderedPromise = renderer.rende(html, url);
+var renderedPromise = renderer.render(html, url);
 
-rendered.then(function(html) {
+renderedPromise.then(function(html) {
     
 }).fail(function(errorHtml) {
 
 });
 
-// rendererHtml is a Q promise
+// renderedPromise is a Q promise
 
 ```
 
@@ -234,8 +234,6 @@ html.then(function(result) {
 
 `var renderer = new AngularServer(config)` throws an error if the config object is invalid using `jsonschema` https://github.com/tdegrunt/jsonschema
 
-To see the errors, you can access the array `renderer.errors` 
-
 ##Methods
 
 `middleware` is the function(req, res, next) used for middleware injection. 
@@ -243,7 +241,6 @@ To see the errors, you can access the array `renderer.errors`
 `render(html, url)` takes two strings as parameters, and returns a Q promise (https://github.com/kriskowal/q) .
 
 #Examples
-
 
 They are located in test. To run them, you must edit your /etc/hosts file
 and add the following lines:
