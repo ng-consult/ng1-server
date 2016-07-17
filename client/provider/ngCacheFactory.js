@@ -220,9 +220,3 @@ export function $TemplateCacheProvider() {
         return $cacheFactory('templates');
     }];
 }
-
-export function $ServerCacheProvider() {
-    this.$get = ['$cacheFactory', function($cacheFactory) {
-        return $cacheFactory('server');
-    }];
-}

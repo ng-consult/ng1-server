@@ -24,7 +24,7 @@ Now that all web crawlers can parse the real content of the page, they can index
 ### Pros: 
 
 - It is quicker to develop a website from scratch with Angular than traditional Server Side technologies
-- You don't have to change your existing code base to make an existing AngularJS app work.
+- You have to slighly modify your existing code base to enable server side $http caching.
 - Your website, once the page loaded, will behave as a web application - which means a much richer user experience
 
 ##Cons
@@ -33,7 +33,6 @@ Now that all web crawlers can parse the real content of the page, they can index
 - This is not unit tested (yet).
 - It is quite hard to debug Angular Errors when these hapens on the server side.
 - There are many server side functionalities and performance optimisations missing . To cite a few: 
-    - $http caching ( to  speed up the page load when the browser loads a pre-rendered html page)
     - Benchmark are missing
     - Logging is missing
     - URL rewritting
@@ -74,6 +73,11 @@ In short, I have to make sure that the Angular application is in IDLE state. And
 So far, it only supports file caching, but modyfing the source code to use Redis instead is straigh forward.
 
 Caching is made trough URL Regex, and supports two caching mode ( `never`, `always`, and `maxAge` ).
+
+##$http caching
+
+When rendering the HTL on the server, every templateRequest and REST call are cached and injected into the client before the angular app runs. 
+It means all the requests are instantly replayed, increasing considerably the client page load.
 
 ##URL filtering
 
@@ -156,6 +160,77 @@ TODO To be implemented
 This is the name of the angularJS application present in the `ng-app` tag.
 
 # Usage:
+
+## A new cacheFactoryProvider
+
+You need to import the file `client/provider/ngCacheFactory.js`
+
+This file is a modified version of the original AngularJS 1.5 cacheFactoryProvider, and adds several methods to the cache factory.
+
+###$cacheFactoryProvider.export (cacheId)
+
+Export the secified cache into JSON
+
+###$cacheFactoryProvider.exportAll()
+
+Exports all the caches
+
+###$cacheFactoryProvider.importAll(cacheData)
+
+Import the data exported trough the method `exportAll`
+
+###$cacheFactoryProvider.import(cacheId) 
+
+Specifically import a cache
+
+###$cacheFactoryProvider.info(cacheId)
+
+Get info about a cache
+
+###$cacheFactoryProvider.infoAll()
+
+Get info about all caches
+
+## Using the new cacheFactoryProvider
+
+modify the file `client/provider/ngCacheFactory.js` if your are still using ES5 and setup your angular application config this way: 
+
+```
+
+var app = angular.module('YourApp', [dependencies]);
+
+
+app.provider('$cacheFactory', $CacheFactoryProvider)
+   .provider('$templateCache', $TemplateCacheProvider);
+   
+app.config(function($windowProvider, $httpProvider, $cacheFactoryProvider) {
+
+    $httpProvider.defaults.cache = true;
+
+    var $window = $windowProvider.$get();
+
+    // It will be executed when rendered on the server side
+    if ($window.onServer && $window.onServer === true) {
+        $window.$cacheFactoryProvider = $cacheFactoryProvider;
+    }
+
+    // if the client detects that a cache object is present, it will preload it.
+    
+    if (typeof $window.onServer === 'undefined' &&  typeof $window.$angularServerCache !== 'undefined' ) {
+        console.log('SHOULD LOAD CACHE !');
+
+        $cacheFactoryProvider.importAll($window.$angularServerCache);
+
+        $window.addEventListener('StackQueueEmpty', function() {
+            console.log('clearing cache now')
+            $cacheFactoryProvider.remove('$http');
+            $httpProvider.defaults.cache = true;
+        });
+    }
+
+
+});
+``
 
 ## Manually prerender
  
