@@ -25,7 +25,7 @@ Now that all web crawlers can parse the real content of the page, they can index
 
 - It is quicker to develop a website from scratch with Angular than traditional Server Side technologies
 - You don't have to change your existing code base to make an existing AngularJS app work.
-- Your website, once the page loaded, will behave as a web application - which means a much richer user experience
+- Your website, once the page loaded, will behave as a web application - which means a significant faster richer user experience
 
 ##Cons
 
@@ -34,13 +34,13 @@ Now that all web crawlers can parse the real content of the page, they can index
 - It is quite hard to debug Angular Errors when these hapens on the server side.
 - There are many server side functionalities and performance optimisations missing . To cite a few: 
     - $http caching ( to  speed up the page load when the browser loads a pre-rendered html page)
+      UPDATE: A working attempt is on the branch `cacheExperiment` https://github.com/a-lucas/angular.js-server/tree/cacheExperiment
     - Benchmark are missing
     - Logging is missing
     - URL rewritting
     - `ui-router` & `ng-router` integration are missing. For example, it would be better to configure the pre-render config inside these two routers as well as URL rewriting
     - Redis caching
     - URL cache invalidation library: for ex: `onUserUpdate: function(id) { cache.invalidate([ /user/([0-9+])/]); } `
-    - and much more
     
 # Requirements
 
