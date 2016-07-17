@@ -76,8 +76,8 @@ Caching is made trough URL Regex, and supports two caching mode ( `never`, `alwa
 
 ##$http caching
 
-When rendering the HTL on the server, every templateRequest and REST call are cached and injected into the client before the angular app runs. 
-It means all the requests are instantly replayed, increasing considerably the client page load.
+When rendering the HTML on the server, every templateRequest and REST call are cached and injected into the client before the angular app runs. 
+Then all the requests are instantly replayed, increasing considerably the client page load.
 
 ##URL filtering
 
@@ -209,20 +209,19 @@ app.config(function($windowProvider, $httpProvider, $cacheFactoryProvider) {
 
     var $window = $windowProvider.$get();
 
-    // It will be executed when rendered on the server side
+    // It will be executed when rendered on the server side and give access to the current cache state to the server
     if ($window.onServer && $window.onServer === true) {
         $window.$cacheFactoryProvider = $cacheFactoryProvider;
     }
 
     // if the client detects that a cache object is present, it will preload it.
-    
     if (typeof $window.onServer === 'undefined' &&  typeof $window.$angularServerCache !== 'undefined' ) {
-        console.log('SHOULD LOAD CACHE !');
-
+        
         $cacheFactoryProvider.importAll($window.$angularServerCache);
 
+        //This is optional if you desire not to cache requests after te initial page load.
         $window.addEventListener('StackQueueEmpty', function() {
-            console.log('clearing cache now')
+            console.log('clearing cache now');;
             $cacheFactoryProvider.remove('$http');
             $httpProvider.defaults.cache = true;
         });
@@ -230,7 +229,7 @@ app.config(function($windowProvider, $httpProvider, $cacheFactoryProvider) {
 
 
 });
-``
+```
 
 ## Manually prerender
  
