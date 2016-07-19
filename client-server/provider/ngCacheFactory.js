@@ -1,4 +1,4 @@
-export default function $CacheFactoryProvider() {
+module.exports.$CacheFactoryProvider = function() {
 
     var caches = {};
 
@@ -214,7 +214,7 @@ export default function $CacheFactoryProvider() {
     };
 }
 
-export function $TemplateCacheProvider() {
+module.exports.$TemplateCacheProvider = function() {
     this.$get = ['$cacheFactory', function($cacheFactory) {
         return $cacheFactory('templates');
     }];

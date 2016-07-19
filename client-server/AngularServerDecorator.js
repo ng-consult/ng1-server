@@ -1,13 +1,12 @@
-import {$CacheFactoryProvider, $TemplateCacheProvider} from './provider/ngCacheFactory';
+var ngCacheFactory = require('./provider/ngCacheFactory');
+var debug = require('debug')('angular.js-server');
 
 
-// .provider('$cacheFactory', $CacheFactoryProvider)
-// .provider('$templateCache', $TemplateCacheProvider)
+module.exports =  function AngularServerDecorator( _window, module ) {
 
-export default function AngularServerDecorator( _window, module ) {
-
-    module.provider('$cacheFactory', $CacheFactoryProvider);
-    module.provider('$templateCache', $TemplateCacheProvider);
+    debug('AngularServerDecorator called', module);
+    module.provider('$cacheFactory', ngCacheFactory.$CacheFactoryProvider);
+    module.provider('$templateCache', ngCacheFactory.$TemplateCacheProvider);
 
     debug('Assigning Windows');
     window = Object.assign(_window, window);
@@ -33,5 +32,5 @@ export default function AngularServerDecorator( _window, module ) {
             });
         }
 
-    };
+    });
 };

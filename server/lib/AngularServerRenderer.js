@@ -6,6 +6,7 @@ var cacheEngine = require('./CacheEngine');
 var Q = require('q');
 var jsdom = require('jsdom');
 var configValidation = require('./configValidation');
+var angularServerDecorator = require('./../../client-server/AngularServerDecorator');
 var debug = require('debug')('angular.js-server');
 
 var AngularServerRenderer = function(config) {
@@ -155,8 +156,6 @@ var AngularServerRenderer = function(config) {
 
                 var window = document.defaultView;
                 window.onServer = true;
-                debug('SERVER myApp = ', window['myApp']);
-
 
                 var serverTimeout = setTimeout(function () {
                     if (rendering) return;
@@ -172,30 +171,14 @@ var AngularServerRenderer = function(config) {
 
 
                 window.addEventListener('error', function (err) {
+                    var rendering = true;
                     cacheUrl.removeCache();
                     debug('EVENT LISTENER ON ERROR CATCHED', err);
                     defer.reject(err);
                     window.close();
                     window.dispose();
                 });
-/* OLD
-                window.addEventListener('AngularContextException', function (e) {
-                    rendering = true;
-                    StackTrace.get()
-                        .then(function (stack) {
-                            console.log('StackTrace.get', stack);
-                        })
-                        .catch(function (err) {
-                            console.log('StackTrace.catch', err);
-                        });
-                    cacheUrl.removeCache();
-                    debug("AngularContextException caught on server");
-                    window.console.error(e);
-                    defer.reject(err);
-                    window.close();
-                    window.dispose();
-                });
-*/
+
                 window.addEventListener('StackQueueEmpty', function () {
                     debug('StackQueueEmpty event caught');
                     if (rendering) return;
@@ -206,7 +189,6 @@ var AngularServerRenderer = function(config) {
                     window.close();
                     window.dispose();
                 });
-
 
                 window.addEventListener('load', function() {
                     debug('Application is loaded in JSDOM');
