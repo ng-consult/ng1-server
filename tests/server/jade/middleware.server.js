@@ -18,7 +18,7 @@ var config = require('./../config');
 
 var app = express();
 
-var angularServer = new angularDomServer(config);
+var angularServer = new angularDomServer( Object.assign({ server: { domain: 'server-middleware.example'}},config));
 
 app = utils(app, 'jade');
 

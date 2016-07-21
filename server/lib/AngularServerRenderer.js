@@ -140,6 +140,8 @@ var AngularServerRenderer = function(config) {
 
                 var rendering = false;
 
+                console.log('SERVER URL = ', 'http://' + config.server.domain + ':' + config.server.port + url);
+
                 var document  = jsdom.jsdom(html, {
                     features: {
                         FetchExternalResources: ['script'],
@@ -157,6 +159,10 @@ var AngularServerRenderer = function(config) {
                 var window = document.defaultView;
                 window.onServer = true;
 
+                console.log('jsdom.jsdom loaded');
+
+                console.log('window = ', window.window.angular);
+
                 var serverTimeout = setTimeout(function () {
                     if (rendering) return;
                     debug('SERVER TIMEOUT ! ! !');
@@ -171,7 +177,7 @@ var AngularServerRenderer = function(config) {
 
 
                 window.addEventListener('error', function (err) {
-                    var rendering = true;
+                    rendering = true;
                     cacheUrl.removeCache();
                     debug('EVENT LISTENER ON ERROR CATCHED', err);
                     defer.reject(err);
