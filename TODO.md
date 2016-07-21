@@ -26,7 +26,9 @@ Modify the angular.JS cache (natively or via injectors)
  Once each element's count is zero, remove the caching functionality and resume normal behavior.
  Set a timeout to notify and logs the server if some requests are never replayed.
 
-# Better Caching
+# $html Better Caching
 
-use https://www.npmjs.com/package/cache-manager instead
+Add serialize to this library, or decorate angular $cacheFactory
+ t
+https://github.com/jmdobry/CacheFactory/blob/master/src/index.js
 

@@ -12,6 +12,7 @@ var utils = require('./../utils');
 var angularDomServer = require('./../../../server/lib/AngularServerRenderer');
 
 var config = require('./../config');
+config.server.domain = 'server.example';
 
 var app = express();
 

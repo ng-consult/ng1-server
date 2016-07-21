@@ -13,6 +13,7 @@ var AngularServerRenderer = function(config) {
     var valid = configValidation(config);
     if (valid.errors.length !== 0) {
         debug('invalid config = ', valid);
+        console.log('invalid config');
         console.error(valid.errors);
         throw 'invalid config';
     }
@@ -48,12 +49,31 @@ var AngularServerRenderer = function(config) {
     var getHTML = function(window, timeouts) {
         debug('Getting HTML.');
         var AngularDocument = window.angular.element(window.document);
+
         var scope = AngularDocument.scope();
+
         scope.$apply();
         for (var i in timeouts) {
             clearTimeout( timeouts[i]);
         }
+
         var html = window.document.documentElement.outerHTML;
+
+        debug('$cacheFactoryProvider', window.$cacheFactoryProvider);
+
+        if (typeof window.$cacheFactoryProvider !== 'undefined') {
+            var cachedData = window.$cacheFactoryProvider.exportAll();
+
+            var script = "<script type='text/javascript'> " +
+                "/*No read only needed */" +
+                "/*Object.defineProperty (window,'$angularServerCache', {value :  " + JSON.stringify(cachedData)  + ",writable: false});*/"
+                + "window.$angularServerCache = " + JSON.stringify(cachedData) + ";</script></head>";
+            debug('inserting the script: ',script);
+
+            var html = html.replace(/<\/head>/i, script);
+
+        }
+
         debug('returned HTML length: ', html.length);
         return html;
     };
@@ -112,24 +132,11 @@ var AngularServerRenderer = function(config) {
                 defer.resolve(cacheUrl.getCached());
             } else {
 
-                /* Get rid of the exception Handler issue
-                 * https://github.com/angular/zone.js/issues/29
-                 * */
-                /*
-                 module.config(function($provide) {
-                 $provide.decorator('$exceptionHandler', function($exceptionHandler) {
-                 return function(error, cause) {
-                 $exceptionHandler(error, cause);
-                 throw error;
-                 };
-                 });
-                 });*/
-
-
-
                 jsdom.debugMode = true;
 
                 var rendering = false;
+
+                console.log('SERVER URL = ', 'http://' + config.server.domain + ':' + config.server.port + url);
 
                 var document  = jsdom.jsdom(html, {
                     features: {
@@ -148,6 +155,15 @@ var AngularServerRenderer = function(config) {
                 var window = document.defaultView;
                 window.onServer = true;
 
+                window.addEventListener('angularInConfig', function() {
+                    debug('EVENT angularInConfig CAUGHT');
+                    afterAngularStarted();
+                });
+
+                console.log('jsdom.jsdom loaded');
+
+                console.log('window = ', window.window.angular);
+
                 var serverTimeout = setTimeout(function () {
                     if (rendering) return;
                     debug('SERVER TIMEOUT ! ! !');
@@ -157,35 +173,18 @@ var AngularServerRenderer = function(config) {
                     cacheUrl.removeCache();
                     defer.resolve(html);
                     window.close();
-                    window.dispose();
                 }, config.server.timeout);
 
-
+/*
                 window.addEventListener('error', function (err) {
+                    rendering = true;
                     cacheUrl.removeCache();
                     debug('EVENT LISTENER ON ERROR CATCHED', err);
                     defer.reject(err);
                     window.close();
                     window.dispose();
                 });
-
-                window.addEventListener('AngularContextException', function (e) {
-                    rendering = true;
-                    StackTrace.get()
-                        .then(function (stack) {
-                            console.log('StackTrace.get', stack);
-                        })
-                        .catch(function (err) {
-                            console.log('StackTrace.catch', err);
-                        });
-                    cacheUrl.removeCache();
-                    debug("AngularContextException caught on server");
-                    window.console.error(e);
-                    defer.reject(err);
-                    window.close();
-                    window.dispose();
-                });
-
+*/
                 window.addEventListener('StackQueueEmpty', function () {
                     debug('StackQueueEmpty event caught');
                     if (rendering) return;
@@ -197,10 +196,24 @@ var AngularServerRenderer = function(config) {
                     window.dispose();
                 });
 
+
                 window.addEventListener('load', function() {
-                    debug('Application is laoded in JSDOM');
-                    return;
+                    debug('Application is loaded in JSDOM');
                 });
+
+                var afterAngularStarted = function() {
+                    var windowApp = window[config.name];
+                    windowApp.config(function($provide) {
+                        $provide.decorator('$exceptionHandler', function($exceptionHandler) {
+                            return function(error, cause) {
+                                debug('Throwing error = ', error);
+                                debug('cause', cause);
+                                $exceptionHandler(error, cause);
+                                throw error;
+                            };
+                        });
+                    });
+                };
             }
         }
 

@@ -24,23 +24,23 @@ Now that all web crawlers can parse the real content of the page, they can index
 ### Pros: 
 
 - It is quicker to develop a website from scratch with Angular than traditional Server Side technologies
-- You don't have to change your existing code base to make an existing AngularJS app work.
-- Your website, once the page loaded, will behave as a web application - which means a significant faster richer user experience
+- You have to slighly modify your existing code base to enable server side $http caching.
+- Your website, once the page loaded, will behave as a web application - which means a much richer user experience
+- You can server side cache REST API and templateCache and replay them them in your client with  (https://github.com/a-lucas/angular.js-server-ng-cache)
 
 ##Cons
 
 - This is a new concept built on a rather old technology. Angular 1 is now 4 years old, and AngularJS2 will have server side rendering built-in - but at this time of writting, ng2 is still in rc.
 - This is not unit tested (yet).
-- It is quite hard to debug Angular Errors when these hapens on the server side.
+- It is quite hard to debug Angular Errors when these happens on the server side.
 - There are many server side functionalities and performance optimisations missing . To cite a few: 
-    - $http caching ( to  speed up the page load when the browser loads a pre-rendered html page)
-      UPDATE: A working attempt is on the branch `cacheExperiment` https://github.com/a-lucas/angular.js-server/tree/cacheExperiment
     - Benchmark are missing
     - Logging is missing
-    - URL rewritting
+    - URL rewritting support
     - `ui-router` & `ng-router` integration are missing. For example, it would be better to configure the pre-render config inside these two routers as well as URL rewriting
     - Redis caching
     - URL cache invalidation library: for ex: `onUserUpdate: function(id) { cache.invalidate([ /user/([0-9+])/]); } `
+
     
 # Requirements
 
@@ -74,6 +74,11 @@ In short, I have to make sure that the Angular application is in IDLE state. And
 So far, it only supports file caching, but modyfing the source code to use Redis instead is straigh forward.
 
 Caching is made trough URL Regex, and supports two caching mode ( `never`, `always`, and `maxAge` ).
+
+##$http caching
+
+When rendering the HTML on the server, every templateRequest and REST call are cached and injected into the client before the angular app runs. 
+Then all the requests are instantly replayed, increasing considerably the client page load.
 
 ##URL filtering
 
@@ -154,8 +159,6 @@ TODO To be implemented
 ###name:
 
 This is the name of the angularJS application present in the `ng-app` tag.
-
-# Usage:
 
 ## Manually prerender
  
