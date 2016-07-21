@@ -3,7 +3,7 @@
   "author": "Antoine LUCAS <antoine.lucas.australia@gmail.com>",
   "scripts": {},
   "main": "server/lib/AngularServerRenderer.js",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "license": "MIT",
   "repository": {
     "type": "git",
