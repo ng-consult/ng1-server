@@ -6,7 +6,6 @@ var cacheEngine = require('./CacheEngine');
 var Q = require('q');
 var jsdom = require('jsdom');
 var configValidation = require('./configValidation');
-var angularServerDecorator = require('./../../client-server/AngularServerDecorator');
 var debug = require('debug')('angular.js-server');
 
 var AngularServerRenderer = function(config) {
@@ -51,16 +50,13 @@ var AngularServerRenderer = function(config) {
         debug('Getting HTML.');
         var AngularDocument = window.angular.element(window.document);
 
-        //debug('AngularDocument = ', window['myApp']);
-        //debug('angular injetor cache: ', window.angular.injector);
-        //debug('angular injetor cache: ', window.angular.injector.get('cacheFactory'));
-
         var scope = AngularDocument.scope();
 
         scope.$apply();
         for (var i in timeouts) {
             clearTimeout( timeouts[i]);
         }
+
         var html = window.document.documentElement.outerHTML;
 
         debug('$cacheFactoryProvider', window.$cacheFactoryProvider);
@@ -69,8 +65,8 @@ var AngularServerRenderer = function(config) {
             var cachedData = window.$cacheFactoryProvider.exportAll();
 
             var script = "<script type='text/javascript'> " +
-                "//No read only needed " +
-                "//Object.defineProperty (window,'$angularServerCache', {value :  " + JSON.stringify(cachedData)  + ",writable: false});"
+                "/*No read only needed */" +
+                "/*Object.defineProperty (window,'$angularServerCache', {value :  " + JSON.stringify(cachedData)  + ",writable: false});*/"
                 + "window.$angularServerCache = " + JSON.stringify(cachedData) + ";</script></head>";
             debug('inserting the script: ',script);
 
@@ -159,6 +155,11 @@ var AngularServerRenderer = function(config) {
                 var window = document.defaultView;
                 window.onServer = true;
 
+                window.addEventListener('angularInConfig', function() {
+                    debug('EVENT angularInConfig CAUGHT');
+                    afterAngularStarted();
+                });
+
                 console.log('jsdom.jsdom loaded');
 
                 console.log('window = ', window.window.angular);
@@ -172,10 +173,9 @@ var AngularServerRenderer = function(config) {
                     cacheUrl.removeCache();
                     defer.resolve(html);
                     window.close();
-                    window.dispose();
                 }, config.server.timeout);
 
-
+/*
                 window.addEventListener('error', function (err) {
                     rendering = true;
                     cacheUrl.removeCache();
@@ -184,7 +184,7 @@ var AngularServerRenderer = function(config) {
                     window.close();
                     window.dispose();
                 });
-
+*/
                 window.addEventListener('StackQueueEmpty', function () {
                     debug('StackQueueEmpty event caught');
                     if (rendering) return;
@@ -196,23 +196,9 @@ var AngularServerRenderer = function(config) {
                     window.dispose();
                 });
 
+
                 window.addEventListener('load', function() {
                     debug('Application is loaded in JSDOM');
-                    debug('LISTING ALL EVENT LISTENERS')
-                    var i=0;
-                    Event.observers.each(function(item) {
-                        debug(i + '-------============--------');
-                        debug(item);
-                    });
-                    debug('IS Angular bootstrapped?');
-
-                    var originalBootstrap = window.angular.bootstrap;
-
-                    window.angular.bootstrap = function() {
-                        debug('Starting Angular');
-                        originalBootstrap.apply(this, arguments);
-                        debug('Angular started');
-                    };
                 });
 
                 var afterAngularStarted = function() {
@@ -227,7 +213,7 @@ var AngularServerRenderer = function(config) {
                             };
                         });
                     });
-                }
+                };
             }
         }
 
