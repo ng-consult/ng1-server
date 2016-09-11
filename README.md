@@ -27,11 +27,13 @@ Now that all web crawlers can parse the real content of the page, they can index
 - You have to slighly modify your existing code base to enable server side $http caching.
 - Your website, once the page loaded, will behave as a web application - which means a much richer user experience
 - You can server side cache REST API and templateCache and replay them them in your client with  (https://github.com/a-lucas/angular.js-server-ng-cache)
+- Written in typescript and ES6
 
 ##Cons
 
 - This is a new concept built on a rather old technology. Angular 1 is now 4 years old, and AngularJS2 will have server side rendering built-in - but at this time of writting, ng2 is still in rc.
 - This is not unit tested (yet).
+- Custom built of Angular (soon to be removed)
 - It is quite hard to debug Angular Errors when these happens on the server side.
 - There are many server side functionalities and performance optimisations missing . To cite a few: 
     - Benchmark are missing
@@ -104,7 +106,6 @@ var path = require('path');
 
 module.exports = {
     name: "myApp",
-    log: path.resolve( __dirname + './../logs'),
     server: {
         domain: 'server.example',
         port: 3000,
@@ -267,5 +268,10 @@ This work is incomplete and totally in progress - DON'T use it on prod.
 
 #Contributing
 
+```
+npm install
 npm install -g typescript
 npm install -g tsd
+tsd install
+tsc
+```
