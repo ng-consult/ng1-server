@@ -264,3 +264,8 @@ node test-app.js
 #WIP
 
 This work is incomplete and totally in progress - DON'T use it on prod.
+
+#Contributing
+
+npm install -g typescript
+npm install -g tsd
