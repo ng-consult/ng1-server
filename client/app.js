@@ -10,7 +10,7 @@ import ProductList from './directives/ProductList';
     see https://github.com/a-lucas/angular.js-server-ng-cache
     
 */
-window['myApp'] = angular.module('myApp', ['ngResource', 'ngRoute', 'server-cache'])
+window['myApp'] = angular.module('myApp', ['ngResource', 'ngRoute', 'server', 'server-cache'])
     .config(Routes)
     .controller('MainCtrl', MainCtrl)
     .controller('TodoCtrl', TodoCtrl)

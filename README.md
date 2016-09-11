@@ -33,7 +33,6 @@ Now that all web crawlers can parse the real content of the page, they can index
 
 - This is a new concept built on a rather old technology. Angular 1 is now 4 years old, and AngularJS2 will have server side rendering built-in - but at this time of writting, ng2 is still in rc.
 - This is not unit tested (yet).
-- Custom built of Angular (soon to be removed)
 - It is quite hard to debug Angular Errors when these happens on the server side.
 - There are many server side functionalities and performance optimisations missing . To cite a few: 
     - Benchmark are missing
@@ -52,20 +51,14 @@ Your angular app must use html5mode. The reason behind this requirement is that 
 
 So for example, rendering on the server side http://domain.com/url#blah will just render http://domain.com/url.
 
-##Custom build of Angular
+##Custom Angular $qFactory
 
-You must use a modified version of AngularJS ( while I get the time to write the tests to contribute to Angular source code. )
+You must use a modified version of AngularJS original $qFactory based  on the version `1.5.7`
 
-So far the only version of angular available is `1.5.7`, available here: https://github.com/a-lucas/bower-angular/tree/v1.5.7
-
-*Why do I need a custom build of Angular?*
+*Why do I need a custom promise $q?*
 
 In order to have the prerenderer working, I need to make sure that all the initial templates are loaded, and all the REST api calls are completed.
 In short, I have to make sure that the Angular application is in IDLE state. And Angular1 doesn't trigger (yet) this idle state event.
-
- You can check how this is done at this URL: https://github.com/a-lucas/angular.js
- 
- All tests passes, but the $EngineQueueProvider hasn't been tested.
 
 
 #Functionalities
@@ -270,8 +263,11 @@ This work is incomplete and totally in progress - DON'T use it on prod.
 
 ```
 npm install
+npm install -g webpack  
 npm install -g typescript
 npm install -g tsd
+npm link webpack
 tsd install
 tsc
+cd server/client ; webpack
 ```

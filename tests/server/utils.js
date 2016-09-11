@@ -17,6 +17,8 @@ module.exports = function(app, viewEngine) {
     app.use('/public', express.static( path.resolve(__dirname + '/../../tests/bower')));
     app.use('/views', express.static( path.resolve(__dirname + '/../../client/views')));
     app.use('/dist', express.static( path.resolve(__dirname + '/../../dist/client')));
+    app.use('/lib', express.static( path.resolve(__dirname + '/../../server/client/js')));
+
 
     app.set('views', path.resolve(__dirname + '/' + viewEngine + '/views'));
     app.set('view engine', viewEngine);

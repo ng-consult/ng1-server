@@ -48,6 +48,7 @@
     "shelljs": "^0.7.0",
     "stacktrace-js": "^1.0.3",
     "swig": "^1.4.2",
+    "ts-loader": "^0.8.2",
     "vhost": "^3.0.2",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",

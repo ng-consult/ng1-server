@@ -2,7 +2,8 @@
     "compilerOptions": {
         "module": "commonjs",
         "sourceMap": true,
-        "outDir": "./server/lib"
+        "outDir": "./server/lib",
+        "removeComments": true
     },
     "files": [
         "./typings/tsd.d.ts",
