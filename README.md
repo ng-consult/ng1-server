@@ -60,20 +60,11 @@ You must use a modified version of AngularJS original $qFactory based  on the ve
 In order to have the prerenderer working, I need to make sure that all the initial templates are loaded, and all the REST api calls are completed.
 In short, I have to make sure that the Angular application is in IDLE state. And Angular1 doesn't trigger (yet) this idle state event.
 
+This modified `$q` is included in the client side library - and the change should be totally transparent to you.
+
 ##Client Side library
 
 The client side module is here: https://github.com/a-lucas/angular.js-server-bower
-
-
-You can install it via bower with : 
-
-```
-bower install angular.js-server
-```
-
-For those without bower, this is where the file is https://github.com/a-lucas/angular.js-server-bower/tree/master/dest
-
-Then you need to include the module `server` as a dependency in your AngularJS application.
 
 
 #Functionalities
@@ -83,12 +74,12 @@ Then you need to include the module `server` as a dependency in your AngularJS a
 
 So far, it only supports file caching, but modyfing the source code to use Redis instead is straigh forward.
 
-Caching is made trough URL Regex, and supports two caching mode ( `never`, `always`, and `maxAge` ).
+Caching is made trough URL Regex, and supports severall mode ( `never`, `always`, and `maxAge` ).
 
 ##$http caching
 
 When rendering the HTML on the server, every templateRequest and REST call are cached and injected into the client before the angular app runs. 
-Then all the requests are instantly replayed, increasing considerably the client page load.
+Then all the requests are instantly replayed, decreasing considerably the client page loading time.
 
 ##URL filtering
 
@@ -96,10 +87,9 @@ You can decide which URLs will be pre-rendered, and uses either of the two strat
 
 ##Logging
 
-Not implemented (yet)
+Not implemented
 
-#How to use
-
+#Usage
 
 ##Client Side library
 
