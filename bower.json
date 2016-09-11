@@ -1,9 +1,0 @@
-{
-  "name": "angular.js-server",
-  "dependencies": {
-    "angular": "~1.5.0",
-    "angular-resource": "~1.5.0",
-    "angular-route": "~1.5.0",
-    "angular-server-cache": "~0.2.3"
-  }
-}

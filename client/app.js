@@ -5,11 +5,11 @@ import Routes from './routes';
 import ProductList from './directives/ProductList';
 
 /*
-    this example runs with the API calls cache turne on with:
+    this example runs with the API calls cache turned on with:
     angular.js-server-ng-cache
     see https://github.com/a-lucas/angular.js-server-ng-cache
-    
 */
+
 window['myApp'] = angular.module('myApp', ['ngResource', 'ngRoute', 'server', 'server-cache'])
     .config(Routes)
     .controller('MainCtrl', MainCtrl)

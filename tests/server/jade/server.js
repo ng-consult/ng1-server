@@ -1,6 +1,3 @@
-/**
- * Created by antoine on 07/07/16.
- */
 
 var express = require('express');
 var vhost = require('vhost');

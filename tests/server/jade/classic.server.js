@@ -1,9 +1,6 @@
 /**
  * Created by antoine on 08/07/16.
  */
-/**
- * Created by antoine on 07/07/16.
- */
 
 var express = require('express');
 var utils = require('./../utils');

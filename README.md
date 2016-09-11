@@ -60,6 +60,21 @@ You must use a modified version of AngularJS original $qFactory based  on the ve
 In order to have the prerenderer working, I need to make sure that all the initial templates are loaded, and all the REST api calls are completed.
 In short, I have to make sure that the Angular application is in IDLE state. And Angular1 doesn't trigger (yet) this idle state event.
 
+##Client Side library
+
+The client side module is here: https://github.com/a-lucas/angular.js-server-bower
+
+
+You can install it via bower with : 
+
+```
+bower install angular.js-server
+```
+
+For those without bower, this is where the file is https://github.com/a-lucas/angular.js-server-bower/tree/master/dest
+
+Then you need to include the module `server` as a dependency in your AngularJS application.
+
 
 #Functionalities
 
@@ -85,7 +100,21 @@ Not implemented (yet)
 
 #How to use
 
-##install
+
+##Client Side library
+
+You can install it via bower with : 
+
+```
+bower install angular.js-server
+```
+
+For those without bower, this is where the file is https://github.com/a-lucas/angular.js-server-bower/tree/master/dest
+
+Then you need to include the module `server` as a dependency in your AngularJS application.
+
+
+##Server module installation
 
 ```
 npm install angular.js-server
@@ -93,6 +122,8 @@ npm install angular.js-server
 
 ##Config object
 
+This is an example of what a config object looks like:
+ 
 ```
 
 var path = require('path');
@@ -124,9 +155,12 @@ module.exports = {
 };
 
 ```
+
 ###server
 
-```timeout``` is the number in seconds before the server consider the request timed out. If it is reached, the current (and possibly incomplete) rendered HTML will be sent to the client.
+`domain` is the tld.
+`port` must be set, even if 80.
+`timeout` is the number in seconds before the server consider the request timed out. If it is reached, the current (and possibly incomplete) rendered HTML will be sent to the client.
 
 ###cache
 
@@ -147,15 +181,15 @@ This is  a very basic cache engine that takes 4 types of caches
 }
 ```
 
-cacheTimestamp:
-TODO To be implemented
+*cacheTimestamp*: To be implemented
 
 ###name:
 
 This is the name of the angularJS application present in the `ng-app` tag.
 
-## Manually prerender
+## Manually pre-render
  
+ This assume that your angular app has loaded the client side module `server`.
 
 ```
 var AngularServer = require('angular.js-server');
@@ -177,6 +211,8 @@ renderedPromise.then(function(html) {
 
 ## Middleware
 
+ This assume that your angular app has loaded the client side module `server`.
+
 ```
 var AngularServer = require('angular.js-server');
 
@@ -194,6 +230,8 @@ app.use(renderer.middleware);
 
 ## Jade
 
+ This assume that your angular app has loaded the client side module `server`.
+
 ```
 var jadeHtml = jade.renderFile('./views/index-classic.jade', {});
 
@@ -207,6 +245,9 @@ renderedPromise.then(function(result) {
 ```
 
 ## Swig
+
+
+ This assume that your angular app has loaded the client side module `server`.
 
 ```
 var tpl = swig.compileFile('./views/index-classic.html', {

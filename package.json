@@ -23,6 +23,7 @@
     "browserify-fs": "^1.0.0",
     "bunyan": "^1.7.0",
     "cli-md": "^1.2.0",
+    "consolidate": "^0.14.1",
     "debug": "^2.2.0",
     "dev": "^0.1.3",
     "express": "latest",

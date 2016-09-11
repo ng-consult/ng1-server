@@ -1,12 +1,6 @@
 /**
  * Created by antoine on 15/07/16.
  */
-/**
- * Created by antoine on 08/07/16.
- */
-/**
- * Created by antoine on 07/07/16.
- */
 
 var express = require('express');
 var jade = require('jade');
