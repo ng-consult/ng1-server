@@ -36,7 +36,6 @@ Now that all web crawlers can parse the real content of the page, they can index
 - It is quite hard to debug Angular Errors when these happens on the server side.
 - There are many server side functionalities and performance optimisations missing . To cite a few: 
     - Benchmark are missing
-    - Logging is missing
     - URL rewritting support
     - `ui-router` & `ng-router` integration are missing. For example, it would be better to configure the pre-render config inside these two routers as well as URL rewriting
     - Redis caching
@@ -125,6 +124,28 @@ module.exports = {
         port: 3000,
         timeout: 15000
     },
+    log: {
+        log: {
+            path: '/var/log/ng-server/log.log',
+            stack: false
+        },
+        info: {
+            path: '/var/log/ng-server/info.log',
+            stack: false
+        },
+        warn: {
+             path: '/var/log/ng-server/warn.log',
+             stack: false
+        },
+        error: {
+             path: '/var/log/ng-server/error.log',
+             stack: true
+        },
+        debug: {
+             path: '/var/log/ng-server/debug.log',
+             stack: true
+        }
+    },
     cache: {
         type: 'file', // possible values: none, file
         fileDir: path.resolve( __dirname + './../cache'),
@@ -151,6 +172,13 @@ module.exports = {
 `domain` is the tld.
 `port` must be set, even if 80.
 `timeout` is the number in seconds before the server consider the request timed out. If it is reached, the current (and possibly incomplete) rendered HTML will be sent to the client.
+
+###log
+
+Each logging options has the following set of parameters: 
+
+`path` : the absolute log file path
+`stack` : Want to see the stack trace? Set to true
 
 ###cache
 
@@ -285,6 +313,8 @@ All the client code is written in ES6.
 cd tests/server
 DEBUG=angular.js-server node test-app.js
 ```
+
+
 
 #WIP
 
