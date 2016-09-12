@@ -283,7 +283,7 @@ All the client code is written in ES6.
 
 ```
 cd tests/server
-node test-app.js
+DEBUG=angular.js-server node test-app.js
 ```
 
 #WIP

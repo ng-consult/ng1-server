@@ -1,11 +1,9 @@
-/**
- * Created by antoine on 07/07/16.
- */
 "use strict";
 var CacheEngine_1 = require('./CacheEngine');
 var Q = require('q');
 var jsdom = require('jsdom');
 var dbug = require('debug');
+var fs = require('fs');
 var debug = dbug('angular.js-server');
 var AngularServerRenderer = (function () {
     function AngularServerRenderer(config) {
@@ -61,7 +59,7 @@ var AngularServerRenderer = (function () {
                 else {
                     jsdom.debugMode = true;
                     var rendering_1 = false;
-                    console.log('SERVER URL = ', 'http://' + _this.config.server.domain + ':' + _this.config.server.port + url);
+                    debug('SERVER URL = ', 'http://' + _this.config.server.domain + ':' + _this.config.server.port + url);
                     var document_1 = jsdom.jsdom(html, {
                         features: {
                             FetchExternalResources: ['script'],
@@ -75,33 +73,30 @@ var AngularServerRenderer = (function () {
                             cookieDomain: _this.config.server.domain
                         }
                     });
-                    var window_1 = Object.assign(document_1.defaultView, { onServer: true });
-                    window_1.addEventListener('angularInConfig', function () {
-                        debug('EVENT angularInConfig CAUGHT');
-                        afterAngularStarted();
+                    var window_1 = Object.assign(document_1.defaultView, {
+                        onServer: true,
+                        fs: fs,
+                        logConfig: _this.config.log
                     });
-                    console.log('jsdom.jsdom loaded');
+                    debug('jsdom.jsdom loaded');
                     var serverTimeout_1 = setTimeout(function () {
                         if (rendering_1)
                             return;
                         debug('SERVER TIMEOUT ! ! !');
-                        //@todo Get the error URl here
                         rendering_1 = true;
                         var renderedHtml = _this.getHTML(window_1, [serverTimeout_1]);
                         cacheUrl_1.removeCache();
                         defer.resolve(renderedHtml);
                         window_1.close();
                     }, _this.config.server.timeout);
-                    /*
-                                    window.addEventListener('error', function (err) {
-                                        rendering = true;
-                                        cacheUrl.removeCache();
-                                        debug('EVENT LISTENER ON ERROR CATCHED', err);
-                                        defer.reject(err);
-                                        window.close();
-                                        window.dispose();
-                                    });
-                    */
+                    window_1.addEventListener('ServerExceptionHandler', function (err, data) {
+                        rendering_1 = true;
+                        cacheUrl_1.removeCache();
+                        debug('EVENT LISTENER ON ServerExceptionHandler CATCHED', err.details);
+                        defer.reject(err.details);
+                        window_1.close();
+                        window_1.dispose();
+                    });
                     window_1.addEventListener('StackQueueEmpty', function () {
                         debug('StackQueueEmpty event caught');
                         if (rendering_1)
@@ -116,19 +111,6 @@ var AngularServerRenderer = (function () {
                     window_1.addEventListener('load', function () {
                         debug('Application is loaded in JSDOM');
                     });
-                    var afterAngularStarted = function () {
-                        var windowApp = window_1[_this.config.name];
-                        windowApp.config(function ($provide) {
-                            $provide.decorator('$exceptionHandler', function ($exceptionHandler) {
-                                return function (error, cause) {
-                                    debug('Throwing error = ', error);
-                                    debug('cause', cause);
-                                    $exceptionHandler(error, cause);
-                                    throw error;
-                                };
-                            });
-                        });
-                    };
                 }
             }
             return defer.promise;

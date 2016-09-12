@@ -6,10 +6,6 @@ var express = require('express');
 var path = require('path');
 var cons = require('consolidate');
 
-
-console.log(cons);
-
-
 module.exports = function(app, viewEngine) {
 
     app.use(favicon(__dirname + '/favicon.ico'));
@@ -23,9 +19,6 @@ module.exports = function(app, viewEngine) {
     app.use('/views', express.static( path.resolve(__dirname + '/../../client/views')));
     app.use('/dist', express.static( path.resolve(__dirname + '/../../dist/client')));
     app.use('/lib', express.static( path.resolve(__dirname + '/../../server/client/js')));
-
-
-    console.log(path.resolve(__dirname + '/' + viewEngine + '/views'));
 
     switch(viewEngine){
         case 'swig':

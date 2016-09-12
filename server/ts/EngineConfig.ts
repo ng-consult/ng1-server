@@ -21,6 +21,19 @@ export interface MaxAgeRegexRule extends RegexRule{
     maxAge: number
 }
 
+export interface LogConfigData {
+    path: string,
+    stack: boolean
+}
+
+export interface LogConfig {
+    log: LogConfigData,
+    warn: LogConfigData,
+    error: LogConfigData,
+    info: LogConfigData,
+    debug: LogConfigData
+}
+
 export interface CacheConfig{
     type: string,
     fileDir: string,
@@ -34,5 +47,6 @@ export interface Config {
     name: string,
     server: ServerConfig,
     render: RenderConfig,
-    cache: CacheConfig
+    cache: CacheConfig,
+    log: LogConfig
 }

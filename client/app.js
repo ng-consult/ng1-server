@@ -16,8 +16,10 @@ window['myApp'] = angular.module('myApp', ['ngResource', 'ngRoute', 'server', 's
     .controller('TodoCtrl', TodoCtrl)
     .controller('ErrorCtrl', ErrorCtrl)
     .directive('productList', ProductList)
-    .config(function($windowProvider) {
-        var $window = $windowProvider.$get();
-        var event = new Event('angularInConfig');
-        $window.dispatchEvent(event);
+    .config(function($log) {
+            $log.log('This should be written in log');
+            $log.warn('This should be written in warn');
+            $log.error('This should be written in error');
+            $log.debug('This should be written in debug');
+            $log.info('This should be written in info');
     });

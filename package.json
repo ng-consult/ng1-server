@@ -47,6 +47,8 @@
     "request": "^2.69.0",
     "scribe-js": "^2.0.4",
     "shelljs": "^0.7.0",
+    "source-map": "^0.5.6",
+    "stack-trace": "0.0.9",
     "stacktrace-js": "^1.0.3",
     "swig": "^1.4.2",
     "ts-loader": "^0.8.2",

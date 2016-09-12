@@ -13,7 +13,6 @@ var cacheUrl = (function () {
         this.getRegexTest = function (u) {
             return u.regex.test(_this.currentUrl);
         };
-        //return always|never|maxAge|timestamp|default
         this.getCacheCategory = function () {
             var i;
             for (i in _this.config.cacheNever) {
@@ -120,19 +119,13 @@ var cacheUrl = (function () {
         this._currentFilePath = null;
         this._currentMaxAge = null;
         this._currentCategory = null;
-        // Init the object;
         this.getCacheCategory();
-        //console.log('New cacheUrl: ',  _currentUrl, _currentCategory);
         if (this.config.type === 'file') {
             this._currentFilePath = path.join(this.config.fileDir, this.currentUrl);
         }
     }
     return cacheUrl;
 }());
-/**
- *
- * @param config {AngularServerConfig}
- */
 function default_1(config) {
     var _config = config.cache;
     if (_config.type === 'file') {

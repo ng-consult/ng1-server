@@ -8,6 +8,9 @@ import * as Q from 'q';
 import * as jsdom from 'jsdom';
 import {Config} from './EngineConfig';
 import * as dbug from 'debug';
+import * as fs from 'fs';
+import * as stacktrace from 'stack-trace';
+
 var debug = dbug('angular.js-server');
 
 
@@ -18,7 +21,6 @@ class AngularServerRenderer {
     constructor(private config: Config) {
         this.cache = new cacheEngine(this.config);
     }
-
 
     private shouldRender(url: string) {
         let i,regex;
@@ -135,7 +137,7 @@ class AngularServerRenderer {
 
                 let rendering = false;
 
-                console.log('SERVER URL = ', 'http://' + this.config.server.domain + ':' + this.config.server.port + url);
+                debug('SERVER URL = ', 'http://' + this.config.server.domain + ':' + this.config.server.port + url);
 
                 let document  = jsdom.jsdom(html, {
                     features: {
@@ -151,14 +153,13 @@ class AngularServerRenderer {
                     }
                 });
 
-                let window = (<any>Object).assign(document.defaultView, { onServer: true});
-
-                window.addEventListener('angularInConfig', function() {
-                    debug('EVENT angularInConfig CAUGHT');
-                    afterAngularStarted();
+                let window = (<any>Object).assign(document.defaultView, {
+                    onServer: true,
+                    fs: fs,
+                    logConfig: this.config.log
                 });
 
-                console.log('jsdom.jsdom loaded');
+                debug('jsdom.jsdom loaded');
 
                 let serverTimeout = setTimeout( () => {
                     if (rendering) return;
@@ -171,16 +172,15 @@ class AngularServerRenderer {
                     window.close();
                 }, this.config.server.timeout);
 
-/*
-                window.addEventListener('error', function (err) {
+                window.addEventListener('ServerExceptionHandler',  (err, data) => {
                     rendering = true;
                     cacheUrl.removeCache();
-                    debug('EVENT LISTENER ON ERROR CATCHED', err);
-                    defer.reject(err);
+                    debug('EVENT LISTENER ON ServerExceptionHandler CATCHED', err.details);
+                    defer.reject(err.details);
                     window.close();
                     window.dispose();
                 });
-*/
+
                 window.addEventListener('StackQueueEmpty',  () => {
                     debug('StackQueueEmpty event caught');
                     if (rendering) return;
@@ -192,24 +192,10 @@ class AngularServerRenderer {
                     window.dispose();
                 });
 
-
                 window.addEventListener('load', () => {
                     debug('Application is loaded in JSDOM');
                 });
 
-                var afterAngularStarted = () => {
-                    let windowApp = window[this.config.name];
-                    windowApp.config(function($provide) {
-                        $provide.decorator('$exceptionHandler', function($exceptionHandler) {
-                            return function(error, cause) {
-                                debug('Throwing error = ', error);
-                                debug('cause', cause);
-                                $exceptionHandler(error, cause);
-                                throw error;
-                            };
-                        });
-                    });
-                };
             }
         }
 
