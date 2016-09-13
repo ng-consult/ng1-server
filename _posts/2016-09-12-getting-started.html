@@ -1,0 +1,264 @@
+---
+layout: default
+title:  "Getting Started!"
+date:   2016-09-12 20:21:41 +0200
+categories: jekyll update
+permalink: getting-started
+---
+
+<div class="ui text container">
+  <div class="ui basic segment" id="toc-segment">
+    <div class="ui left rail">
+      <div class="ui sticky" style="left: 275.5px; width: 272px !important; height: 262.531px !important;">
+        <div class="ui segment" id="toc" class="tocify">
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#toc').tocify({
+        showAndHide: false,
+        scrollTo: 50
+      });
+    });
+  </script>
+  
+  
+  <h1 class="ui header">
+    Requirements
+  </h1>
+  
+  
+  
+  <div class="ui divided items">
+    <div class="item">
+      <div class="ui tiny image">
+        <img src="/img/nodejs_logo.png">
+      </div>
+      <div class="middle aligned content">
+        <div class="header">Node.js Server</div>
+        <div class="description">
+          <p>So far, only node.js server rendering is supported. If you want to pre-render Angular.JS with ASP, PHP, C#, you will need a node.js environment, and encapsulate it inside your favorite server side language.</p>
+        </div>
+      </div>
+    </div>
+    <div class="item">
+      <div class="ui tiny image">
+        <img src="/img/html5_logo.png">
+      </div>
+      <div class="middle aligned content">
+        <div class="header">HTML5 mode</div>
+        <div class="description">
+          <p>Your angular app must use html5mode. The reason behind this requirement is that browsers don't send the hashbang fragment to the server.</p>
+        </div>
+      </div>
+    </div>
+  
+    
+  </div>
+  
+  
+  
+  <h1 class="ui header">Installation</h1>
+  
+  <h2 class="ui header">Download the packages</h2>
+  
+  <p>
+    You will need two libraries, the server side renderer, and the client side angular module.
+  </p>
+  
+  <pre><code class="bash">
+  ## install the server side renderer
+  npm install angular.js-server
+  
+  ## install the client side angular module
+  bower install angular.js-server
+    
+  </code></pre>
+  
+  <h2 class="ui header">Modify your client code</h2>
+  
+  <p>
+  Add the module <i>server</i> to your global module dependencies.
+  </p>
+  
+  <pre><code class="javascript">
+    angular.module('Your-app', [ 'server' ]);
+  </code></pre>
+  
+  
+  <h1 class="ui header">Configuration</h1>
+  
+  <p>
+    A config file is needed for the pre-renderer to work correctly. This config file includes informations about:
+  
+    <div class="ui ordered relaxed divided list">
+      <div class="item">
+        <div class="header">The Web application</div>
+        Application name, domain name and port
+      </div>
+      <div class="item">
+        <div class="header">Log files</div>
+        The log files locations as well as the stack traces
+      </div>
+      <div class="item">
+        <div class="header">URLs</div>
+        The URL to be pre-rendered
+      </div>
+      <div class="item">
+        <div class="header">Caching</div>
+        The caching strategy and the list of URLs to be cached
+      </div>
+    </div>
+  
+  </p>
+  
+  <h2 class="ui header">Config file example</h2>
+  
+  <div class="ui raised segment">
+  <p>
+    This config will setup a server side rendering angularJS app with the folllowing properties : 
+    
+    <ul class="ui divided">
+      <li>The Angular app name is <i>Your-app</i></li>
+      <li>The domain name is server.example:3000</li>
+      <li>After 15 seconds, the server will timeout</li>
+      <li>It will pre-render all URLs</li>
+      <li>It will cache all URLs for 10 seconds</li>
+    </ul>
+  </p>
+  </div>
+  
+  <pre><code class="javascript">
+  
+  var path = require('path');
+  
+  module.exports = {
+    name: "Your-app",
+    server: {
+      domain: 'server.example',
+      port: 3000,
+      timeout: 15000
+    },
+    log: {
+      log: {
+        path: '/var/log/ng-server/log.log',
+        stack: false
+      },
+      info: {
+        path: '/var/log/ng-server/info.log',
+        stack: false
+      },
+      warn: {
+        path: '/var/log/ng-server/warn.log',
+        stack: false
+      },
+      error: {
+        path: '/var/log/ng-server/error.log',
+        stack: true
+      },
+      debug: {
+        path: '/var/log/ng-server/debug.log',
+        stack: true
+      }
+    },
+    cache: {
+      type: 'file', 
+      fileDir: path.resolve( __dirname + './../cache'),
+      cacheMaxAge: [
+        {
+          regex: /.*/,
+          maxAge: 10
+        }
+      ],
+      cacheAlways: [],
+      cacheNever: [],
+      cacheTimestamp: []
+    },
+    render: {
+      strategy: 'include',
+      rules: [
+        /.*/
+      ]
+    }
+  };
+  </code></pre>
+  
+  <h1 class="ui header">Usage</h1>
+  
+  <p>Once your config file is set, you can start pre-render your AngularJS app</p>
+  
+  
+  <h2 class="ui header">Manually</h2>
+  
+  <p> If you know the html to be pre-rendered, and the associated URL, then you can do it manually this way</p>
+  
+  <pre><code class="javascript">
+  var AngularServer = require('angular.js-server');
+  var config = require('your-config-file');
+    
+  var renderer = new AngularServer(config);
+  
+  // html is the page html to pre-render
+  // url is the page URL
+  var renderedPromise = renderer.render(html, url);
+  
+  renderedPromise.then(function(html) {
+    //html is the pre-rendered HTML
+  }).fail(function(errorHtml) {  
+    
+  });
+  </code></pre>
+  
+  <h2 class="ui header">Express Middleware</h2>
+  
+  
+  <pre><code class="javascript">
+  var AngularServer = require('angular.js-server');
+  
+  var renderer = new AngularServer(config);
+  
+  app.get('/*', renderer.middleware, function(req, res, next) {
+    //your code here
+  });
+  
+  // or
+  
+  app.use(renderer.middleware);
+  </code></pre>
+  
+  <h2 class="ui header">Jade - manual</h2>
+  
+  <pre><code class="javascript">
+  var jadeHtml = jade.renderFile('./views/index-classic.jade', {});
+  
+  var renderedPromise = angularServer.render(jadeHtml, req.url);
+  
+  renderedPromise.then(function(result) {
+    res.send(result);
+  }).fail(function(err) {
+    res.send(err);
+  });
+  </code></pre>
+    
+  <h2 class="ui header">Swig - manual</h2>
+  
+  <pre><code class="javascript">
+  var tpl = swig.compileFile('./views/index-classic.html', {
+    cache: false
+  });
+  
+  var prehtml = tpl({swigVarName: value});
+  
+  var html = angularServer.render(prehtml, req.url);
+  
+  html.then(function(result) {
+    res.send(result);
+  }).fail(function(err) {
+    res.send(err);
+  });
+  </code></pre>
+  
+</div>

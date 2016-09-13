@@ -1,0 +1,112 @@
+---
+layout: default
+title:  "Documentation"
+date:   2016-09-12 20:21:41 +0200
+categories: jekyll update
+permalink: documentation
+---
+
+
+<div class="ui text container">
+    <div class="ui basic segment" id="toc-segment">
+        <div class="ui left rail">
+            <div class="ui sticky" style="left: 275.5px; width: 272px !important; height: 262.531px !important;">
+                <div class="ui segment" id="toc" class="tocify">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#toc').tocify({
+                showAndHide: false,
+                scrollTo: 50
+            });
+        });
+    </script>
+
+
+    <h1 class="ui header">Configuration</h1>
+
+    <h1 class="ui header">Cache</h1>
+
+    <h2 class="ui header">cacheEngine</h2>
+
+    <h3 class="ui header">constructor(config)</h3>
+
+    <h3 class="ui header">loadUrl(html, url)</h3>
+
+    <h2 class="ui header">cacheUrl(url, config)</h2>
+
+    <h3 class="ui header">constructor(config)</h3>
+
+    <h3 class="ui header">isCached()</h3>
+
+    <h3 class="ui header">cachedIt(html, force)</h3>
+
+    <h3 class="ui header">removeCache()</h3>
+
+    <h1 class="ui header">AngularServerRenderer</h1>
+
+    <h2>Functions</h2>
+
+    <h3>Constructor</h3>
+
+    <h3>middleWare(req, res, next)</h3>
+
+    <h3>render(html, url)</h3>
+
+    <h1 class="ui header">REST caching</h1>
+
+    <h2 class="ui header">Usage</h2>
+
+    <pre><code class="bash">
+        bower install angular.js-server-cache
+        ##or
+        npm install angular.js-server-cache
+    </code></pre>
+
+    <p>Then incluce <b>server-cache</b> in your module dependency</p>
+
+    <pre><code class="javascript">
+        angular.module('yourApp', [ 'your dependencies...', 'server-cache']);
+    </code></pre>
+
+    <h2 class="ui header">defaultcache option</h2>
+
+    <p>By default, $http caching is disabled once the application has been rendered in the client.</p>
+
+    <pre><code class="javascript">
+        angular.module('server-cache').constant('serverCacheConfig', {defaultConfig: true});
+    </code></pre>
+
+    <h1>$cacheFactoryProvider</h1>
+
+    <p>This is a modified version of the original AngularJS 1.5 cacheFactoryProvider, and adds several methods to the cache factory.</p>
+
+    <h2 class="ui header">export (cacheId)</h2>
+
+    Export the secified cache into JSON
+
+    <h2 class="ui header">exportAll()</h2>
+
+    Exports all the caches
+
+    <h2 class="ui header">importAll(cacheData)</h2>
+
+    Import the data exported trough the method exportAll
+
+    <h2 class="ui header">import(cacheId)</h2>
+
+    Specifically import a cache
+
+    <h2 class="ui header">info(cacheId)</h2>
+
+    Get info about a cache
+
+    <h2 class="ui header">infoAll()</h2>
+
+    Get info about all caches
+
+</div>

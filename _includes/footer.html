@@ -1,0 +1,35 @@
+
+<footer class="ui inverted vertical footer segment">
+
+    <div class="ui container">
+
+
+
+        <div class="ui stackable divided grid">
+
+            <div class="five wide column">
+                <h2 class="ui inverted header">Who am I?</h2>
+
+                <ul>
+                    {% if site.github_username %}
+                    <li>
+                        {% include icon-github.html username=site.github_username %}
+                    </li>
+                    {% endif %}
+                    </li>
+                    <li><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
+                </ul>
+            </div>
+
+
+            <div class="eleven wide column">
+                <h2 class="ui inverted header">{{ site.title | escape }}</h2>
+                <p>{{ site.description | escape }}</p>
+            </div>
+        </div>
+
+
+
+    </div>
+
+</footer>
