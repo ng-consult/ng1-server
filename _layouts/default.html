@@ -5,6 +5,7 @@
 
     <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}</title>
     <meta name="author" content="{{ site.author }}">
+    <meta name="keywords" content="{{ site.keywords }}">
 
     {% capture base_url %}{% if jekyll.environment == "production" %}{{ site.baseurl_prod }}{% else %}{{ site.baseurl_dev }}{% endif %}{% endcapture %}
     <base href="{{base_url}}" />
@@ -40,7 +41,7 @@
 
     {% include menu.html %}
 
-    <main id="mainContainer">
+    <main id="mainContainer" class="pusher">
         {{ content }}
     </main>
 

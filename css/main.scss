@@ -5,7 +5,6 @@
 
 
 main  {
-  margin-top: 7em;
   margin-bottom: 2em;
 }
 
@@ -24,6 +23,36 @@ figure.highlight {
   margin: 0;
   padding: 0;
 }
+
+@media (min-width: 1024px) {
+  #desktop-menu {
+    display: block;
+  }
+
+  #mobile-menu {
+    display: none;
+  }
+
+  main {
+    margin-top: 4em;
+  }
+}
+
+@media (max-width: 1024px) {
+  #desktop-menu {
+    display: none;
+  }
+
+  #mobile-menu {
+    display: block;
+  }
+
+
+  main {
+    margin-top: 3em;
+  }
+}
+
 
 
 

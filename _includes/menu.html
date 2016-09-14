@@ -1,4 +1,34 @@
-<div class="ui fixed inverted menu">
+
+<div  id="desktop-menu">
+    <div class="ui fixed inverted menu">
+        <div class="ui container">
+            <a href="" class="header item">
+                Angular.js-server
+            </a>
+            <a href="" class="item">Home</a>
+            <a href="getting-started" class="item">Getting started</a>
+            <a href="documentation" class="item">Documentation</a>
+            <a href="https://github.com/a-lucas/angular.js-server/issues" class="item">Issues</a>
+            <a href="https://github.com/a-lucas/angular.js-server" class="item">Contribute</a>
+        </div>
+    </div>
+
+</div>
+
+
+<div  id="mobile-menu">
+
+
+    <div class="ui fixed inverted menu">
+        <a class="item" id="mobile-menu-btn">
+            <i class="sidebar icon"></i>
+            Menu
+        </a>
+    </div>
+</div>
+
+<div class="ui sidebar inverted vertical menu">
+
     <div class="ui container">
         <a href="" class="header item">
             Angular.js-server
@@ -9,4 +39,16 @@
         <a href="https://github.com/a-lucas/angular.js-server/issues" class="item">Issues</a>
         <a href="https://github.com/a-lucas/angular.js-server" class="item">Contribute</a>
     </div>
+
 </div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+        $("#mobile-menu-btn").click(function() {
+            $('.ui.sidebar').sidebar('toggle');
+        });
+    });
+
+</script>
