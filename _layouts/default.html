@@ -28,6 +28,12 @@
     <script src="//code.jquery.com/jquery-2.2.4.min.js"></script>
     <script src="{{base_url}}js/jquery-ui.min.js"></script>
 
+    {% if jekyll.environment == "production" %}
+    <!-- PROD -->
+    {% else %}
+    <!-- DEV -->
+    {% endif %}
+
 </head>
 <body>
 
