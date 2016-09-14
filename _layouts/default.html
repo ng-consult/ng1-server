@@ -6,6 +6,11 @@
     <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}</title>
     <meta name="author" content="{{ site.author }}">
 
+    {% capture base_url %}{% if jekyll.environment == "production" %}{{ site.baseurl_prod }}{% else %}{{ site.baseurl_dev }}{% endif %}{% endcapture %}
+    <base href="{{base_url}}" />
+    <link rel="icon" href="{{base_url}}favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="{{base_url}}favicon.ico" type="image/x-icon">
+
     {% capture description %}{% if page.description %}{{ page.description }}{% else %}{{ content | raw_content }}{% endif %}{% endcapture %}
     <meta name="description" content="{{ description | strip_html | condense_spaces | truncate:150 }}">
     {% if page.keywords %}<meta name="keywords" content="{{ page.keywords }}">{% endif %}
@@ -15,7 +20,7 @@
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="/css/semantic-ui.css">
+    <link rel="stylesheet" href="css/semantic-ui.css">
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,700" media="all">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/default.min.css">
     <link rel="stylesheet" href="/css/main.css">
