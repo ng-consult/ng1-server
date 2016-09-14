@@ -1,0 +1,25 @@
+sudo: required
+dist: trusty
+language: node_js
+env:
+  - CXX=g++-4.8
+cache:
+  directories:
+  - node_modules
+  - test-server/bower
+  - typings
+before_install:
+  - npm install
+install:
+  - npm run bower
+  - npm run typings
+  - npm run build-client
+  - npm run build
+node_js:
+  - "5.11"
+notifications:
+  email:
+    recipients:
+      - cooluhuru@gmail.com
+    on_success: never
+    on_failure: always

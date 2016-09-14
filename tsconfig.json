@@ -1,14 +1,20 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "sourceMap": true,
-        "outDir": "./server/lib",
-        "removeComments": true
-    },
-    "files": [
-        "./typings/tsd.d.ts",
-        "./server/ts/EngineConfig.ts",
-        "./server/ts/CacheEngine.ts",
-        "./server/ts/AngularServerRenderer.ts"
-    ]
+  "compilerOptions": {
+    "target": "es6",
+    "allowUnreachableCode": false,
+    "module": "commonjs",
+    "noImplicitAny": false,
+    "declaration": false,
+    "diagnostics": true,
+    "listFiles": true,
+    "pretty": true,
+    //"traceResolution": true,
+    "moduleResolution": "node",
+    "removeComments": true,
+    "watch": true
+  },
+  "files": [
+      "./typings/index.d.ts",
+      "./src/AngularServerRenderer.ts"
+  ]
 }

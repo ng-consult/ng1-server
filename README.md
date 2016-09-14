@@ -1,6 +1,9 @@
-#AngularJS
+#Angular.JS-server  [![Build Status](https://travis-ci.org/a-lucas/angular.js-server.svg?branch=master)](https://travis-ci.org/a-lucas/angular.js-server)
 
 ##Introduction
+
+Official site: https://a-lucas.github.io/angular.js-server/
+
 AngularJS is an awesome framework designed to run Web Applications. SEO is usually not a requireemnt for web applications, and AngularJS is bad at SEO for the reason that the client doesnt see anything when the client receives the requests from the server.
 
 ##Comparing server prerendering with no prerendering
@@ -27,20 +30,13 @@ Now that all web crawlers can parse the real content of the page, they can index
 - You have to slighly modify your existing code base to enable server side $http caching.
 - Your website, once the page loaded, will behave as a web application - which means a much richer user experience
 - You can server side cache REST API and templateCache and replay them them in your client with  (https://github.com/a-lucas/angular.js-server-ng-cache)
-- Written in typescript and ES6
 
 ##Cons
 
-- This is a new concept built on a rather old technology. Angular 1 is now 4 years old, and AngularJS2 will have server side rendering built-in - but at this time of writting, ng2 is still in rc.
-- This is not unit tested (yet).
-- It is quite hard to debug Angular Errors when these happens on the server side.
-- There are many server side functionalities and performance optimisations missing . To cite a few: 
-    - Benchmark are missing
-    - URL rewritting support
-    - `ui-router` & `ng-router` integration are missing. For example, it would be better to configure the pre-render config inside these two routers as well as URL rewriting
-    - Redis caching
-    - URL cache invalidation library: for ex: `onUserUpdate: function(id) { cache.invalidate([ /user/([0-9+])/]); } `
-
+- It is quite hard to debug Angular Errors when these happens on the server side - working on integration of stacktrace with sourcemaps
+- Benchmarks are missing
+- URL rewritting and redirection support is missing
+- It is not really possible to define the URL caching strategy an dthe preprendering strategy in the `ui-router` & `ng-router` URL definition files, because it would force the engine te render he page one time to discover the config, and then the caching would be useless.
     
 # Requirements
 
@@ -71,14 +67,22 @@ The client side module is here: https://github.com/a-lucas/angular.js-server-bow
 
 ##Caching
 
-So far, it only supports file caching, but modyfing the source code to use Redis instead is straigh forward.
+For caching, the package 'simple-cache-url` is used. 
+
+It is possibel to cache the files on the file system, or in a REDIS datastore.
 
 Caching is made trough URL Regex, and supports severall mode ( `never`, `always`, and `maxAge` ).
 
-##$http caching
+##$http caching & template caching
 
 When rendering the HTML on the server, every templateRequest and REST call are cached and injected into the client before the angular app runs. 
 Then all the requests are instantly replayed, decreasing considerably the client page loading time.
+
+To use $http caching, you will need the package `angular.js-server-ng-cache` available at
+
+```bash
+bower install angular.js-server-ng-cache
+```
 
 ##URL filtering
 
@@ -86,7 +90,7 @@ You can decide which URLs will be pre-rendered, and uses either of the two strat
 
 ##Logging
 
-Not implemented
+The $log provider is augmented to access the file system when rendered on the server. It becomes then possible to log anything your web-app does on the server file system.
 
 #Usage
 
@@ -147,25 +151,34 @@ module.exports = {
         }
     },
     cache: {
-        type: 'file', // possible values: none, file
-        fileDir: path.resolve( __dirname + './../cache'),
-        cacheMaxAge: [{
-            regex: /.*/,
-            maxAge: 10
-        }],
-        cacheAlways: [],
-        cacheNever: [],
-        cacheTimestamp: []
+        storageConfig: {
+            type: 'file', // possible values: none, file
+            dir: path.resolve( __dirname + './../cache'),
+        },
+        cacheRules: {
+            cacheMaxAge: [{
+                regex: /.*/,
+                maxAge: 10
+            }],
+            cacheAlways: [],
+            cacheNever: [],
+            default: 'never'
+        }
     },
     render: {
         strategy: 'include',  // possible values: include, exclude
         rules: [
-            /.*/, //pre-render it all !
+            /.*/ //pre-render it all !
         ]
     }
 };
 
 ```
+
+
+The `storageConfig` and the `cacheRules` config obey the definition of `simple-url-cache` found here: https://www.npmjs.com/package/simple-url-cache.
+
+It means that you can also store the cached file inside a Redis datastore.
 
 ###server
 
@@ -180,30 +193,9 @@ Each logging options has the following set of parameters:
 `path` : the absolute log file path
 `stack` : Want to see the stack trace? Set to true
 
-###cache
-
-This is  a very basic cache engine that takes 4 types of caches
-
-*cacheMaxAge* is an array of objects of type:
-```
-{
-    regex: regular Expression
-    maxAge: integer (Seconds)
-}
-```
-
-*cacheAlways* and cache Never are array of js objects
-```
-{
-    regex: regular Expression
-}
-```
-
-*cacheTimestamp*: To be implemented
-
 ###name:
 
-This is the name of the angularJS application present in the `ng-app` tag.
+This is the name of the AngularJS application present in the `ng-app` tag.
 
 ## Manually pre-render
  
@@ -218,11 +210,11 @@ var renderedPromise = renderer.render(html, url);
 
 renderedPromise.then(function(html) {
     
-}).fail(function(errorHtml) {
+}).catch(function(errorHtml) {
 
 });
 
-// renderedPromise is a Q promise
+// renderedPromise is an ES6 promise
 
 ```
 
@@ -257,7 +249,7 @@ var renderedPromise = angularServer.render(jadeHtml, req.url);
 
 renderedPromise.then(function(result) {
     res.send(result);
-}).fail(function(err) {
+}).catch(function(err) {
     res.send(err);
 });
 ```
@@ -278,7 +270,7 @@ var html = angularServer.render(prehtml, req.url);
 
 html.then(function(result) {
     res.send(result);
-}).fail(function(err) {
+}).catch(function(err) {
     res.send(err);
 });
 ```
@@ -288,47 +280,33 @@ html.then(function(result) {
 
 ##Constructor
 
-`var renderer = new AngularServer(config)` throws an error if the config object is invalid using `jsonschema` https://github.com/tdegrunt/jsonschema
+`var renderer = new AngularServer(config)` 
 
 ##Methods
 
-`middleware` is the function(req, res, next) used for middleware injection. 
+`middleware` is the `function(req, res, next)` used for http middleware injection. 
 
-`render(html, url)` takes two strings as parameters, and returns a Q promise (https://github.com/kriskowal/q) .
+`render(html, url)` takes two strings as parameters, and returns an ES6 promise.
 
-#Examples
 
-They are located in test. To run them, you must edit your /etc/hosts file
-and add the following lines:
+#Contributing
 
-```
-127.0.0.1   noserver.example    // render the app witouth server rendering
-127.0.0.1   server.example      // render the app with server rendering and caching (if enabled)
-127.0.0.1   api.example         // the api url
-```
-
-All the client code is written in ES6.
-
-```
-cd tests/server
-DEBUG=angular.js-server node test-app.js
+```bash
+npm install
+npm run bower
+npm run typings
+npm run build-client
+npm run build
+npm run test
 ```
 
+For more debugging information, you can 
+
+```bash
+DEBUG=mocha-test-server,mocha-test,angular.js-server mocha
+```
 
 
 #WIP
 
 This work is incomplete and totally in progress - DON'T use it on prod.
-
-#Contributing
-
-```
-npm install
-npm install -g webpack  
-npm install -g typescript
-npm install -g tsd
-npm link webpack
-tsd install
-tsc
-cd server/client ; webpack
-```

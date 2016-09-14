@@ -1,0 +1,15 @@
+{
+  "globalDependencies": {
+    "angular": "registry:dt/angular#1.5.0+20160909133806",
+    "debug": "registry:dt/debug#0.0.0+20160317120654",
+    "jquery": "registry:dt/jquery#1.10.0+20160908203239",
+    "jsdom": "registry:dt/jsdom#2.0.0+20160906180921",
+    "node": "registry:dt/node#6.0.0+20160915134512",
+    "q": "registry:dt/q#0.0.0+20160613154756",
+    "shelljs": "registry:dt/shelljs#0.0.0+20160526131156",
+    "source-map-support": "registry:dt/source-map-support#0.2.10+20160316155526"
+  },
+  "dependencies": {
+    "redis": "registry:npm/redis#2.6.0+20160901110043"
+  }
+}
