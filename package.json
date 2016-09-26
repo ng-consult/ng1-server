@@ -72,7 +72,6 @@
     "karma-phantomjs-launcher": "^0.1.4",
     "karma-requirejs": "^0.2.6",
     "karma-script-launcher": "~0.1.0",
-    "libtidy": "^0.3.0",
     "lodash": "^4.3.0",
     "mocha": "^3.0.2",
     "moment": "^2.11.2",

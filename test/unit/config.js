@@ -392,16 +392,16 @@ describe('Config file', function () {
                     },
                     cacheRules: {
                         default: 'never',
-                        cacheMaxAge: [{regex: /aaa /, maxAge: 10}],
+                        cacheMaxAge: [{regex: /aaa/, maxAge: 10}],
                         cacheNever: [{regex: /bbb/}],
                         cacheAlways: [{regex: /ccc/}]
                     }
                 };
 
                 config.cache.importConfig(cacheConfig);
-                expect(config.cache.getAlwaysRules()).eql({regex: /ccc/});
-                expect(config.cache.getNeverRules()).eql({regex: /bbb/});
-                expect(config.cache.getMaxAgeRules()).eql({regex: /aaa/, maxAge: 10});
+                expect(config.cache.getAlwaysRules()).eql([{regex: /ccc/}]);
+                expect(config.cache.getNeverRules()).eql([{regex: /bbb/}]);
+                expect(config.cache.getMaxAgeRules()).eql([{regex: /aaa/, maxAge: 10}]);
                 expect(config.cache.getDefault()).eql('never');
 
             });
