@@ -5,9 +5,9 @@ env:
   - CXX=g++-4.8
 cache:
   directories:
-  - node_modules
-  - test-server/bower
-  - typings
+  #- node_modules
+  #- test-server/bower
+  #- typings
 before_install:
   - npm install
 install:
