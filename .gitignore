@@ -1,8 +1,8 @@
+coverage
 node_modules
 test-server/log
 test-server/cache
 test-server/bower
-test/outputs
 .idea
 npm-debug.log
 typings
