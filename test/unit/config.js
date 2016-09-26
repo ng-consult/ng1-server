@@ -362,9 +362,6 @@ describe('Config file', function () {
 
             it('Cache Rules Set and Get', function () {
 
-                var cacheConfig = {
-                    
-                }
                 expect(config.cache.getMaxAgeRules()).to.eql([]);
                 config.cache.addMaxAgeRule(/aaa/, 50);
                 expect(config.cache.getMaxAgeRules()).to.eql([{regex: /aaa/, maxAge: 50}]);
@@ -383,6 +380,29 @@ describe('Config file', function () {
                 expect(config.cache.getAlwaysRules()).to.eql([{regex: /aaa/}]);
                 config.cache.removeAlwaysRule(/aaa/);
                 expect(config.cache.getAlwaysRules()).to.eql([]);
+
+            });
+
+
+            it('imports config file ok', function() {
+                var cacheConfig = {
+                    storageConfig: {
+                        type: 'file',
+                        dir: path.resolve( process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME']  + '/cache/angular.js-server')
+                    },
+                    cacheRules: {
+                        default: 'never',
+                        cacheMaxAge: [{regex: /aaa /, maxAge: 10}],
+                        cacheNever: [{regex: /bbb/}],
+                        cacheAlways: [{regex: /ccc/}]
+                    }
+                };
+
+                config.cache.importConfig(cacheConfig);
+                expect(config.cache.getAlwaysRules()).eql({regex: /ccc/});
+                expect(config.cache.getNeverRules()).eql({regex: /bbb/});
+                expect(config.cache.getMaxAgeRules()).eql({regex: /aaa/, maxAge: 10});
+                expect(config.cache.getDefault()).eql('never');
 
             });
 

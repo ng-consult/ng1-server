@@ -9,6 +9,7 @@ cache:
   #- test-server/bower
   #- typings
 before_install:
+  - sudo apt-get install tidy
   - npm install
 install:
   - npm run bower
