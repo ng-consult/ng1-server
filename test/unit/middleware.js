@@ -132,7 +132,7 @@ staticServer = function (done) {
 };
 
 
-describe('The api & html servers', function () {
+describe.skip('The api & html servers', function () {
 
     it('should start the static server', function (done) {
         runningApp = staticServer(done);
@@ -175,7 +175,7 @@ describe('The api & html servers', function () {
 
 });
 
-describe('Launching the  Api & http server once', function(done) {
+describe.skip('Launching the  Api & http server once', function(done) {
     it('should start the api server', function (done) {
         runningApi = apiServer(done);
     });
@@ -186,7 +186,7 @@ describe('Launching the  Api & http server once', function(done) {
 });
 
 
-describe('Unit Testing angular.js-server', function () {
+describe.skip('Unit Testing angular.js-server', function () {
 
     describe('Testing The static HTML', function () {
 
@@ -221,7 +221,7 @@ describe('Unit Testing angular.js-server', function () {
     });
 
 });
-describe('Checking the middleware connectivity', function() {
+describe.skip('Checking the middleware connectivity', function() {
 
 
     it('Should do nothing when the request is not GET', function() {

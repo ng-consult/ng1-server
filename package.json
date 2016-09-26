@@ -5,6 +5,7 @@
     "bower": "./node_modules/.bin/bower install",
     "typings": "./node_modules/.bin/typings install",
     "build": "./node_modules/.bin/webpack",
+    "doc": "node_modules/.bin/typedoc -out docs src --mode modules --module commonjs --target ES5 --readme ./README.md",
     "supertest": " --require source-map-support/register",
     "test": "rm -Rf ./coverage ; ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test -- -R spec",
     "codecov": "./node_modules/.bin/codecov"

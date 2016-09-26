@@ -30,7 +30,7 @@ What does server side rendering means for angular?
 -->
 ## How does it works?
 
-This library uses [JSDOM]() to execute the angular app in a browser likre environment on the server, [simple-url-cache]() to handle the url caching and [angular.js-server client library]() to link this all together.
+This library uses [JSDOM](https://github.com/tmpvar/jsdom) to execute the angular app in a browser likre environment on the server, [simple-url-cache](https://www.npmjs.com/package/simple-url-cache) to handle the url caching and [angular.js-server client library](https://github.com/a-lucas/angular.js-server-bower) to link this all together.
 
 To explain what is going on under the hood, let's use a todo case scenario and compare it with angular-server's flow.
 
@@ -109,15 +109,12 @@ The config options are quite extensive, you can get the complete api in the doc 
 - ERROR_HANDLER: `4`
 - SERVER_ERROR: `5`
 
-
-
 ## Dependencies
 
 This library depends on a compatible version of [Angular.js-server client](https://github.com/a-lucas/angular.js-server-bower "Angular.js-server")
 
 [![Build Status](https://travis-ci.org/a-lucas/angular.js-server-bower.svg?branch=master)](https://travis-ci.org/a-lucas/angular.js-server-bower)   [![codecov](https://codecov.io/gh/a-lucas/angular.js-server-bower/branch/master/graph/badge.svg)](https://codecov.io/gh/a-lucas/angular.js-server-bower)
 
-    
 ## Requirements
 
 **html5mode**
