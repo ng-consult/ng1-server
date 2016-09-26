@@ -1,14 +1,8 @@
-/**
- * Created by antoine on 15/07/16.
- */
-
-
 var express = require('express');
 var jade = require('jade');
 var utils = require('./../utils').express;
 
 var angularDomServer = require('./../../../dist/AngularServerRenderer');
-
 
 var angularServer = new angularDomServer();
 angularServer.config.render.setStrategy('always');

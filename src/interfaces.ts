@@ -1,4 +1,4 @@
-import {FileStorageConfig, RedisStorageConfig, CacheRules} from 'simple-url-cache';
+import {FileStorageConfig, RedisStorageConfig, CacheRules, StorageConfig} from 'simple-url-cache';
 
 export interface IServerConfig {
     protocol?: string,
@@ -31,7 +31,7 @@ export interface ILogConfig {
 }
 
 export interface ICacheConfig{
-    storageConfig: FileStorageConfig | RedisStorageConfig,
+    storageConfig: any,
     cacheRules: CacheRules
 }
 
@@ -50,11 +50,3 @@ export interface IResponse {
     code: number,
     stacktrace: any
 }
-
-
-export interface IInstantConfig {
-    configInstanciated: boolean;
-    setConfigInstanciated(bool:boolean): void;
-    initialize(): void;
-}
-

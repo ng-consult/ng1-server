@@ -17,21 +17,22 @@ sourceMapSupport.install({
 
 //import * as stacktrace from 'stack-trace';
 /*sourceMapSupport.install({
-    retrieveSourceMap: (source) => {
-        if (source === 'AngularServerRenderer.js') {
-            return {
-                url: 'AngularServerRendererMap.js',
-                map: fs.readFileSync('AngularServerRenderer.js.map', 'utf8')
-            };
-        }
-        return null;
-    }
-});*/
+ retrieveSourceMap: (source) => {
+ if (source === 'AngularServerRenderer.js') {
+ return {
+ url: 'AngularServerRendererMap.js',
+ map: fs.readFileSync('AngularServerRenderer.js.map', 'utf8')
+ };
+ }
+ return null;
+ }
+ });*/
 
 
 var debug = dbug('angular.js-server');
 
-class JSDOMEventEmitter extends events.EventEmitter {}
+class JSDOMEventEmitter extends events.EventEmitter {
+}
 
 const JSDOM_EVENTS = {
     JSDOM_ERROR: 'JSDOM_ERROR',
@@ -40,20 +41,20 @@ const JSDOM_EVENTS = {
     JSDOM_DONE_ERROR: 'JSDOM_DONE_ERROR'
 };
 
-class AngularServerRenderer {
+export default class AngularServerRenderer {
 
-    public config: EngineConfig;
+    public config:EngineConfig;
 
     private externalResources = [];
 
-    private static eventEmmiter: JSDOMEventEmitter = new JSDOMEventEmitter();
+    private static eventEmmiter:JSDOMEventEmitter = new JSDOMEventEmitter();
 
-    constructor(config?: IGeneralConfig) {
+    constructor(config?:IGeneralConfig) {
         this.config = new EngineConfig(config);
         debug('AngularServerRenderer initialized with config = ', config);
     }
 
-    addExternalresource = (url: string | RegExp, content: string) => {
+    addExternalresource = (url:string | RegExp, content:string) => {
         Helpers.CheckType(url, ['string', 'regexp']);
         Helpers.CheckType(content, 'string');
         this.externalResources.push({
@@ -70,7 +71,7 @@ class AngularServerRenderer {
         return this.externalResources;
     };
 
-    private getHTML  = (window: any, timeouts: any): string => {
+    private getHTML = (window:any, timeouts:any):string => {
         debug('Getting HTML.');
         let AngularDocument = window.angular.element(window.document);
 
@@ -78,7 +79,7 @@ class AngularServerRenderer {
 
         scope.$apply();
         for (let i in timeouts) {
-            clearTimeout( timeouts[i]);
+            clearTimeout(timeouts[i]);
         }
 
         let html = window.document.documentElement.outerHTML;
@@ -90,80 +91,78 @@ class AngularServerRenderer {
 
             let script = "<script type='text/javascript'> " +
                 "/*No read only needed */" +
-                "/*Object.defineProperty (window,'$angularServerCache', {value :  " + JSON.stringify(cachedData)  + ",writable: false});*/"
+                "/*Object.defineProperty (window,'$angularServerCache', {value :  " + JSON.stringify(cachedData) + ",writable: false});*/"
                 + "window.$angularServerCache = " + JSON.stringify(cachedData) + ";</script></head>";
-            debug('inserting the script: ',script);
+            debug('inserting the script: ', script);
             html = html.replace(/<\/head>/i, script);
         }
 
         debug('returned HTML length: ', html.length);
         return html;
     };
-    
-    middleware = () => {
 
-        var self = this;
-        return (req, res, next) => {
-            debug('MiddleWare called with URL ', req.url);
+    middleware = (req, res, next) => {
+        debug('MiddleWare called with URL ', req.url);
 
-            if (req.method !== 'GET') {
-                next();
-            }
-            if (req.xhr === true) {
-                next();
-            }
-            if( /text\/html/.test(req.get('accept')) !== true) {
-                next();
-            }
 
-            var send = res.send.bind(res);
-
-            res.send = function (body) {
-                if(typeof body === 'string') {
-                    self.render(body, req.url).then(function(result) {
-                        debug('MiddleWare successfully rendered');
-                        res.location(req.url);
-                        res.status(200);
-                        return send.apply(this, [result.html]);
-                    },function(result) {
-                        debug('MidleWare error rendering');
-                        res.status(500);
-                        res.location(req.url);
-                        return send.apply(this,[result.html]);
-                    });
-                } else {
-                    return send.apply(this, [body]);
-                }
-            };
-
+        if (req.method !== 'GET') {
             next();
-            
+        }
+        if (req.xhr === true) {
+            next();
+        }
+        if (/text\/html/.test(req.get('accept')) !== true) {
+            next();
+        }
+
+        var send = res.send.bind(res);
+
+        res.send = (body) => {
+            if (typeof body === 'string') {
+                this.render(body, req.url).then((result) => {
+                    debug('MiddleWare successfully rendered', result.status);
+                    res.location(req.url);
+                    res.status(200);
+                    return send.apply(this, [result.html]);
+                }, (result) => {
+                    debug('MidleWare error rendering', result.status);
+                    res.status(500);
+                    res.location(req.url);
+                    return send.apply(this, [result.html]);
+                });
+            } else {
+                return send.apply(this, [body]);
+            }
         };
+
+        next();
+
     };
 
-    private instanciateJSDOM = (html: string, url: string, uid: string): any => {
+
+    private instanciateJSDOM = (html:string, url:string, uid:string):any => {
         jsdom.debugMode = true;
         const URL = this.config.server.getDomain() + ':' + this.config.server.getPort() + url
         debug('SERVER URL = ', URL);
 
         const debugVirtualConsole = jsdom.createVirtualConsole();
-        debugVirtualConsole.on("jsdomError",  (error) => {
+        debugVirtualConsole.on("jsdomError", (error) => {
             AngularServerRenderer.eventEmmiter.emit(JSDOM_EVENTS.JSDOM_ERROR + uid, error);
-            debug('Some serious shit happened',  error.detail);
+            debug('Some serious shit happened', error.detail);
         });
 
-        let document  = jsdom.jsdom(html, {
+        let document = jsdom.jsdom(html, {
             features: {
                 FetchExternalResources: ['script'],
                 ProcessExternalResources: ['script']
             },
-            resourceLoader:  (resource, callback: Function) => {
+            resourceLoader: (resource, callback:Function) => {
                 let pathname = resource.url.pathname;
                 let externalResource;
-                for(var i in this.externalResources) {
+                for (var i in this.externalResources) {
                     externalResource = this.externalResources[i];
                     debug('Checking ', pathname, 'with ', externalResource.url);
-                    if ( (typeof externalResource.url === 'string' && pathname === externalResource.url) || (typeof externalResource.url === 'regexp' && externalResource.url.test(pathname))) {
+                    if ((typeof externalResource.url === 'string' && pathname === externalResource.url) || (typeof externalResource.url === 'regexp' && externalResource.url.test(pathname))) {
                         return callback(null, externalResource.content);
                     }
                 }
@@ -171,12 +170,12 @@ class AngularServerRenderer {
                 debug('loading external resource  ', resource.url.pathname);
                 //because of issue https://github.com/tmpvar/jsdom/issues/156
 
-                if ( resource.url.href.indexOf(this.config.server.getDomain() + ':' + this.config.server.getPort()) === 0) {
+                if (resource.url.href.indexOf(this.config.server.getDomain() + ':' + this.config.server.getPort()) === 0) {
                     //we probably are loading from same domain a relative url
                     if (/^(.+)\/.+/.test(url)) {
                         let regexResult = /^(.+)\/.+/.exec(url);
                         const fragment = regexResult[1];
-                        if( resource.url.pathname.indexOf(fragment) === 0) {
+                        if (resource.url.pathname.indexOf(fragment) === 0) {
                             //probably the bug isnt fixed yet, there is a work around
                             fixedURL = this.config.server.getDomain() + ':' + this.config.server.getPort() + resource.url.pathname.substr(fragment.length);
                             debug('Url fixed to ', fixedURL);
@@ -188,12 +187,12 @@ class AngularServerRenderer {
                     //return resource.defaultFetch(callback);
                 }
                 requesting(fixedURL, (err, response, body) => {
-                    if(err) {
+                    if (err) {
                         //debug("Error fetching the url ", fixedURL, err);
                         AngularServerRenderer.eventEmmiter.emit(JSDOM_EVENTS.JSDOM_URL_ERROR + uid, err);
                         return;
                     }
-                    if(response.statusCode !== 200) {
+                    if (response.statusCode !== 200) {
                         //debug("Error fetching ther url", fixedURL, response);
                         AngularServerRenderer.eventEmmiter.emit(JSDOM_EVENTS.JSDOM_URL_ERROR + uid, response);
                         return;
@@ -202,22 +201,22 @@ class AngularServerRenderer {
                 });
             },
             url: URL,
-            virtualConsole: this.config.server.getDebug() ? debugVirtualConsole.sendTo(console, { omitJsdomErrors: true }) : debugVirtualConsole,
+            virtualConsole: this.config.server.getDebug() ? debugVirtualConsole.sendTo(console, {omitJsdomErrors: true}) : debugVirtualConsole,
             document: {
                 referrer: '',
                 cookie: 'key=value; expires=Wed, Sep 21 2011 12:00:00 GMT; path=/',
                 cookieDomain: this.config.server.getDomain()
             },
             created: (error, window) => {
-                if(error) {
+                if (error) {
                     debug('Created event caught', error);
                     AngularServerRenderer.eventEmmiter.emit(JSDOM_EVENTS.JSDOM_CREATED_ERROR + uid, error);
                 }
             },
             done: (error, window) => {
-                if(error) {
+                if (error) {
                     debug('Done event caught', error);
-                    AngularServerRenderer.eventEmmiter.emit(JSDOM_EVENTS.JSDOM_DONE_ERROR  +  uid, error);
+                    AngularServerRenderer.eventEmmiter.emit(JSDOM_EVENTS.JSDOM_DONE_ERROR + uid, error);
                 }
             }
         });
@@ -232,36 +231,36 @@ class AngularServerRenderer {
 
     };
 
-    private clearEventEmitterListeners = (uid: string) => {
+    private clearEventEmitterListeners = (uid:string) => {
         AngularServerRenderer.eventEmmiter.removeAllListeners(JSDOM_EVENTS.JSDOM_ERROR + uid);
         AngularServerRenderer.eventEmmiter.removeAllListeners(JSDOM_EVENTS.JSDOM_CREATED_ERROR + uid);
         AngularServerRenderer.eventEmmiter.removeAllListeners(JSDOM_EVENTS.JSDOM_DONE_ERROR + uid);
         AngularServerRenderer.eventEmmiter.removeAllListeners(JSDOM_EVENTS.JSDOM_URL_ERROR + uid);
     };
 
-    render = (html: string, url: string): Promise<IResponse> => {
+    render = (html:string, url:string):Promise<IResponse> => {
         Helpers.CheckType(url, 'string');
         Helpers.CheckType(html, 'string');
 
-        return new Promise((resolve, reject) =>{
+        return new Promise((resolve, reject) => {
             let shouldRender;
 
             shouldRender = this.config.render.shouldRender(url);
-        
+
             if (!shouldRender) {
 
                 debug('This Angular URL should not be pre-rendered', url);
-                resolve( Response.send(html, ResponseStatus.RENDER_EXCLUDED));
+                resolve(Response.send(html, ResponseStatus.RENDER_EXCLUDED));
 
             } else {
                 let cacheUrl = this.config.cache.getCacheEngine().url(url);
-                cacheUrl.isCached().then((isCached) =>{
+                cacheUrl.isCached().then((isCached) => {
                     debug('Is URL ', url, 'cached?', isCached);
 
                     if (isCached === true) {
                         debug('This URL is cached', url);
                         cacheUrl.getUrl().then((res) => {
-                            resolve( Response.send(res, ResponseStatus.ALREADY_CACHED));
+                            resolve(Response.send(res, ResponseStatus.ALREADY_CACHED));
                         });
                     } else {
 
@@ -292,7 +291,7 @@ class AngularServerRenderer {
 
                         const window = this.instanciateJSDOM(html, url, uid);
 
-                        let serverTimeout = setTimeout( () => {
+                        let serverTimeout = setTimeout(() => {
                             if (rendering) return;
                             debug('SERVER TIMEOUT ! ! !');
                             //@todo Get the error URl here
@@ -305,13 +304,13 @@ class AngularServerRenderer {
                                 debug('Remove URL', res);
                                 reject(Response.send(html, ResponseStatus.SERVER_TIMEOUT));
                                 window.close();
-                            }, (res) =>{
+                            }, (res) => {
                                 reject(Response.send(html, ResponseStatus.SERVER_TIMEOUT));
                                 window.close();
                             });
                         }, this.config.server.getTimeout());
 
-                        window.addEventListener('ServerExceptionHandler',  (err, data) => {
+                        window.addEventListener('ServerExceptionHandler', (err, data) => {
                             rendering = true;
                             this.clearEventEmitterListeners(uid);
                             cacheUrl.removeUrl().then(() => {
@@ -322,18 +321,18 @@ class AngularServerRenderer {
                             });
                         });
 
-                        window.addEventListener('Idle',  () => {
+                        window.addEventListener('Idle', () => {
                             debug('Idle event caught');
                             if (rendering) return;
                             rendering = true;
                             let renderedHtml = this.getHTML(window, [serverTimeout]);
                             this.clearEventEmitterListeners(uid);
                             cacheUrl.cache(renderedHtml).then((cacheStatus) => {
-                                debug('caching the url = ', url,  cacheStatus);
+                                debug('caching the url = ', url, cacheStatus);
                                 resolve(Response.send(renderedHtml, ResponseStatus.RENDERED));
                                 window.close();
                                 window.dispose();
-                            }, function(err) {
+                            }, function (err) {
                                 debug('Something went wrong with the cache', err);
                                 resolve(Response.send(renderedHtml, ResponseStatus.RENDERED));
                                 window.close();
@@ -350,6 +349,7 @@ class AngularServerRenderer {
             }
         });
     };
-};
+}
+;
 
 module.exports = AngularServerRenderer;

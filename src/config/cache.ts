@@ -1,12 +1,12 @@
-import {ICacheConfig, IInstantConfig} from './../interfaces';
-import {CacheEngine, FileStorageConfig, RedisStorageConfig, MaxAgeRegexRule, RegexRule} from 'simple-url-cache';
+import {ICacheConfig} from './../interfaces';
+import {CacheEngine, FileStorageConfig, RedisStorageConfig, MaxAgeRegexRule, StorageConfig, RegexRule} from 'simple-url-cache';
 import Helpers from './../Helpers';
 import * as path from 'path';
 import * as dbug from 'debug';
 var debug = dbug('angular.js-server');
 
 
-export default class CacheConfig implements IInstantConfig{
+export default class CacheConfig{
 
     private cacheConfig:ICacheConfig = {
         storageConfig: {

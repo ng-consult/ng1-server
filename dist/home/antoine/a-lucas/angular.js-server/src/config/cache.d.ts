@@ -1,0 +1,32 @@
+import { ICacheConfig } from './../interfaces';
+import { CacheEngine, FileStorageConfig, RedisStorageConfig, MaxAgeRegexRule, RegexRule } from 'simple-url-cache';
+export default class CacheConfig {
+    private cacheConfig;
+    private configInstanciated;
+    private cache;
+    constructor();
+    importConfig(config: ICacheConfig): void;
+    getCacheEngine(): CacheEngine;
+    setConfigInstanciated(bool: boolean): void;
+    initialize(): void;
+    clearCachedUrl(url: string): Promise<boolean>;
+    clearAllCachedUrl(): Promise<boolean>;
+    setStorageConfig(config: FileStorageConfig | RedisStorageConfig): void;
+    setDefault(def: string): void;
+    addMaxAgeRule(rule: RegExp, maxAge: number): void;
+    addAlwaysRule(rule: RegExp): void;
+    addNeverRule(rule: RegExp): void;
+    removeMaxAgeRule(rule: RegExp): void;
+    removeAlwaysRule(rule: RegExp): void;
+    removeNeverRule(rule: RegExp): void;
+    removeAllMaxAgeRules(): void;
+    removeAllAlwaysRules(): void;
+    removeAllNeverRules(): void;
+    removeAllRules(): void;
+    getDefault(): string;
+    getMaxAgeRules(): MaxAgeRegexRule[];
+    getAlwaysRules(): RegexRule[];
+    getNeverRules(): RegexRule[];
+    private checkExists(rule);
+    private getRegexes(collection);
+}

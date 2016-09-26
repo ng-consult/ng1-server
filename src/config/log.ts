@@ -1,4 +1,4 @@
-import {ILogConfig,IInstantConfig, ILogConfigData} from './../interfaces';
+import {ILogConfig, ILogConfigData} from './../interfaces';
 import Helpers from './../Helpers';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -7,7 +7,7 @@ var debug = dbug('angular.js-server');
 
 
 
-export default class LogConfig implements IInstantConfig{
+export default class LogConfig {
     private logConfig:ILogConfig = {
         dir: path.resolve( process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME']  + '/log/angular.js-server'),
         log: {enabled: true, stack: false},

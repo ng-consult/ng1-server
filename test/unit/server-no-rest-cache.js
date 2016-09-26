@@ -14,7 +14,7 @@ var express = require('express');
 
 
 var logFiles = {},
-    testLogFile = '/home/antoine/test';
+    testLogFile = path.resolve( process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME']  + '/test');
 
 describe('Mocking fs.writeFileSync', function() {
 
@@ -53,7 +53,6 @@ describe('Mocking fs.writeFileSync', function() {
 });
 
 var AngularJsServer = require('./../../dist/AngularServerRenderer');
-
 
 var apiServer,
     staticServer,
@@ -166,7 +165,6 @@ beforeEach(function () {
     config.server.setDomain('http://localhost');
     config.server.setPort(3000);
     requestListenerFn = sinon.spy();
-
 });
 
 describe('The api & html servers', function () {

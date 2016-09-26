@@ -4,7 +4,8 @@
     "allowUnreachableCode": false,
     "module": "commonjs",
     "noImplicitAny": false,
-    "declaration": false,
+    "declaration": false
+  ,
     "diagnostics": true,
     "listFiles": true,
     "pretty": true,

@@ -9,12 +9,14 @@
     "jsdom": "registry:dt/jsdom#2.0.0+20160906180921",
     "node": "registry:dt/node#6.0.0+20160915134512",
     "node-uuid": "registry:dt/node-uuid#0.0.0+20160316155526",
+    "node-uuid/node-uuid-global": "registry:dt/node-uuid/node-uuid-global#0.0.0+20160316155526",
     "q": "registry:dt/q#0.0.0+20160613154756",
     "request": "registry:dt/request#0.0.0+20160726020908",
     "shelljs": "registry:dt/shelljs#0.0.0+20160526131156",
     "source-map-support": "registry:dt/source-map-support#0.2.10+20160316155526"
   },
   "dependencies": {
+    "node-uuid": "registry:npm/node-uuid#1.4.7+20160723033700",
     "redis": "registry:npm/redis#2.6.0+20160901110043"
   }
 }

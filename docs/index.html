@@ -1,0 +1,400 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>angular.js-server</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script src="assets/js/modernizr.js"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.js" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">angular.js-server</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1> angular.js-server</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<h1 id="angular-js-server-build-status-https-travis-ci-org-a-lucas-angular-js-server-svg-branch-master-https-travis-ci-org-a-lucas-angular-js-server-">Angular.JS-server  <a href="https://travis-ci.org/a-lucas/angular.js-server"><img src="https://travis-ci.org/a-lucas/angular.js-server.svg?branch=master" alt="Build Status"></a></h1>
+				<h2 id="introduction">Introduction</h2>
+				<!--Official site: https://a-lucas.github.io/angular.js-server/-->
+				<p><a href="https://angularjs.org/" title="A super hero framework">Angular.js</a>  is a super heroic framework originally designed for web apps development. It usage has quickly expanded for hybrid mobile application development, with one mojo: one language to rule it all.</p>
+				<p>The only missing piece is server-side rendering, which this package aims to fix. </p>
+				<p>What does server side rendering means for angular?</p>
+				<ul>
+					<li>You can transform your website into a web app with <a href="">cordova</a></li>
+					<li>You don&#39;t have to modify your existing Angular.js code base.</li>
+					<li>Your website will behave as a web application - which means a much richer UX.</li>
+					<li>You can server side cache REST API and templateCache and replay them in your client.</li>
+				</ul>
+				<!--
+[//]: # ##Comparing server prerendering with no prerendering
+
+[//]: # ![MEAN.js HTML with Angular.js](screenshots/no-prerender.png)
+[//]: # **MEAN.js HTML with Angular.js**
+
+[//]: # ![MEAN.js HTML with Angular.js-server](screenshots/prerender.png)
+[//]: # **MEAN.js HTML with Angular.js-server**
+
+[//]: # You can check this out by yourself at this url: https://github.com/a-lucas/mean
+-->
+				<h2 id="dependencies">Dependencies</h2>
+				<p>This library depends on a compatible version of <a href="https://github.com/a-lucas/angular.js-server-bower" title="Angular.js-server">Angular.js-server client</a></p>
+				<p><a href="https://travis-ci.org/a-lucas/angular.js-server-bower"><img src="https://travis-ci.org/a-lucas/angular.js-server-bower.svg?branch=master" alt="Build Status"></a>   <a href="https://codecov.io/gh/a-lucas/angular.js-server-bower"><img src="https://codecov.io/gh/a-lucas/angular.js-server-bower/branch/master/graph/badge.svg" alt="codecov"></a></p>
+				<h2 id="requirements">Requirements</h2>
+				<p><strong>html5mode</strong></p>
+				<p>Your angular app must use <a href="">html5mode</a>. The reason behind this requirement is that browsers don&#39;t send the hashbang fragment to the server.</p>
+				<p><strong>Angular.js 1.5.x</strong></p>
+				<p>This has been written with 1.5.x in mind.</p>
+				<p><strong>node.js</strong></p>
+				<p>The only known way to integrate node with popular server side technologies as (PHP, Perl, ASP, whatever) is to summon node.js child processes to do the work. </p>
+				<h2 id="functionalities">Functionalities</h2>
+				<p><strong>Web page caching</strong></p>
+				<p>It is possible to cache the files on the file system, or in a <a href="">Redis</a> datastore. If you need to use another storage engine, it is easy to extend <a href="">simple-url-cache</a> package to meet your needs.</p>
+				<p><strong>REST $http caching &amp; angular template pre-caching</strong></p>
+				<p>When pre-rendered, every templateRequest and REST call can be optionally cached and injected into the client before the angular app bootstraps. These requests are instantly replayed, decreasing considerably the client page loading time.</p>
+				<p><strong>URL filtering</strong></p>
+				<p>You can decide which URLs will be pre-rendered, and uses either of the two strategies <code>include</code> or <code>exclude</code> by providing an array of Regexes to match URL against.</p>
+				<p><strong>Logging</strong> </p>
+				<p>The $log provider is augmented to access the file system when rendered on the server. It becomes then possible to log anything your web-app does on the server file system.</p>
+				<h2 id="installation">Installation</h2>
+				<h3 id="client-side-library">Client Side library</h3>
+				<p>You can install <a href="">it</a> vith bower. </p>
+				<pre><code><span class="hljs-keyword">bower </span><span class="hljs-keyword">install </span>angular.<span class="hljs-keyword">js-server</span>
+</code></pre><p>For those without bower, this is <a href="https://github.com/a-lucas/angular.js-server-bower/tree/master/dist">where the file is</a></p>
+				<p>Then you need to include the module <code>server</code> as a dependency in your AngularJS application.</p>
+				<h3 id="server-module-installation">Server module installation</h3>
+				<pre><code>npm <span class="hljs-keyword">install</span> angular.js-<span class="hljs-keyword">server</span>
+</code></pre><h2 id="how-does-it-works-">How does it works?</h2>
+				<h2 id="getting-started">Getting started</h2>
+				<ol>
+					<li><p>Start sdsd</p>
+						<p> blah blah blah</p>
+					</li>
+					<li>Second step</li>
+				</ol>
+				<h2 id="-status-string-error-codes">##Status string &amp; error codes</h2>
+				<ul>
+					<li>RENDERED: <code>0</code></li>
+					<li>RENDER_EXCLUDED: <code>1</code></li>
+					<li>ALREADY_CACHED: <code>2</code></li>
+					<li>SERVER_TIMEOUT: <code>3</code></li>
+					<li>ERROR_HANDLER: <code>4</code></li>
+					<li>SERVER_ERROR: <code>5</code></li>
+				</ul>
+				<h2 id="-examples">##Examples</h2>
+				<p>This assume that your angular app has loaded the client side module <a href="https://github.com/a-lucas/angular.js-server-bower">server</a>.</p>
+				<h4 id="manually-pre-render">Manually pre-render</h4>
+				<pre><code><span class="hljs-keyword">var</span> AngularServer = <span class="hljs-keyword">require</span>(<span class="hljs-string">'angular.js-server'</span>);
+
+<span class="hljs-keyword">var</span> renderer = <span class="hljs-keyword">new</span> AngularServer(config);
+
+<span class="hljs-keyword">var</span> renderedPromise = renderer.render(html, url);
+
+renderedPromise.then(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(html)</span> </span>{
+
+}).<span class="hljs-keyword">catch</span>(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(errorHtml)</span> </span>{
+
+});
+
+<span class="hljs-comment">// renderedPromise is an ES6 promise</span>
+</code></pre><p>####Middleware</p>
+				<pre><code><span class="hljs-keyword">var</span> AngularServer = <span class="hljs-keyword">require</span>(<span class="hljs-string">'angular.js-server'</span>);
+
+<span class="hljs-keyword">var</span> renderer = <span class="hljs-keyword">new</span> AngularServer(config);
+
+app.get(<span class="hljs-string">'/*'</span>, renderer.middleware, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res, next)</span> </span>{
+   <span class="hljs-comment">//your code here </span>
+});
+
+<span class="hljs-comment">// or</span>
+
+app.<span class="hljs-keyword">use</span>(renderer.middleware);
+</code></pre><h4 id="jade">Jade</h4>
+				<pre><code><span class="hljs-keyword">var</span> jadeHtml = jade.renderFile(<span class="hljs-string">'./views/index-classic.jade'</span>, {});
+
+<span class="hljs-keyword">var</span> renderedPromise = angularServer.render(jadeHtml, req.url);
+
+renderedPromise.then(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(result)</span> </span>{
+    res.send(result);
+}).<span class="hljs-keyword">catch</span>(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err)</span> </span>{
+    res.send(err);
+});
+</code></pre><h4 id="swig">Swig</h4>
+				<pre><code><span class="hljs-keyword">var</span> tpl = swig.compileFile(<span class="hljs-string">'./views/index-classic.html'</span>, {
+    cache: <span class="hljs-literal">false</span>
+});
+
+<span class="hljs-keyword">var</span> prehtml = tpl({swigVarName: value});
+
+<span class="hljs-keyword">var</span> html = angularServer.render(prehtml, req.url);
+
+html.then(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(result)</span> </span>{
+    res.send(result);
+}).<span class="hljs-keyword">catch</span>(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err)</span> </span>{
+    res.send(err);
+});
+</code></pre><p>##Contributing</p>
+				<pre><code class="lang-bash">npm install
+npm run bower
+npm run typings
+npm run build-client
+npm run build
+npm run <span class="hljs-built_in">test</span>
+</code></pre>
+				<p>For more debugging information, you can </p>
+				<pre><code class="lang-bash">DEBUG=mocha-test-server,mocha-test,angular.js-server mocha
+</code></pre>
+				<p>##Config </p>
+				<p>This is an example of what a config object looks like:</p>
+				<pre><code>
+var path = require(<span class="hljs-string">'path'</span>);
+
+module.exports = {
+<span class="hljs-attr">    name:</span> <span class="hljs-string">"myApp"</span>,
+<span class="hljs-attr">    server:</span> {
+<span class="hljs-attr">        domain:</span> <span class="hljs-string">'server.example'</span>,
+<span class="hljs-attr">        port:</span> <span class="hljs-number">3000</span>,
+<span class="hljs-attr">        timeout:</span> <span class="hljs-number">15000</span>,
+<span class="hljs-attr">        debug:</span> <span class="hljs-literal">false</span>
+    },
+<span class="hljs-attr">    log:</span> {
+<span class="hljs-attr">        dir:</span> <span class="hljs-string">'/var/log/angular.js-server'</span>, 
+<span class="hljs-attr">        log:</span> {
+<span class="hljs-attr">            enabled:</span> <span class="hljs-literal">true</span>,
+<span class="hljs-attr">            stack:</span> <span class="hljs-literal">false</span>
+        },
+<span class="hljs-attr">        info:</span> {
+<span class="hljs-attr">            enabled:</span> <span class="hljs-literal">true</span>,
+<span class="hljs-attr">            stack:</span> <span class="hljs-literal">false</span>
+        },
+<span class="hljs-attr">        warn:</span> {
+<span class="hljs-attr">             enabled:</span> <span class="hljs-literal">true</span>,
+<span class="hljs-attr">             stack:</span> <span class="hljs-literal">false</span>
+        },
+<span class="hljs-attr">        error:</span> {
+<span class="hljs-attr">             enabled:</span> <span class="hljs-literal">true</span>,
+<span class="hljs-attr">             stack:</span> <span class="hljs-literal">true</span>
+        },
+<span class="hljs-attr">        debug:</span> {
+<span class="hljs-attr">             enabled:</span> <span class="hljs-literal">true</span>,
+<span class="hljs-attr">             stack:</span> <span class="hljs-literal">true</span>
+        }
+    },
+<span class="hljs-attr">    cache:</span> {
+<span class="hljs-attr">        storageConfig:</span> {
+<span class="hljs-attr">            type:</span> <span class="hljs-string">'file'</span>, // possible values: none, file, redis
+<span class="hljs-attr">            dir:</span> path.resolve( __dirname + <span class="hljs-string">'./../cache'</span>),
+        },
+<span class="hljs-attr">        cacheRules:</span> {
+<span class="hljs-attr">            cacheMaxAge:</span> [{
+<span class="hljs-attr">                regex:</span> /.*/,
+<span class="hljs-attr">                maxAge:</span> <span class="hljs-number">10</span>
+            }],
+<span class="hljs-attr">            cacheAlways:</span> [],
+<span class="hljs-attr">            cacheNever:</span> [],
+<span class="hljs-attr">            default:</span> <span class="hljs-string">'never'</span>
+        }
+    },
+<span class="hljs-attr">    rest_cache:</span> { 
+<span class="hljs-attr">        cacheMaxAge:</span> [{
+<span class="hljs-attr">            regex:</span> /.*/,
+<span class="hljs-attr">            maxAge:</span> <span class="hljs-number">10</span>
+        }],
+<span class="hljs-attr">        cacheAlways:</span> [],
+<span class="hljs-attr">        cacheNever:</span> [],
+<span class="hljs-attr">        default:</span> <span class="hljs-string">'never'</span>
+    },
+<span class="hljs-attr">    render:</span> {
+<span class="hljs-attr">        strategy:</span> <span class="hljs-string">'include'</span>,  // possible values: include, exclude
+<span class="hljs-attr">        rules:</span> [
+            /.*/ //pre-render it all !
+        ]
+    }
+};
+</code></pre><p>The <code>storageConfig</code>, <code>cacheRules</code> and <code>rest_cache</code> must match <a href="https://www.npmjs.com/package/simple-url-cache" title="Simple-url-cache ">simple-url-cache</a>&#39;s config definition.</p>
+				<p>###server</p>
+				<p><code>domain</code> is the tld.
+					<code>port</code> must be set, even if 80.
+					<code>timeout</code> is the number in seconds before the server consider the request timed out. If it is reached, the current (and possibly incomplete) rendered HTML will be sent to the client.
+				<code>debug</code> Will log some debugging informaions inside <code>dev.log</code></p>
+				<p>###log</p>
+				<p>Each logging options has the following set of parameters: </p>
+				<p><code>enabled</code> : Talks for itself
+				<code>stack</code> : Want to see the stack tracetrace? Set to true</p>
+				<p>###name:</p>
+				<p>This is the name of the AngularJS application present in the <code>ng-app</code> tag.</p>
+				<p>###rest_cache</p>
+				<p>You can define which REST calls will be injected inside the response. </p>
+				<p>It is a good idea to include all template views as well as most static content. </p>
+				<p>For example, take a page that renders a blog content, but on the side, there is a weather widget that REST call the current forecast for the user&#39;s current location. You would be advised to exclude this REST url from getting cached, or some dude somewhere on the planet might get unexpectanly wet. </p>
+				<p>Another critical example would be user personal informations.</p>
+				<p>#WIP</p>
+				<p>This work is incomplete and totally in progress - DON&#39;T use it on prod withouth prior testing.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class="label tsd-is-external">
+						<span>Internals</span>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_angularserverrenderer_.html">"<wbr>Angular<wbr>Server<wbr>Renderer"</a>
+					</li>
+					<li class="label tsd-is-external">
+						<span>Externals</span>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_engineconfig_.html">"<wbr>Engine<wbr>Config"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_helpers_.html">"<wbr>Helpers"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_responseformater_.html">"<wbr>Response<wbr>Formater"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_config_cache_.html">"config/cache"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_config_log_.html">"config/log"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_config_render_.html">"config/render"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_config_server_.html">"config/server"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="modules/_interfaces_.html">"interfaces"</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-module"><span class="tsd-kind-icon">Module</span></li>
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
+				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+				<li class="tsd-kind-enum-member"><span class="tsd-kind-icon">Enumeration member</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-enum"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-enum"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-interface"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-interface"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+				<li class="tsd-kind-index-signature tsd-parent-kind-class"><span class="tsd-kind-icon">Index signature</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited constructor</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected"><span class="tsd-kind-icon">Protected accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private method</span></li>
+				<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private accessor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static property</span></li>
+				<li class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"><span class="tsd-kind-icon">Static method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="http://typedoc.io" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
