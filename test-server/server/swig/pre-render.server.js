@@ -1,22 +1,21 @@
-/**
- * Created by antoine on 08/07/16.
- */
-
-
 var express = require('express');
-var utils  = require('./../utils').express;
 var swig = require('swig');
-var angularDomServer = require('./../../../dist/server/AngularServerRenderer');
-var config = require('./../config');
+var utils = require('./../utils').express;
+var path = require('path');
+var angularDomServer = require('./../../../dist/AngularServerRenderer');
+var debug = require('debug')(require('./../utils').debugStr);
 
-var app = utils(express(), 'swig');
-config.server.port = 3004;
+var angularServer = new angularDomServer();
+angularServer.config.render.setStrategy('always');
+angularServer.config.server.setPort(3004);
+angularServer.config.server.setDomain('http://localhost');
+angularServer.config.cache.setDefault('always');
 
-var angularServer = new angularDomServer(config);
+var app = utils(express(), 'jade');
 
 app.get('/*', function(req, res) {
-    
-    var tpl = swig.compileFile('./swig/views/index-classic.html', {
+
+    var tpl = swig.compileFile(__dirname + '/views/index-classic.html', {
         cache: false
     });
     var prehtml = tpl({});
@@ -24,9 +23,14 @@ app.get('/*', function(req, res) {
     var html = angularServer.render(prehtml, req.url);
 
     html.then(function(result) {
-        res.send(result);
-    }).fail(function(err) {
-        res.send(err);
+        debug(result.status);
+        res.send(result.html);
+    }, function(err) {
+        debug('ERROR WITH SWIG', err.status);
+        res.send(err.html);
+    }).catch(function(err) {
+        debug('ERROR WITH SWIG', err.status);
+        res.send(err.html);
     });
 
 });

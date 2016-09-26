@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for test-server/server/utils.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">all files</a> / <a href="index.html">test-server/server/</a> utils.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">58% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>29/50</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">66.67% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>2/3</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">33.33% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>2/6</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">58% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>29/50</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line medium'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">88×</span>
+<span class="cline-any cline-yes">88×</span>
+<span class="cline-any cline-yes">88×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-yes">2×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-yes">4×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">"use strict";
+&nbsp;
+var favicon = require('express-favicon');
+var express = require('express');
+var path = require('path');
+var cons = require('consolidate');
+var process = require('process');
+&nbsp;
+var debugStr = "test-server";
+&nbsp;
+var debug = require('debug')(debugStr);
+&nbsp;
+module.exports.debugStr = debugStr;
+&nbsp;
+module.exports.express = function (app, viewEngine) {
+&nbsp;
+    app.use(favicon(__dirname + '/favicon.ico'));
+&nbsp;
+    app.use(function (req, res, next) {
+        debug('GET ', req.protocol + '://' + req.get('host') + req.originalUrl);
+        res.set("Connection", "close");
+        next();
+    });
+&nbsp;
+    app.use('/public', express.static(path.resolve(__dirname + '/../../test-server/bower')));
+    app.use('/views', express.static(path.resolve(__dirname + '/../bower/angular.js-server-test-client/src/views')));
+    app.use('/client-server-build', express.static(path.resolve(__dirname + '/../../dist')));
+&nbsp;
+    switch (viewEngine) {
+        case 'swig':
+            app.engine('html', cons.swig);
+            app.set('view engine', 'html');
+            break;
+        case 'jade':
+            app.engine('jade', cons.jade);
+            app.set('view engine', 'jade');
+            break;
+<span class="branch-2 cbranch-no" title="branch not covered" >        default:</span>
+<span class="cstat-no" title="statement not covered" >            throw new Error('unknown templating');</span>
+    }
+&nbsp;
+    app.set('views', path.resolve(__dirname + '/' + viewEngine + '/views'));
+&nbsp;
+    return app;
+};
+&nbsp;
+&nbsp;
+var serve = (expressApp, description, port) =&gt; {
+<span class="cstat-no" title="statement not covered" >    return new Promise((resolve, reject) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        expressApp.listen(port, <span class="fstat-no" title="function not covered" >function () {</span></span>
+<span class="cstat-no" title="statement not covered" >            debug(description + ' started on 127.0.0.1:' + port);</span>
+<span class="cstat-no" title="statement not covered" >            resolve(true);</span>
+        });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        process.on('uncaughtException', <span class="fstat-no" title="function not covered" >function (err) {</span></span>
+<span class="cstat-no" title="statement not covered" >            reject(err);</span>
+            ;
+        });
+    });
+&nbsp;
+};
+&nbsp;
+module.exports.startApi = <span class="fstat-no" title="function not covered" >function () {</span>
+<span class="cstat-no" title="statement not covered" >    var apiServer = require('./api/api-server');</span>
+<span class="cstat-no" title="statement not covered" >    server(apiServer, 'api-server', 8080).then(() =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        debug('API Server started');</span>
+    }, err =&gt; {
+<span class="cstat-no" title="statement not covered" >        debug('Some error happened while starting the Api Server', err);</span>
+    })
+};
+&nbsp;
+module.exports.testServers = <span class="fstat-no" title="function not covered" >function () {</span>
+&nbsp;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    var apiServer = require('./api/api-server');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    var jadeClassicServer = require('./jade/classic.server');</span>
+<span class="cstat-no" title="statement not covered" >    var jadePreRenderServer = require('./jade/pre-render.server');</span>
+<span class="cstat-no" title="statement not covered" >    var jadeMiddleWareServer = require('./jade/middleware.server');</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    var swigClassicServer = require('./swig/classic.server');</span>
+<span class="cstat-no" title="statement not covered" >    var swigPreRenderServer = require('./swig/pre-render.server');</span>
+<span class="cstat-no" title="statement not covered" >    var swigMiddleWareServer = require('./swig/middleware.server');</span>
+&nbsp;
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    Promise.all([</span>
+        serve(jadeClassicServer, 'jade - no server side rendering', 3000),
+&nbsp;
+        serve(jadePreRenderServer, 'jade - server side rendering', 3001),
+        serve(jadeMiddleWareServer, 'jade - server side rendering middleware', 3002),
+&nbsp;
+        serve(swigClassicServer, 'swig - no server side rendering', 3003),
+        serve(swigPreRenderServer, 'swig - server side rendering', 3004),
+        serve(swigMiddleWareServer, 'swig - server side rendering middleware', 3005),
+&nbsp;
+        serve(apiServer, 'api.server', 8080),
+    ]).then(() =&gt; {
+<span class="cstat-no" title="statement not covered" >        debug('Servers started');</span>
+    }, err =&gt; {
+<span class="cstat-no" title="statement not covered" >        debug('Some error happened while starting the servers', err);</span>
+&nbsp;
+    });
+&nbsp;
+&nbsp;
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Mon Sep 26 2016 21:58:36 GMT+0700 (ICT)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

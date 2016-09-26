@@ -6,13 +6,15 @@ var express = require('express');
 var jade = require('jade');
 var utils = require('./../utils').express;
 var path = require('path');
-var angularDomServer = require('./../../../dist/server/AngularServerRenderer');
+var debug = require('debug')(require('./../utils').debugStr);
 
-var config = require('./../config');
-config.server.port = 3001;
+var angularDomServer = require('./../../../dist/AngularServerRenderer');
 
-
-var angularServer = new angularDomServer(config);
+var angularServer = new angularDomServer();
+angularServer.config.render.setStrategy('always');
+angularServer.config.server.setPort(3001);
+angularServer.config.server.setDomain('http://localhost');
+angularServer.config.cache.setDefault('always');
 
 var app = utils(express(), 'jade');
 
@@ -23,10 +25,14 @@ app.get('/*', function(req, res) {
     var html = angularServer.render(jadeHtml, req.url);
 
     html.then(function(result) {
-        res.send(result);
+        debug(result.status);
+        res.send(result.html);
+    }, function(err) {
+        debug('ERROR WITH JADE', err.status);
+        res.send(err.html);
     }).catch(function(err) {
-        console.error('ERROR WITH JADE', err);
-        res.send(err);
+        debug('ERROR WITH JADE', err.status);
+        res.send(err.html);
     });
 
 });

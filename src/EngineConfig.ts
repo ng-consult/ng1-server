@@ -1,39 +1,42 @@
-import {FileStorageConfig, RedisStorageConfig, CacheRules} from 'simple-url-cache';
+import {IGeneralConfig} from './interfaces';
+import * as dbug from 'debug';
+var debug = dbug('angular.js-server');
+import CacheConfig from './config/cache';
+import LogConfig from './config/log';
+import RenderConfig from './config/render';
+import ServerConfig from './config/server';
 
-interface ServerConfig {
-    domain: string,
-    port: number,
-    timeout: number
-}
+export default class EngineConfig {
+    
+    public cache: CacheConfig;
+    public restCache: CacheConfig;
+    public server: ServerConfig;
+    public log: LogConfig;
+    public render: RenderConfig;
 
-interface RenderConfig {
-    strategy: string,
-    rules : RegExp[]
-}
+    constructor(config?: IGeneralConfig) {
+        this.cache = new CacheConfig();
+        this.restCache = new CacheConfig();
+        this.server = new ServerConfig();
+        this.log = new LogConfig();
+        this.render = new RenderConfig();
 
-export interface LogConfigData {
-    enabled: boolean,
-    stack: boolean
-}
+        if(config) {
+            this.server.importConfig(config.server);
+            this.render.importConfig(config.render);
+            this.cache.importConfig(config.cache);
+            this.restCache.importConfig(config.restCache);
+            this.log.importConfig(config.log);
+        }
 
-export interface LogConfig {
-    dir: string,
-    log: LogConfigData,
-    warn: LogConfigData,
-    error: LogConfigData,
-    info: LogConfigData,
-    debug: LogConfigData
-}
-
-export interface CacheConfig{
-    storageConfig: FileStorageConfig,
-    cacheRules: CacheRules
-}
-
-export interface Config {
-    name: string,
-    server: ServerConfig,
-    render: RenderConfig,
-    cache: CacheConfig,
-    log: LogConfig
+        this.setConfigInstanciated();
+        this.cache.initialize();
+        this.restCache.initialize();
+        this.log.initialize();
+    }
+    
+    private setConfigInstanciated():void{
+        this.cache.setConfigInstanciated(true);
+        this.log.setConfigInstanciated(true);
+    }
 }

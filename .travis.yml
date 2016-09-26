@@ -13,7 +13,6 @@ before_install:
 install:
   - npm run bower
   - npm run typings
-  - npm run build-client
   - npm run build
 node_js:
   - "5.11"
@@ -23,3 +22,5 @@ notifications:
       - cooluhuru@gmail.com
     on_success: never
     on_failure: always
+after_success:
+  - npm run codecov

@@ -1,6 +1,5 @@
-/**
- * Created by antoine on 15/07/16.
- */
+"use strict";
+
 var favicon = require('express-favicon');
 var express = require('express');
 var path = require('path');
@@ -13,21 +12,21 @@ var debug = require('debug')(debugStr);
 
 module.exports.debugStr = debugStr;
 
-module.exports.express = function(app, viewEngine) {
+module.exports.express = function (app, viewEngine) {
 
     app.use(favicon(__dirname + '/favicon.ico'));
 
-    app.use(function(req, res, next) {
+    app.use(function (req, res, next) {
         debug('GET ', req.protocol + '://' + req.get('host') + req.originalUrl);
         res.set("Connection", "close");
         next();
     });
 
-    app.use('/public', express.static( path.resolve(__dirname + '/../../test-server/bower')));
-    app.use('/views', express.static( path.resolve(__dirname + '/../bower/angular.js-server-test-client/src/views')));
-    app.use('/client-server-build', express.static( path.resolve(__dirname + '/../../dist/client/server')));
+    app.use('/public', express.static(path.resolve(__dirname + '/../../test-server/bower')));
+    app.use('/views', express.static(path.resolve(__dirname + '/../bower/angular.js-server-test-client/src/views')));
+    app.use('/client-server-build', express.static(path.resolve(__dirname + '/../../dist')));
 
-    switch(viewEngine){
+    switch (viewEngine) {
         case 'swig':
             app.engine('html', cons.swig);
             app.set('view engine', 'html');
@@ -39,7 +38,7 @@ module.exports.express = function(app, viewEngine) {
         default:
             throw new Error('unknown templating');
     }
-    
+
     app.set('views', path.resolve(__dirname + '/' + viewEngine + '/views'));
 
     return app;
@@ -47,21 +46,30 @@ module.exports.express = function(app, viewEngine) {
 
 
 var serve = (expressApp, description, port) => {
-    return new Promise( (resolve, reject) => {
-        expressApp.listen(port, function() {
+    return new Promise((resolve, reject) => {
+        expressApp.listen(port, function () {
             debug(description + ' started on 127.0.0.1:' + port);
             resolve(true);
         });
 
         process.on('uncaughtException', function (err) {
-            reject(err);;
+            reject(err);
+            ;
         });
     });
 
 };
 
+module.exports.startApi = function () {
+    var apiServer = require('./api/api-server');
+    server(apiServer, 'api-server', 8080).then(() => {
+        debug('API Server started');
+    }, err => {
+        debug('Some error happened while starting the Api Server', err);
+    })
+};
 
-module.exports.testServers = function() {
+module.exports.testServers = function () {
 
 
     var apiServer = require('./api/api-server');
@@ -81,19 +89,17 @@ module.exports.testServers = function() {
         serve(jadePreRenderServer, 'jade - server side rendering', 3001),
         serve(jadeMiddleWareServer, 'jade - server side rendering middleware', 3002),
 
-        serve(swigClassicServer, 'jade - no server side rendering', 3003),
-        serve(swigPreRenderServer, 'jade - server side rendering', 3004),
-        serve(swigMiddleWareServer, 'jade - server side rendering middleware', 3005),
+        serve(swigClassicServer, 'swig - no server side rendering', 3003),
+        serve(swigPreRenderServer, 'swig - server side rendering', 3004),
+        serve(swigMiddleWareServer, 'swig - server side rendering middleware', 3005),
 
         serve(apiServer, 'api.server', 8080),
     ]).then(() => {
         debug('Servers started');
     }, err => {
-        debug('Some error happened while starting the servers',  err);
+        debug('Some error happened while starting the servers', err);
 
     });
-
-
 
 
 };

@@ -2,26 +2,9 @@ var express = require('express');
 var dbg = require('debug');
 var debugStr = require('./../utils').debugStr;
 var debug = dbg(debugStr);
-
-
-
+var products = require('./products');
 var apiServer = express();
 
-var getProducts = function(req, res) {
-    setTimeout( function() {
-        debug('Sending back products');
-        res.set("Connection", "close");
-        res.end(JSON.stringify([
-            {
-                name: 'test',
-                price: 1
-            },
-            {
-                name: 'test2',
-                price: 2
-            }]));
-    },2000);
-};
 
 apiServer.get("*", function(req, res, next) {
     var url = req.url;
@@ -55,8 +38,12 @@ apiServer.get("*", function(req, res, next) {
     }
 });
 
-apiServer.get('/products', function(req, res) {
-    return getProducts(req, res);
+apiServer.get('/products/:time', function(req, res) {
+    setTimeout( function() {
+        debug('Sending back products');
+        res.set("Connection", "close");
+        res.end(JSON.stringify(products));
+    },req.params.time);
 });
 
 module.exports = apiServer;

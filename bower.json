@@ -4,9 +4,7 @@
     "angular": "~1.5.0",
     "angular-resource": "~1.5.0",
     "angular-route": "~1.5.0",
-    "angular-server-cache": "~0.2.3",
     "angular.js-server": "latest",
-    "angular.js-server-test-client": "latest",
-    "angular.js-server-ng-cache": "latest"
+    "angular.js-server-test-client": "latest"
   }
 }

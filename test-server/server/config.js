@@ -13,7 +13,7 @@ module.exports = {
         },
         warn: {
             enabled: true,
-            stack: true
+            stack: false
         },
         error: {
             enabled: true,
@@ -25,7 +25,7 @@ module.exports = {
         },
         debug: {
             enabled: true,
-            stack: true
+            stack: false
         }
     },
     server: {
@@ -42,7 +42,7 @@ module.exports = {
     cache: {
         storageConfig: {
             type: 'file',
-            dir: path.resolve( __dirname + './../cache')
+            dir: path.resolve( '/cache/angular.js-server')
         },
         cacheRules: {
             cacheMaxAge: [{

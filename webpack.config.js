@@ -12,18 +12,22 @@ fs.readdirSync('node_modules')
     });
 
 module.exports = {
-    entry: './src/AngularServerRenderer.ts',
+
+    entry: {
+        'AngularServerRenderer': './src/AngularServerRenderer.ts'
+    },
     externals: nodeModules,
     target: 'node',
     output: {
+        path: path.join(__dirname, "dist"),
+        filename: "[name].js",
         library: 'angular.js-server',
-        filename: 'dist/AngularServerRenderer.js',
         libraryTarget: 'commonjs2'
     },
     resolve: {
         extensions: ['', '.webpack.js', '.web.js', '.ts']
     },
-    devtool: 'source-map',
+    devtool: 'inline-source-map',
     plugins: [
         //new webpack.optimize.UglifyJsPlugin({ minimize: true })
     ],

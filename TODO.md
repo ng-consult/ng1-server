@@ -11,3 +11,13 @@ It will help remove the tidy library used to display only the body in the tests
 ```
 <style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-clo
 ```
+
+# Note: all script tags must use absolute url
+Seems like jsdom ignores the base path
+
+
+# htmltidy before rendering
+ 
+ 
+# Fix the common default cache path between restCache and cache
+

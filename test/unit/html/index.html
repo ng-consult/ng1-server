@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head>
+    <base href="http://localhost:3000/"/>
+</head>
+<body>
+
+<div id="msg"></div>
+<div ng-controller="MainCtrl as vm" id="mainDiv">
+    Choose
+    <a href="/Todo">Todo</a> |
+    <a href="/Main">Main</a> |
+    <a href="/Error">Error</a> |
+
+    <div ng-view></div>
+</div>
+
+<script src="public/angular/angular.js"></script>
+<script src="public/angular-resource/angular-resource.js"></script>
+<script src="public/angular-route/angular-route.js"></script>
+<script src="public/angular.js-server/dist/angular.js-server.js"></script>
+<script src="public/angular.js-server-test-client/dist/app.js"></script>
+</body>
+</html>
