@@ -1,14 +1,14 @@
+'use strict';
+
 var express = require('express');
 var jade = require('jade');
 var utils = require('./../utils').express;
 
-var angularDomServer = require('./../../../dist/AngularServerRenderer');
+var  angularDomServer =require( './../../../dist/AngularServerRenderer');
+var config = require('./../config');
 
-var angularServer = new angularDomServer();
-angularServer.config.render.setStrategy('always');
-angularServer.config.server.setPort(3002);
-angularServer.config.server.setDomain('http://localhost');
-angularServer.config.cache.setDefault('always');
+var angularServer = new angularDomServer(config);
+angularServer.config.server.setDomain('http://localhost:3002');
 
 var app = utils(express(), 'jade');
 

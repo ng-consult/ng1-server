@@ -45,6 +45,11 @@ export default class RenderConfig {
         }
     };
 
+    /**
+     * Set the Pre-rendering strategy for all pre-rendering requests. Always and Never will ignore the Regex Rules defined,
+     * while include will only render url match the rules, while exclude will render all the URLs that don't match the rules.
+     * @param strategy Strategy is either 'include', 'exclude', 'always' or 'never'
+     */
     setStrategy(strategy:string):void{
         Helpers.StringIn(strategy, ['include', 'exclude', 'always', 'never']);
         this.renderConfig.strategy = strategy;

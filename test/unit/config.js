@@ -15,50 +15,48 @@ describe('Config file', function () {
     });
 
 
-
     it('should have the correct default values', function () {
 
-            //server
-            expect(config.server.getDomain()).to.eql('http://localhost');
-            expect(config.server.getPort()).to.eql(80);
-            expect(config.server.getTimeout()).to.eql(10000);
-            expect(config.server.getDebug()).to.eql(true);
+        //server
+        expect(config.server.getDomain()).to.eql('http://localhost');
+        expect(config.server.getTimeout()).to.eql(10000);
+        expect(config.server.getDebug()).to.eql(true);
 
-            //render
-            expect(config.render.getStrategy()).to.eql('never');
-            expect(config.render.getRules()).to.eql([]);
+        //render
+        expect(config.render.getStrategy()).to.eql('never');
+        expect(config.render.getRules()).to.eql([]);
 
-            //cache
-            expect(config.cache.getDefault()).to.eql('never');
-            expect(config.cache.getAlwaysRules()).to.eql([]);
-            expect(config.cache.getNeverRules()).to.eql([]);
-            expect(config.cache.getMaxAgeRules()).to.eql([]);
+        //cache
+        expect(config.cache.getDefault()).to.eql('never');
+        expect(config.cache.getAlwaysRules()).to.eql([]);
+        expect(config.cache.getNeverRules()).to.eql([]);
+        expect(config.cache.getMaxAgeRules()).to.eql([]);
 
-            //restcache
-            expect(config.restCache.getDefault()).to.eql('never');
-            expect(config.restCache.getAlwaysRules()).to.eql([]);
-            expect(config.restCache.getNeverRules()).to.eql([]);
-            expect(config.restCache.getMaxAgeRules()).to.eql([]);
+        //restcache
+        expect(config.restCache.getDefault()).to.eql('never');
+        expect(config.restCache.getAlwaysRules()).to.eql([]);
+        expect(config.restCache.getNeverRules()).to.eql([]);
+        expect(config.restCache.getMaxAgeRules()).to.eql([]);
 
 
-            //log
-            expect(config.log.getBasePath()).to.eql(path.resolve(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/log/angular.js-server'));
-            ['warn', 'log', 'info', 'debug', 'error'].forEach((log)=> {
-                expect(config.log.getDefinition(log)).to.eql({enabled: true, stack: false});
-            });
-            expect(config.log.getFileServerName()).to.eql('angular-server.log');
-
+        //log
+        expect(config.log.getBasePath()).to.eql(path.resolve(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/log/angular.js-server'));
+        ['warn', 'log', 'info', 'debug', 'error'].forEach((log)=> {
+            expect(config.log.getDefinition(log)).to.eql({enabled: true, stack: false});
         });
+        expect(config.log.getFileServerName()).to.eql('angular-server.log');
+
+    });
 
 
     describe('set and get config data', function () {
 
 
-        describe('ServerConfig', function() {
+        describe('ServerConfig', function () {
 
-            it('should import the config ok', function() {
+            it('should import the config ok', function () {
                 var serverConfig = {
-                    domain: 'http://localhostaaa',
+                    domain: 'http://localhostaaa/',
                     port: 8080,
                     timeout: 100,
                     debug: false,
@@ -67,7 +65,6 @@ describe('Config file', function () {
 
                 config.server.importConfig(serverConfig);
                 expect(config.server.getDomain()).to.eql(serverConfig.domain);
-                expect(config.server.getPort()).to.eql(serverConfig.port);
                 expect(config.server.getTimeout()).to.eql(serverConfig.timeout);
                 expect(config.server.getDebug()).to.eql(serverConfig.debug);
                 expect(config.server.getBase()).to.eql(serverConfig.base);
@@ -78,8 +75,7 @@ describe('Config file', function () {
             it('should set the server config ok', function () {
 
                 var serverConfig = {
-                    domain: 'http://localhost',
-                    port: 80,
+                    domain: 'http://localhost/',
                     timeout: 10000,
                     debug: true,
                     base: '/'
@@ -87,8 +83,6 @@ describe('Config file', function () {
                 config.server.setDomain(serverConfig.domain);
                 expect(config.server.getDomain()).to.eql(serverConfig.domain);
 
-                config.server.setPort(serverConfig.port);
-                expect(config.server.getPort()).to.eql(serverConfig.port);
 
                 config.server.setTimeout(serverConfig.timeout);
                 expect(config.server.getTimeout()).to.eql(serverConfig.timeout);
@@ -102,13 +96,10 @@ describe('Config file', function () {
             });
 
 
-
-
             it('Server config Should throw Errors when assigning wrong values', function () {
 
                 var serverConfig = {
                     domain: null,
-                    port: null,
                     timeout: null,
                     debug: null,
                     base: null
@@ -116,9 +107,6 @@ describe('Config file', function () {
 
                 expect(function () {
                     config.server.setDomain(serverConfig.domain)
-                }).to.throw;
-                expect(function () {
-                    config.server.setPort(serverConfig.port)
                 }).to.throw;
                 expect(function () {
                     config.server.setTimeout(serverConfig.timeout)
@@ -134,12 +122,10 @@ describe('Config file', function () {
                 }).to.throw;
 
 
-
-
             });
         });
 
-        describe('LogConfig', function() {
+        describe('LogConfig', function () {
             it('should set the log config ok', function () {
 
                 //server
@@ -191,9 +177,9 @@ describe('Config file', function () {
 
             });
 
-            it('Should import config just fine', function() {
+            it('Should import config just fine', function () {
                 var configSample = {
-                    dir: path.resolve( process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/AAAAA_to_be_deleted') ,
+                    dir: path.resolve(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/AAAAA_to_be_deleted'),
                     log: {
                         enabled: true,
                         stack: true
@@ -221,28 +207,28 @@ describe('Config file', function () {
 
                 expect(config.log.getBasePath()).to.eql(configSample.dir);
 
-                ['log', 'info', 'warn', 'error', 'debug'].forEach(function(item) {
+                ['log', 'info', 'warn', 'error', 'debug'].forEach(function (item) {
                     expect(config.log.getDefinition(item)).eql(configSample[item]);
                 });
 
                 expect(config.log.getFileServerName()).equal(configSample.serverLogFile);
 
-                ['log', 'info', 'warn', 'error', 'debug'].forEach(function(item) {
+                ['log', 'info', 'warn', 'error', 'debug'].forEach(function (item) {
                     expect(config.log.getLogPath(item)).eql(configSample.dir + '/' + item + '.log');
                 });
 
-                expect(config.log.getLogServerPath()).eql(path.resolve( process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/AAAAA_to_be_deleted' + '/another.log'));
+                expect(config.log.getLogServerPath()).eql(path.resolve(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/AAAAA_to_be_deleted' + '/another.log'));
 
                 expect(config.log.getConfig()).eql(configSample);
 
-                fs.rmdir(path.resolve( process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/AAAAA_to_be_deleted'));
+                fs.rmdir(path.resolve(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/AAAAA_to_be_deleted'));
 
             });
 
-            it('Should complain about invalid inputs', function() {
+            it('Should complain about invalid inputs', function () {
 
                 var configSample = {
-                    dirname: path.resolve( process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/testfolder_to_be_deleted') ,
+                    dirname: path.resolve(process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'] + '/testfolder_to_be_deleted'),
                     log: {
                         enabled: 'aaa',
                         stack: false
@@ -266,16 +252,24 @@ describe('Config file', function () {
                 };
 
 
-                expect(function(){config.log.setBasePath(configSample.dir);}).to.throw;
+                expect(function () {
+                    config.log.setBasePath(configSample.dir);
+                }).to.throw;
 
-                ['log', 'info', 'warn', 'error', 'debug'].forEach(function(item) {
-                    expect(function(){config.log.setDefinition(item, configSample[item].enabled, configSample[item].stack);}).to.throw;
+                ['log', 'info', 'warn', 'error', 'debug'].forEach(function (item) {
+                    expect(function () {
+                        config.log.setDefinition(item, configSample[item].enabled, configSample[item].stack);
+                    }).to.throw;
                 });
 
-                expect(function(){config.log.setFileServerName(configSample.serverLogFile);}).to.throw;
+                expect(function () {
+                    config.log.setFileServerName(configSample.serverLogFile);
+                }).to.throw;
 
 
-                expect(function(){config.log.importConfig(configSample)}).to.throw;
+                expect(function () {
+                    config.log.importConfig(configSample)
+                }).to.throw;
             });
 
 
@@ -287,7 +281,7 @@ describe('Config file', function () {
 
                 var invalidParams = [{}, 'string', null, new Object()];
 
-                invalidParams.forEach(function(item) {
+                invalidParams.forEach(function (item) {
                     expect(function () {
                         config.render.addRule(item);
                     }).to.throw;
@@ -301,7 +295,7 @@ describe('Config file', function () {
                 expect(function () {
                     config.render.setStrategy('sometimes');
                 }).to.throw;
-                
+
                 var renderConfig = {
                     strategy: 'always',
                     rules: [
@@ -323,8 +317,8 @@ describe('Config file', function () {
                 }).to.throw;
 
             });
-            
-            it('Should import config ok', function() {
+
+            it('Should import config ok', function () {
                 var renderConfig = {
                     strategy: 'always',
                     rules: [
@@ -335,7 +329,7 @@ describe('Config file', function () {
 
                 config.render.importConfig(renderConfig);
                 expect(config.render.getStrategy()).eql('always');
-                expect(config.render.getRules()).to.eql([/aaa/,/bbb/]);
+                expect(config.render.getRules()).to.eql([/aaa/, /bbb/]);
             });
 
             it('Render rules', function () {
@@ -357,7 +351,7 @@ describe('Config file', function () {
 
         });
 
-        describe('CacheRules & REstCache Rules', function(){
+        describe('CacheRules & REstCache Rules', function () {
 
 
             it('Cache Rules Set and Get', function () {
@@ -384,18 +378,12 @@ describe('Config file', function () {
             });
 
 
-            it('imports config file ok', function() {
+            it('imports config file ok', function () {
                 var cacheConfig = {
-                    storageConfig: {
-                        type: 'file',
-                        dir: path.resolve( process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME']  + '/cache/angular.js-server')
-                    },
-                    cacheRules: {
-                        default: 'never',
-                        cacheMaxAge: [{regex: /aaa/, maxAge: 10}],
-                        cacheNever: [{regex: /bbb/}],
-                        cacheAlways: [{regex: /ccc/}]
-                    }
+                    default: 'never',
+                    maxAge: [{regex: /aaa/, maxAge: 10}],
+                    never: [{regex: /bbb/}],
+                    always: [{regex: /ccc/}]
                 };
 
                 config.cache.importConfig(cacheConfig);
@@ -410,13 +398,23 @@ describe('Config file', function () {
 
                 var invalidParams = [{}, 'string', null, new Object()];
 
-                invalidParams.forEach(function(item) {
+                invalidParams.forEach(function (item) {
                     //expect(function () {config.cache.addMaxAgeRule(item, item);}).to.throw;
-                    expect(function () {config.cache.removeMaxAgeRule(item);}).to.throw;
-                    expect(function () {config.cache.addNeverRule(item);}).to.throw;
-                    expect(function () {config.cache.removeNeverRule(item);}).to.throw;
-                    expect(function () {config.cache.addAlwaysRule(item);}).to.throw;
-                    expect(function () {config.cache.removeAlwaysRule(item);}).to.throw;
+                    expect(function () {
+                        config.cache.removeMaxAgeRule(item);
+                    }).to.throw;
+                    expect(function () {
+                        config.cache.addNeverRule(item);
+                    }).to.throw;
+                    expect(function () {
+                        config.cache.removeNeverRule(item);
+                    }).to.throw;
+                    expect(function () {
+                        config.cache.addAlwaysRule(item);
+                    }).to.throw;
+                    expect(function () {
+                        config.cache.removeAlwaysRule(item);
+                    }).to.throw;
                 });
             });
 
@@ -445,13 +443,23 @@ describe('Config file', function () {
 
                 var invalidParams = [{}, 'string', null, new Object()];
 
-                invalidParams.forEach(function(item) {
+                invalidParams.forEach(function (item) {
                     //expect(function () {config.cache.addMaxAgeRule(item, item);}).to.throw;
-                    expect(function () {config.restCache.removeMaxAgeRule(item);}).to.throw;
-                    expect(function () {config.restCache.addNeverRule(item);}).to.throw;
-                    expect(function () {config.restCache.removeNeverRule(item);}).to.throw;
-                    expect(function () {config.restCache.addAlwaysRule(item);}).to.throw;
-                    expect(function () {config.restCache.removeAlwaysRule(item);}).to.throw;
+                    expect(function () {
+                        config.restCache.removeMaxAgeRule(item);
+                    }).to.throw;
+                    expect(function () {
+                        config.restCache.addNeverRule(item);
+                    }).to.throw;
+                    expect(function () {
+                        config.restCache.removeNeverRule(item);
+                    }).to.throw;
+                    expect(function () {
+                        config.restCache.addAlwaysRule(item);
+                    }).to.throw;
+                    expect(function () {
+                        config.restCache.removeAlwaysRule(item);
+                    }).to.throw;
                 });
             });
 

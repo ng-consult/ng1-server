@@ -1,38 +1,55 @@
 import {IServerConfig,} from './../interfaces';
 import Helpers from './../Helpers';
 import * as dbug from 'debug';
+import {RedisStorageConfig} from 'redis-url-cache';
+import * as nodeurl from 'url';
+import {CacheRuleCreator} from 'redis-url-cache';
+
 var debug = dbug('angular.js-server');
 
 export default class ServerConfig {
-    private serverConfig:IServerConfig = {
-        domain: 'http://localhost',
-        port: 80,
-        timeout: 10000,
-        debug: true,
-        base: '/'
-    };
+    private serverConfig:IServerConfig;
 
     constructor() {
+        const storageConfig: RedisStorageConfig = {
+            "host": "127.0.0.1",
+            "port": 6379,
+            "socket_keepalive": true
+        };
 
+        this.serverConfig = {
+            domain: 'http://localhost',
+            timeout: 10000,
+            debug: true,
+            base: '/',
+            jsdomConsole: 'log',
+            storageConfig: storageConfig
+        };
     }
 
     importConfig(config:IServerConfig) {
         this.setDomain(config.domain);
-        this.setPort(config.port);
         this.setTimeout(config.timeout);
         this.setDebug(config.debug);
         this.setBase(config.base);
+        this.setJSDomCOnsole(config.jsdomConsole);
+        this.setStorageConfig(config.storageConfig);
     }
 
     //Setters
+    /**
+     *
+     * @param domain This is a valid domain string including protocol, and port definition (if needed)
+     */
     setDomain = (domain:string):void => {
-        Helpers.CheckType(domain, 'string');
-        this.serverConfig.domain = domain;
-    };
-
-    setPort = (port:number):void => {
-        Helpers.CheckType(port, 'number');
-        this.serverConfig.port = port;
+        let parsedUrl = nodeurl.parse(domain);
+        const url = Helpers.CheckHostname(domain);
+        url.pathname = null;
+        url.hash = null;
+        url.search = null;
+        url.query = null;
+        url.path = null;
+        this.serverConfig.domain = nodeurl.format(url);
     };
 
     setTimeout = (timeout:number):void => {
@@ -50,17 +67,25 @@ export default class ServerConfig {
         this.serverConfig.base = base;
     };
 
+    setStorageConfig(storageConfig:RedisStorageConfig) {
+        this.serverConfig.storageConfig = storageConfig;
+    }
+
+    setJSDomCOnsole(jsdomConsole) {
+        this.serverConfig.jsdomConsole = jsdomConsole;
+    }
+
     //getters
     getDomain = ():string => {
         return this.serverConfig.domain;
     };
 
-    getPort = ():number => {
-        return this.serverConfig.port;
-    };
+    getStorageConfig(): RedisStorageConfig {
+        return this.serverConfig.storageConfig;
+    }
 
     getTimeout = ():number => {
-        return this.serverConfig.timeout;
+        return this.serverConfig.timeout*1000;
     };
 
     getDebug = ():boolean => {
@@ -70,4 +95,8 @@ export default class ServerConfig {
     getBase = (): string => {
         return this.serverConfig.base;
     };
+
+    getJSDomConsole(): string {
+        return this.serverConfig.jsdomConsole;
+    }
 }

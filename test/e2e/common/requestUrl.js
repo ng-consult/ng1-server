@@ -15,15 +15,7 @@ var CacheEngine = require('simple-url-cache').CacheEngine;
 var expect = chai.expect;
 
 var phInstance = null,
-    cacheEngine = new CacheEngine({
-        type: 'file',
-        dir: path.resolve( process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME']  + '/cache/angular.js-server')
-    },{
-        default: 'always',
-        cacheMaxAge: [],
-        cacheAlways: [],
-        cacheNever: []
-    }),
+    cacheEngine,
     cachedUrl;
 
 function startPhantomInstance() {
@@ -93,7 +85,26 @@ module.exports.describeURL = function(url, conf) {
 
         conf.forEach(function(serverData) {
 
+
+
             describe(serverData.desc, function() {
+
+
+                beforeEach(function() {
+                    cacheEngine = new CacheEngine(
+                        serverData.url,
+                        {
+                            type: 'file',
+                            dir: path.resolve( process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME']  + '/cache/angular.js-server')
+                        },
+                        {
+                            default: 'always',
+                            cacheMaxAge: [],
+                            cacheAlways: [],
+                            cacheNever: []
+                        }
+                    );
+                });
 
                 it('phantom with js disabled', function(done) {
                     var sitepage = null;
@@ -214,7 +225,7 @@ module.exports.describeURL = function(url, conf) {
                     });
 
                     it('The files should have been cached by the server', function(done) {
-                        cachedUrl.isCached().then(function(cached) {
+                        cachedUrl.has().then(function(cached) {
                             expect(cached).to.be.ok;
                             done();
                         }, function(e) {
@@ -229,7 +240,7 @@ module.exports.describeURL = function(url, conf) {
 
                         try {
                             var phantomJSHtml = fs.readFileSync( getFileName(url, serverData.prefix, 'js-enabled'), 'utf-8').trim();
-                            cachedUrl.getUrl().then(function(content) {
+                            cachedUrl.get().then(function(content) {
                                 expect(tidy(content).trim()).to.eql(phantomJSHtml);
                                 done();
                             }, function(err) {
@@ -245,7 +256,7 @@ module.exports.describeURL = function(url, conf) {
                     });
 
                     it('We remove the server\'s cached file', function(done) {
-                        cachedUrl.removeUrl().then(function(removed) {
+                        cachedUrl.delete().then(function(removed) {
                             expect(removed).eql(true);
                             done();
                         }, function(err){

@@ -47,7 +47,7 @@ describe('Starting tests', function() {
             }
         ];
 
-        common.describeURL('/Main/500', confJade);
+        //common.describeURL('/Main/500', confJade);
 
         common.describeURL('/Todo', confJade);
 
@@ -57,7 +57,7 @@ describe('Starting tests', function() {
 
     });
 
-    describe("SWIG - E2E", function() {
+    describe.skip("SWIG - E2E", function() {
         testServer.testConnect();
 
         var confSwig = [

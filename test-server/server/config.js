@@ -26,32 +26,43 @@ module.exports = {
         debug: {
             enabled: true,
             stack: false
-        }
+        },
+        serverLogFile: 'angular.server'
     },
     server: {
-        domain: '127.0.0.1',
-        port: 3000,
-        timeout: 15000
+        domain: "http://localhost:3000/",
+        debug: true,
+        timeout: 60,
+        jsdomConsole: "log",
+        base: "/",
+        storageConfig: {
+            "host": "127.0.0.1",
+            "port": 6379,
+            "socket_keepalive": true
+        }
     },
     render: {
-        strategy: 'include',
+        strategy: "always",
         rules: [
-            /.*/ // render everything
+            "/.*/"
         ]
     },
-    cache: {
-        storageConfig: {
-            type: 'file',
-            dir: path.resolve( '/cache/angular.js-server')
-        },
-        cacheRules: {
-            cacheMaxAge: [{
-                regex: /.*/, //cache everyting
-                maxAge: 10 //ttl = 10 seconds
-            }],
-            cacheAlways: [],
-            cacheNever: [],
-            default: 'always'
-        }
+    serverCache: {
+        "default": "always",
+        "maxAge": [],
+        "always": [],
+        "never": []
+    },
+    restCache: {
+        "default": "never",
+        "maxAge": [],
+        "always": [],
+        "never": []
+    },
+    jsdomCache: {
+        "default": "never",
+        "maxAge": [],
+        "always": [],
+        "never": []
     }
 };

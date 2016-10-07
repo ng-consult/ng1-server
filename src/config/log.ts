@@ -20,38 +20,31 @@ export default class LogConfig {
 
     private configInstanciated: boolean = false;
 
-    constructor() {}
-
-    importConfig(config:ILogConfig) {
+    constructor(config:ILogConfig) {
         this.setBasePath(config.dir);
         ['log', 'warn', 'error', 'info', 'debug'].forEach( log => {
             this.setDefinition(log, config[log].enabled, config[log].stack);
         });
         this.setFileServerName(config.serverLogFile);
+        this.initialize();
     }
 
-    setConfigInstanciated(bool: boolean):void {
-        this.configInstanciated = bool;
-    }
 
-    setBasePath = (path:string):void  => {
+    private setBasePath = (path:string):void  => {
         Helpers.CheckType(path, 'string');
         this.logConfig.dir = path;
-        this.initialize();
     };
 
-    setDefinition = (log:string, enabled:boolean, stack?:boolean):void  => {
+    private setDefinition = (log:string, enabled:boolean, stack?:boolean):void  => {
         Helpers.CheckType(log, 'string');
         Helpers.CheckType(enabled, 'boolean');
         this.logConfig[log].enabled = enabled;
         this.logConfig[log].stack = stack ? true : false;
-        this.initialize();
     };
 
-    setFileServerName = (name: string): void => {
+    private setFileServerName = (name: string): void => {
         Helpers.CheckType(name, 'string');
         this.logConfig.serverLogFile = name;
-        this.initialize();
     }
 
     //getters
@@ -85,8 +78,7 @@ export default class LogConfig {
         fs.appendFileSync(this.getLogServerPath(), args.join(', ')+'\n');
     };
 
-    public initialize(): void {
-        if(!this.configInstanciated) {return}
+    private initialize(): void {
         this.logConfig.dir = path.resolve(path.normalize(this.logConfig.dir));
 
         try {

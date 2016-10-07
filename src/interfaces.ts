@@ -1,13 +1,15 @@
-import {FileStorageConfig, RedisStorageConfig, CacheRules, StorageConfig} from 'simple-url-cache';
+import {RedisStorageConfig, CacheRules} from 'redis-url-cache';
+
+
+type JsDomConsoleConfig =  'none' | 'log' | 'all';
 
 export interface IServerConfig {
-    protocol?: string,
-    hostname?: string,
     domain: string,
-    port: number,
     timeout: number,
     debug: boolean,
-    base: string
+    jsdomConsole: JsDomConsoleConfig,
+    base: string,
+    storageConfig: RedisStorageConfig
 }
 
 export interface IRenderConfig {
@@ -30,23 +32,44 @@ export interface ILogConfig {
     serverLogFile: string
 }
 
-export interface ICacheConfig{
-    storageConfig: any,
-    cacheRules: CacheRules
-}
-
 export interface IGeneralConfig {
     name: string,
     server: IServerConfig,
     render: IRenderConfig,
-    cache: ICacheConfig,
-    restCache: ICacheConfig,
+    serverCache: CacheRules,
+    restCache: CacheRules,
+    jsdomCache: CacheRules,
     log: ILogConfig
 }
 
-export interface IResponse {
+export interface INGResponse {
     html: string,
     status: string,
     code: number,
+    errorMsg: string,
     stacktrace: any
 }
+
+export enum NGResponseCodes  {
+    RENDERED = 0,
+    RENDER_EXCLUDED = 1,
+    ALREADY_CACHED = 2,
+    SERVER_TIMEOUT = 3,
+    ERROR_HANDLER = 4,
+    SERVER_ERROR = 5,
+    JSDOM_ERROR = 6,
+    JSDOM_URL_ERROR = 7,
+    CACHE_ENGINE_ERROR = 8
+}
+
+
+export enum JSDOM_EVENTS  {
+    JSDOM_ERROR= 0,
+    JSDOM_URL_ERROR = 1,
+    JSDOM_CREATED_ERROR = 2,
+    JSDOM_DONE_ERROR = 3
+};
+
+
+
+

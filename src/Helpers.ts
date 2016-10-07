@@ -1,4 +1,7 @@
+import * as nodeurl from 'url';
+import {Url} from "url";
 const debug = require('debug')('angular.js-server');
+
 
 export default class Helpers {
 
@@ -33,6 +36,25 @@ export default class Helpers {
             return true;
         }
         return false;
+    }
+
+    static CheckHostname(domain: string): Url {
+        Helpers.CheckType(domain, 'string');
+        var parsedURL = nodeurl.parse(domain);
+        parsedURL.pathname = null;
+        parsedURL.path = null;
+        parsedURL.hash = null;
+        parsedURL.query = null;
+        parsedURL.search = null;
+
+        var formattedDmain = nodeurl.format(parsedURL);
+
+        debug('Checking domain ', domain, formattedDmain);
+
+        if(formattedDmain.length === 0) {
+            Helpers.Error('Invalid domain name provided', domain, formattedDmain);
+        }
+        return nodeurl.parse(formattedDmain);
     }
 
     /**

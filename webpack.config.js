@@ -25,7 +25,7 @@ module.exports = {
         libraryTarget: 'commonjs2'
     },
     resolve: {
-        extensions: ['', '.webpack.js', '.web.js', '.ts']
+        extensions: ['', '.webpack.js', '.ts']
     },
     devtool: 'inline-source-map',
     plugins: [
@@ -35,12 +35,7 @@ module.exports = {
         loaders: [
             {
                 test: /\.ts$/,
-                loader: 'ts-loader',
-                exclude: [
-                    /test/,
-                    /node_modules/,
-                    /src-client/
-                ]
+                loader: 'ts-loader'
             }
         ]
     }
