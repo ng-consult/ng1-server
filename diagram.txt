@@ -1,0 +1,108 @@
+AAA
+AAA is a socket client
+Goals:
+- Request a page pre-rendering, with optional caching support
+- Architecture independant - only need a socket client
+
+Steps:
+1- Get ready for a URL to render, and optionally a HTML rendered content
+2- Ask BBB if te page should be pre-rendered and if yes, if the page is already cached
+3 -
+    case : no need to prerender
+        -> END
+    case : already rendered and cached
+        -> END
+    case : none of the above
+        -> ASK CCC for a pre-rendered page
+
+
+Communicate with: BBB and CCC
+
+
+
+BBB
+BBB is a socket server
+Goals: Helps AAA dermine what to do next
+
+Steps:
+
+1- check if the page shold be pre-rendered or not against config regex rules
+2- check if the page is already cached
+3- Send back 1&2 result to AAA
+
+Communicate with : AAA
+
+
+CCC
+
+CCC is TWO socket server
+    SERVER1 ; communicates with AAA
+    SERVER2 : communicates with EEE
+
+CCC is the parent process of DDD
+    -> Doesn't communicate with DDD, just receives status health information from DDD for logging purposes and Queue managment
+
+Goals : Interface between AAA && ( DDD + EEE + FFF )
+
+
+SERVER 1 only communicate with AAA and CCC SERVER2
+SERVER 1 Steps:
+
+1 - Receive a request from A and assign to it a UUID
+2 -
+    case : Space available
+        -> GOTO 4
+    case : No Space available
+        -> STORE IN QUEUE
+3 - Notify AAA about the requests status : in Queue, Processing, Error, Ended
+3 - Creates a new child CLI process DDD passing these informations on command line
+    - CCC SOCKET SERVER DETAILS
+    - FFF SOCKET SERVER DETAILS
+    - UUID
+4 - monitor DDD's health status, stderr, error, close
+5 - on DDD exit/close, free a slot  the queue if the queue was full and GOTO 2.
+
+
+SERVER 2 only communicate with EEE
+SERVER 2 Steps:
+
+ 1 - Create a new Server and listen
+ 2 - an Socket connectio is established, only two kinds
+    case :
+
+  case - IDLE:
+       case: error
+            notify SERVER1
+
+       case: success
+            notify SERVER1 - and pass rendered HTML
+
+  case - LOG
+        Call ServerLog and log message accordingly
+
+
+DDD:
+
+    This is a Slimer.js webpage which goal is to
+
+    1 - Load the URL, or prepoulate the HTML
+    2 - Attach SLimer.js rules and cache external JS/CSS files for faster execution
+    3 - Attach to the client's window several config informations, including:
+        - the server environment
+        - SERVER 2 connexion details
+
+
+EEE:
+    Is the Angular collection of decorators which goals are
+    - detect the IDLE state
+    - send the rendered HTML when IDLE to CCC (via server2)
+    - send all $Log calls to CCC (via server2) -for server+client side logging
+
+
+FFF:
+
+    Is a HTTP Cache Server and a Socket Server
+
+
+
+

@@ -5,7 +5,7 @@
 var express = require('express');
 var utils = require('./../utils').express;
 
-app = utils(express(), 'jade');
+app = utils(express());
 
 app.get('/*', function(req, res, next) {
     return res.render('index-classic');

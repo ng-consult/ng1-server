@@ -2,19 +2,37 @@
   "compilerOptions": {
     "target": "es5",
     "allowUnreachableCode": false,
-    "module": "commonjs",
+    "module": "umd",
     "noImplicitAny": false,
     "declaration": false,
     "diagnostics": true,
-    "listFiles": true,
+    "listFiles": false,
     "pretty": true,
     //"traceResolution": true,
     "moduleResolution": "node",
     "removeComments": true,
-    "watch": true
+    "watch": true,
+    "outDir": "dist"/*,
+    "outFile": "dist/ngServer.js"*/
   },
+  /*
   "files": [
-      "./typings/index.d.ts",
-      "./src/AngularServerRenderer.ts"
+      "typings/index.d.ts",
+      "src2/index.ts"
+  ],*/
+  "files": [
+    "typings/index.d.ts",
+    "src3/AAA.ts",
+    "src3/BBB.ts",
+    "src3/CCC_1.ts",
+    "src3/CCC_2.ts",
+    "src3/DDD.ts",
+    "src3/masterProcess.ts",
+    "src3/Spawner.ts"
+
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**/*"
   ]
 }

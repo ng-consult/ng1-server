@@ -1,3 +1,5 @@
+### test wih js disabled in browser
+
 ### Benchmark
 
 - record execution time server vs client

@@ -13,14 +13,12 @@ fs.readdirSync('node_modules')
 
 module.exports = {
 
-    entry: {
-        'AngularServerRenderer': './src/AngularServerRenderer.ts'
-    },
+    entry:  './src2/index.ts' ,
     externals: nodeModules,
     target: 'node',
     output: {
         path: path.join(__dirname, "dist"),
-        filename: "[name].js",
+        filename: "ngServer.js",
         library: 'angular.js-server',
         libraryTarget: 'commonjs2'
     },
