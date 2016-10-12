@@ -10,3 +10,6 @@ dist
 logs
 test-tape/logs/
 test2/logs/
+old
+compile
+slimerjs

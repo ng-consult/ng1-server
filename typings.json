@@ -1,6 +1,7 @@
 {
   "globalDependencies": {
     "async": "registry:dt/async#2.0.1+20160804113311",
+    "bunyan": "registry:dt/bunyan#0.0.0+20160412155112",
     "debug": "registry:dt/debug#0.0.0+20160317120654",
     "es6-promise": "registry:dt/es6-promise#0.0.0+20160614011821",
     "express": "registry:dt/express#4.0.0+20160708185218",
@@ -17,6 +18,7 @@
     "socket.io": "registry:dt/socket.io#1.4.4+20160909205835",
     "socket.io-client": "registry:dt/socket.io-client#1.4.4+20160317120654",
     "source-map-support": "registry:dt/source-map-support#0.2.10+20160316155526",
+    "tmp": "registry:dt/tmp#0.0.0+20160514170650",
     "winston": "registry:dt/winston#0.0.0+20161006194546"
   },
   "dependencies": {

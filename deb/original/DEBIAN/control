@@ -1,0 +1,9 @@
+Package: ng-server
+Version: 1.0.0-0
+Section: base
+Priority: optional
+Architecture: i386
+Installed-Size: SIZE
+Depends: nodeenv
+Maintainer: Antoine LUCAS <antoine.lucas.australia@gmail.com>
+Description: This is a server side renderer for complex Angular 1.5+ applications

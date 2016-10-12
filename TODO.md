@@ -2,7 +2,6 @@
 
 ### Benchmark
 
-- record execution time server vs client
 - load testing
 - memory leak testing
 
@@ -13,29 +12,6 @@ It will help remove the tidy library used to display only the body in the tests
 ```
 <style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-clo
 ```
-
-### Note: all script tags must use absolute url
-Seems like jsdom ignores the base path
-
-
-### htmltidy before rendering
- 
- 
-### Fix the common default cache path between restCache and cache
-
-### Implement the host as a cache subdir, or Redis DB name
-
-for example ngServer running on 2 different domains
-
-    /cache/domain1/index.html
-    /cache/domain2/index.html
-    
-for example, ngServer caching REST queries from different domains, jquery cdn and angular cdn
-
-    /restCache/jquerycdn/jquery.js
-    /restCache/angularcdn/angular.js
-    /restCache/domain1/view1.html
-    /restCache/domain2/view1.html
         
 ### better structure for the $window custom properties 
 
@@ -43,8 +19,6 @@ for example, ngServer caching REST queries from different domains, jquery cdn an
         
         // on Server   
         debug
-        log
-        fs
         timeout TODO
         $restCacheEmitter
         $cacheFactory
@@ -56,17 +30,59 @@ for example, ngServer caching REST queries from different domains, jquery cdn an
 
 ### Pending
 
-1. simple-url-cache redis + test + publish + doc
-2. Pass all ngServer test after simple-url-test
-3. Finish testing RestCache client
-4. Implement RestCache on  ngServer
-5. test Restcache on ngServer unit
-6. test RestCache on ngServer e2e
-7. Implement cacching of external resources
-    config.jsdom.cacheExternalResources(bool)
-    config.jsdom.getCachedExternalResources()
-    config.jsdom.clearCachedExternalResource(url)
-    config.jsdom.clearAllCachedExternalResources()
-    config.jsdom.sendToConsole(no, log, all)
-    
-    
+1. More testing
+4. Write unit tests
+5. Write e2e tests  
+6. Package it into a .deb
+ 
+###PHP integration
+```php
+ <?php
+ ob_start();
+ 
+ .... rendering
+
+ $html = ob_get_content();
+
+```
+
+ Connect with http://elephant.io/ to teh renderer server, and then send the url/html to get the rendered result.
+ 
+ <!--
+
+### Steps for log visuzalization
+
+1 - install GrayLog
+
+apt-get install apt-transport-https openjdk-8-jre-headless uuid-runtime pwgen
+apt-get install mongodb-server
+wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+echo "deb https://packages.elastic.co/elasticsearch/2.x/debian stable main" | sudo tee -a /etc/apt/sources.list.d/elasticsearch-2.x.list
+sudo apt-get update && sudo apt-get install elasticsearch
+
+
+    Make sure to modify the Elasticsearch configuration file (/etc/elasticsearch/elasticsearch.yml) and set the cluster name to graylog:
+
+    cluster.name: graylog
+
+
+$ sudo /bin/systemctl daemon-reload
+$ sudo /bin/systemctl enable elasticsearch.service
+$ sudo /bin/systemctl restart elasticsearch.service
+
+
+Graylog
+Now install the Graylog repository configuration and Graylog itself with the following commands:
+````
+wget https://packages.graylog2.org/repo/packages/graylog-2.1-repository_latest.deb
+sudo dpkg -i graylog-2.1-repository_latest.deb
+sudo apt-get update && sudo apt-get install graylog-server
+```
+http://docs.graylog.org/en/2.1/pages/installation/os/ubuntu.html
+
+
+https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.1/elasticsearch-2.4.1.deb
+https://download.elastic.co/logstash/logstash/packages/debian/logstash-2.4.0_all.deb
+https://download.elastic.co/kibana/kibana/kibana-4.6.1-amd64.deb
+
+-->

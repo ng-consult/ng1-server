@@ -6,7 +6,7 @@ Goals:
 
 Steps:
 1- Get ready for a URL to render, and optionally a HTML rendered content
-2- Ask BBB if te page should be pre-rendered and if yes, if the page is already cached
+2- Ask Cache if te page should be pre-rendered and if yes, if the page is already cached
 3 -
     case : no need to prerender
         -> END
@@ -16,12 +16,12 @@ Steps:
         -> ASK CCC for a pre-rendered page
 
 
-Communicate with: BBB and CCC
+Communicate with: Cache and CCC
 
 
 
-BBB
-BBB is a socket server
+Cache
+Cache is a socket server
 Goals: Helps AAA dermine what to do next
 
 Steps:

@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es6",
     "allowUnreachableCode": false,
-    "module": "umd",
+    "module": "es6",
     "noImplicitAny": false,
     "declaration": false,
     "diagnostics": true,
@@ -11,28 +11,29 @@
     //"traceResolution": true,
     "moduleResolution": "node",
     "removeComments": true,
-    "watch": true,
-    "outDir": "dist"/*,
+    "watch": false,
+    "preserveConstEnums": true,
+    "outDir": "compile"/*,
     "outFile": "dist/ngServer.js"*/
   },
-  /*
-  "files": [
-      "typings/index.d.ts",
-      "src2/index.ts"
-  ],*/
   "files": [
     "typings/index.d.ts",
-    "src3/AAA.ts",
-    "src3/BBB.ts",
-    "src3/CCC_1.ts",
-    "src3/CCC_2.ts",
-    "src3/DDD.ts",
+    "src3/bridge.ts",
+    "src3/bridge_S1.ts",
+    "src3/bridge_S2.ts",
+    "src3/bridge_Pool.ts",
+    "src3/client.ts",
+    "src3/cache.ts",
+    "src3/cacheServer.ts",
     "src3/masterProcess.ts",
-    "src3/Spawner.ts"
-
+    "src3/MESSAGES.ts",
+    "src3/serverLog.ts",
+    "src3/slimerIO.ts",
+    "src3/slimerPage.ts",
+    "src3/slimerProcess.ts",
+    "src3/spawner.ts"
   ],
   "exclude": [
-    "node_modules",
-    "src/**/*"
+    "node_modules"
   ]
 }

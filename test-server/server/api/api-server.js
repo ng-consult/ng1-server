@@ -1,3 +1,5 @@
+"use strict";
+
 var express = require('express');
 var dbg = require('debug');
 var debugStr = require('./../utils').debugStr;
@@ -6,11 +8,36 @@ var products = require('./products');
 var apiServer = express();
 
 
+apiServer.options('*', function(req, res, next) {
+    debug('OPTION CALLED', req.url);
+    next();
+});
+
+apiServer.use(function(req, res, next) {
+
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Request-Method', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+    res.setHeader('Access-Control-Allow-Headers', '*');
+    if ( req.method === 'OPTIONS' ) {
+        res.writeHead(200);
+        res.end();
+        return;
+    }
+
+    debug('Inside CORS');
+    //todo uncoment this for testing
+    //res.header('Access-Control-Allow-Headers', 'ngServerRest');
+    next();
+});
+
+/*
 apiServer.get("*", function(req, res, next) {
     var url = req.url;
     debug('API SERVER REQUESTING ', url);
 
     var oneof = false;
+    debug('ORIGIN = ', req.headers.origin);
     if(req.headers.origin) {
         //if (/noserver/.test(req.headers.origin) || /server/.test(req.headers.origin)) {
         res.header('Access-Control-Allow-Origin', req.headers.origin);
@@ -31,13 +58,14 @@ apiServer.get("*", function(req, res, next) {
 
     // intercept OPTIONS method
     if (oneof && req.method == 'OPTIONS') {
+        res.header('Access-Control-Allow-Origin', req.headers.origin);
         res.send(200);
     }
     else {
         next();
     }
 });
-
+*/
 apiServer.get('/products/:time', function(req, res) {
     setTimeout( function() {
         debug('Sending back products');

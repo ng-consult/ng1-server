@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 "use strict";
-var AAA = require('./../dist/AAA').default;
+var Client = require('./../dist/client');
 
-var aaa = new AAA('http://127.0.0.1:8888','http://127.0.0.1:8889');
-aaa.renderURL('/home', function(result) {
+var client = new Client('http://127.0.0.1:8881');
+
+client.renderURL('http://localhost:3000/Main', function(result) {
     console.log('results = ', result);
 });

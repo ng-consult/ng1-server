@@ -1,4 +1,6 @@
-# Angular.JS-server  [![Build Status](https://travis-ci.org/a-lucas/angular.js-server.svg?branch=master)](https://travis-ci.org/a-lucas/angular.js-server)
+# Angular.JS-server  
+
+<!--[![Build Status](https://travis-ci.org/a-lucas/angular.js-server.svg?branch=master)](https://travis-ci.org/a-lucas/angular.js-server)-->
 
 ## Introduction
 
@@ -10,9 +12,10 @@ The only missing piece is server-side rendering, which this package aims to fix.
 
 What does server side rendering means for angular?
 
-
 - You don't have to modify your existing Angular.js code base.
 - You can have big SEO benefits
+- You get support for REST caching out of the box
+- You get Support for REST pre-loading on page load out of the box
 - Your website will behave as a web application - which means a much richer UX.
 - You get huge performances benefits by server side caching REST API and templateCache and replay them in your client instantly on page load
 - You can start developing your website with Angular, server side render it, and later port it into a mobile app with [cordova]()
@@ -30,8 +33,35 @@ What does server side rendering means for angular?
 -->
 ## How does it works?
 
-This library uses [JSDOM](https://github.com/tmpvar/jsdom) to execute the angular app in a browser like environment on the server, [simple-url-cache](https://www.npmjs.com/package/simple-url-cache) to handle the url caching and [angular.js-server client library](https://github.com/a-lucas/angular.js-server-bower) to link this all together.
 
+It is composed by 4 main components, 
+
+1. **The Client library**
+    By design, can be platform independent, language independent. This is a simple websocket client that queries the render for an url or an url+html. It gets notified in Real time by **(2)** about the status of the query.
+2. **The Bridge**
+    The Bridge has two socket servers listening on two different ports. First port is dedicated for external communications with the client **(1)**. The second port is dedicated to internal communications with **(4)**.
+    Bridge reponsabilties are : 
+    - Listen for **(1)**, and update **(1)** in real time as soon someting new happens( queues, starting, finished, error)
+    - Manage the internal pool of 1's requests
+    - Spawn processes launching a [slimer.js]() instance rendering the URL/HTML (1) ask for.
+    - Once the webapp launches inside slimer, listen socket requests from **(4)** about logging and application state (`error` | `idle`)        
+
+3. **A Cache Web Server.**
+    The cache server is a custom proxy that will cache urls depending on regex rules you specify in the config file `slimerRestCacheRules.js`
+    The same cache server is used both by 
+    - Slimer.js to request external scripts (for example, Angular.js's cdn, you might want to cache it to accelerate the page rendering speed server side)
+    - The Webapp client module to fetch $http REST queries and templates.
+    
+4. **NgServer client module**
+    This library modifies severall providers : `$cacheFactory`, `$q`, `$log` and connects to **(2)**'s socket server.
+    Once `IDLE`, it then export the `$cacheFactory`'s content that has been cached server side to **(2)** alongside with the page's rendered HTML.
+     
+This library uses 
+- [Slimer.JS]() to execute the angular app in a browser like environment on the server, 
+- [simple-url-cache](https://www.npmjs.com/package/simple-url-cache) to handle the url caching and 
+- [angular.js-server client library](https://github.com/a-lucas/angular.js-server-bower) to link this all together.
+
+<!--
 To explain what is going on under the hood, let's use a todo case scenario and compare it with angular-server's flow.
 
 ## Usual flow
@@ -70,61 +100,143 @@ We'll call it **GoalHTML**.
         - -> Return the vanilla HTML.
 
 >> Note: All logging and error handling have been skipped for padding purposes
-
+-->
 ## Getting started
 
-Choose what you want to pre-render and what you want to cache
-    
-    ```javascript
-    vae ngServer = require('angular.js-server');
-    var server = new ngServer();
-    //by default, rendering is off, and caching off
-    server.config.render.setDefault('include'); //never, include, exclude
-    server.config.render.addRule(/^index\.html$/);
-    
-    app.get('/index.html', function(req, res) {
-        var html = fs.readFileSYnc(..., 'utf-8');
-        server.render(html, req.url).then(function(response){
-            res.send(response.html);
-        }, function(result) {
-            // if any error, send the original html
-            res.send(response.html);
-        });
-    }
-    
-    //or with a middleware
-    
-    app.get('index.html', server.middleware(), function(req, res, next) {
-        res.render('/var/content/index.html');
-    }
-    ```
+### WARNING
 
-**Response format**
+#### This only works on my local machine, due to external beta packages not published on NPM. Be patient. Also test are not there, so really not ready, but getting there.
 
-```typescript
+### Installation
 
-interface IResponse {
-    html: string,
-    status: string,
-    code: number,
-    stacktrace: any
+```bash
+# Needs firefox engine
+sudo apt-get install firefox
+
+# classic scripts
+npm i
+npm run install
+```
+
+
+### Starting the server
+
+This is a work in progress, later, this will be packaged into a `.deb` file, and the config folder will be static.
+
+You need to get node installed and a `REDIS` server available.
+
+First, you will need to modify the files in `REPOSITORY_PATH/bin/configSample`. and edit your redis connection infos.
+
+Then 
+
+```bash
+#Terminal 1
+cd REPOSITORY_PATH/bin 
+chmod +x *
+DEBUG=ngServer* ./master.js REPOSITORY_PATH/bin/configSample
+```
+
+By Default, ngServer listen on port **8881**. 
+
+To check if this works, you can run inside these commands: 
+
+```bash
+#Terminal 2
+cd test-server/server
+DEBUG=test-server,ngServer* node test-app.js
+
+#Terminal 3
+cd bin
+./aaa.js
+```
+
+### Integrating with your app: 
+
+
+**Dependencies**
+
+This library depends on a compatible version of [Angular.js-server client](https://github.com/a-lucas/angular.js-server-bower "Angular.js-server")
+
+Just add the `server` module as a dependency.
+
+**Requirements**
+
+***html5mode***
+
+Your angular app must use [html5mode](). The reason behind this requirement is that browsers don't send the hashbang fragment to the server.
+
+***Angular.js 1.5.x***
+
+This has been written with 1.5.x in mind.
+
+### Running the client
+ 
+The client connects to the ngServer port specified in the config.
+
+```
+var Client = require('ngServerClient`);
+
+var client = new Client('http://127.0.0.1:8881');
+
+client.renderHTML(url, function( response ) {
+    
+});
+
+
+client.renderHTML(url, html, function( response ) {
+    
+});
+
+```
+
+**Response's structure:** 
+
+```
+{
+  status: number,
+  html?: string  
 }
 
 ```
 
-**Status, error codes and resolve/reject**
+**Status codes:** 
 
-`server.render` returns a promise, either fullfilled or rejected.
-
-| Fullfilled | Rejected | Rejection Details |
-| --- | --- | --- |
-|0 : RENDERED|3 : SERVER_TIMEOUT | `server.config.setTimout(10000)` |
-|1 : RENDER_EXCLUDED | 4 : ERROR_HANDLER | Angular $exceptionHandler decorator |
-|2 :  ALREADY_CACHED | 5 : SERVER_ERROR | |
-|  | 6 : JSDOM_ERROR | JSdom crashed probably because of bad content |
-|  | 7  : JSDOM_URL_ERROR | JsDom can't retreieve a uRL |
+- **1** : This URL should never be pre-rendered as defined in the `configDir/serverRenderRules.js`
+- **2** : This URL has been pre-rendered correctly, the `response.html` property contains the result.
+- **4** : Some error happens, html has not been preprendered, `response.html` is not set.
 
 
+##Logging
+
+
+### File logging
+ngServer uses Bunyan to log usefull informations and any errors raised.
+
+The following log files are created, depending on the value of `serverConfig.logBasePath`: 
+
+```bash
+
+cd $logBasePath
+ls
+
+# Server logs
+trace.log
+info.log
+error.log
+
+# Web application logs triggered with angular's $log
+web-app.log
+web-app-errors.log
+
+```
+
+
+### GrayLog 
+ 
+ You can forward all these logs to a GrayLog server by changing the config `serverConfig.gelf`. Note that the input must be UDP. 
+ 
+
+<!---
 ## Config
 
 Angular-server has severall config options :
@@ -162,13 +274,9 @@ This has been written with 1.5.x in mind.
 
 **node.js**
 
-The only known way to integrate node with popular server side technologies as (PHP, Perl, ASP, whatever) is to summon node.js child processes to do the work. 
+
 
 ## Functionalities
-
-**Web page caching**
-
-It is possible to cache the files on the file system, or in a [Redis]() datastore. If you need to use another storage engine, you can extend [simple-url-cache]() package to meet your needs.
 
 **REST $http caching & angular template pre-caching**
 
@@ -181,7 +289,6 @@ You can decide which URLs will be pre-rendered, and uses either of the two strat
 
 **Logging** 
 
-The `$logProvider` is augmented in the client to access the file system when rendered on the server. It becomes then possible to log anything your web-app does on the server file system.
 
 ## Installation
 
@@ -202,15 +309,7 @@ Then you need to include the module `server` as a dependency in your AngularJS a
 ```bash
 npm install angular.js-server
 ```
-
-## Under the hood
-
-The [server module](https://github.com/a-lucas/angular.js-server-bower) augments the global window injecting some usefull functionalities accessible only when executed server side: 
- - `Idle` Event and `ServerExceptionHandler` that notifies the server of app's status
- - A decorated `$cacheFactory` that handles importation of http responses
- - A httpInterceptor that checks for cached REST requests
- - A decorated `$logProvider` that handles all the server side logging
-  
+-->
 #WIP
 
 This work is incomplete and in progress - DON'T use it on prod withouth prior testing.
