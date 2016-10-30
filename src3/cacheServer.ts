@@ -14,11 +14,6 @@ import ServerLog from './serverLog';
 
 const debug = require('debug')('ngServer-CacheServer');
 
-interface CacheServerStatus {
-    status:string,
-    url:string,
-    content:string
-}
 
 export default class CacheServer {
 
@@ -87,9 +82,13 @@ export default class CacheServer {
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.setHeader('Access-Control-Request-Method', '*');
         response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-        response.setHeader('Access-Control-Allow-Headers', '*');
-
+        if(typeof request.headers['access-control-request-headers'] !== 'undefined') {
+            response.setHeader('Access-Control-Allow-Headers', request.headers['access-control-request-headers']);
+        }
         if ( request.method === 'OPTION' || request.method === 'OPTIONS' ) {
+            //debug('option call for ', request.url);
+            //debug(request.headers);
+            //debug(request);
             response.writeHead(200);
             response.end();
             return;
@@ -97,7 +96,6 @@ export default class CacheServer {
             this.logger.info({url: nodeurl.parse(request.url), method: request.method}, 'New request');
             //debug('requesting ', request.method, request.url);
         }
-
 
         const cacheServerRequest = new CacheServerRequest(this.serverConfig, request);
 
@@ -139,7 +137,14 @@ class CacheServerRequest {
             throw e;
         }
 
-        const parsedOriginalURL = nodeurl.parse(this.url.query['original-url']);
+        if(typeof request.headers['referer'] === 'undefined') {
+            const error = new Error('Error - the referer header is not set');
+
+            this.logger.error({ headers: request.headers, err: error});
+            throw error;
+        }
+
+        const parsedOriginalURL = nodeurl.parse(request.headers['referer']);
         parsedOriginalURL.query = null;
         parsedOriginalURL.path = null;
         parsedOriginalURL.pathname = null;
@@ -147,6 +152,9 @@ class CacheServerRequest {
         parsedOriginalURL.search = null;
         this.originalURL = nodeurl.format(parsedOriginalURL);
         this.headers = request.headers;
+        delete this.headers['ngreferer'];
+        //todo
+        //Replicate all the headers from the original request
     }
 
     getIt(cb: Function) {
@@ -216,6 +224,7 @@ class CacheServerRequest {
 
     private requestURL2(headers: Object, cb: Function) {
 
+        // this section newheaders should be removed
         const newHeaders = {};
         newHeaders['origin'] = this.originalURL;
         newHeaders['user-agent'] = headers['user-agent'] ? headers['user-agent'] : 'Super User Agent';

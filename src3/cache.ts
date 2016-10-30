@@ -12,7 +12,7 @@ import CallBackBooleanParam = RedisUrlCache.CallBackBooleanParam;
 import CallBackStringParam = RedisUrlCache.CallBackStringParam;
 import CallBackGetResultsParam = RedisUrlCache.CallBackGetResultsParam;
 import RedisStorageConfig = RedisUrlCache.RedisStorageConfig;
-import CacheRulesCreator = RedisUrlCache.CacheRulesCreator;
+import CacheCreator = RedisUrlCache.CacheCreator;
 import ServerLog from './serverLog';
 
 
@@ -35,8 +35,8 @@ export class Cache {
 
         const cacheRulesPath: string = path.join(configDir, 'serverCacheRules.js');
         this.cacheRules = require(`${cacheRulesPath}`);
-        
-        CacheRulesCreator.createCache('SERVER', true, this.serverConfig.redisConfig, this.cacheRules, (err) => {
+
+        CacheCreator.createCache('SERVER', true, this.serverConfig.redisConfig, this.cacheRules, (err) => {
             if (err) {
                 const error = new Error(err);
                 this.logger.error(error);

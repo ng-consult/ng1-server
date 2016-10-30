@@ -3,7 +3,7 @@ import * as fs from 'fs-extra';
 import * as async from  'async';
 import {IServerConfig} from './interfaces';
 import {RedisUrlCache} from 'redis-url-cache';
-import CacheRulesCreator = RedisUrlCache.CacheRulesCreator;
+import CacheCreator = RedisUrlCache.CacheCreator;
 import CacheEngineCB = RedisUrlCache.CacheEngineCB; //for testing only
 import Instance = RedisUrlCache.Instance; //for testing only
 import Spawner from './spawner';
@@ -33,7 +33,7 @@ export default class MasterProcess {
         const configpath:string = path.join(this.configDir, 'serverConfig.js');
 
         this.serverConfig = require(`${configpath}`);
-        
+
         ServerLog.initLogs(this.serverConfig.logBasePath, this.serverConfig.gelf);
 
         ServerLog.Log.info('MAster started');
@@ -51,7 +51,7 @@ export default class MasterProcess {
         let parrallelFns = {};
         for(var key in cacheRules) {
             parrallelFns[key] = (cb) => {
-                CacheRulesCreator.createCache(key.toUpperCase(), true, this.serverConfig.redisConfig, cacheRules[key], (err) => {
+                CacheCreator.createCache(key.toUpperCase(), true, this.serverConfig.redisConfig, cacheRules[key], (err) => {
                     if (err) return cb(err);
                     cb(null);
                 });

@@ -1,0 +1,1 @@
+require('./e2e/index.spec');

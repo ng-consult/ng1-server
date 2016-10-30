@@ -115,8 +115,10 @@ page.onInitialized = () => {
         window['onServer'] = true;
         window['serverConfig'] = {
             uid: uid,
-            socketHostname: CCC_2_url,
-            cacheServer: FFF_URL
+            socketServerURL: CCC_2_url,
+            clientTimeoutValue: 200,
+            restServerURL: FFF_URL,
+            debug: false
         };
         window.addEventListener('Idle', () => {
             console.log('Idle event caught in phantom');

@@ -5,7 +5,6 @@ var swig = require('swig');
 var utils = require('./../utils').express;
 var path = require('path');
 var debug = require('debug')(require('./../utils').debugStr);
-var messages = require('./../../../dist/MESSAGES');
 
 var app = utils(express(), 'jade');
 
@@ -24,11 +23,11 @@ app.get('/*', function(req, res) {
 
     client.renderHTML(req.url, prehtml, (ngData) => {
         switch(ngData.status) {
-            case messages.ENUM_RENDER_STATUS.HTML:
+            case 2:
                 res.send(ngData.html);
                 break;
-            case messages.ENUM_RENDER_STATUS.ERROR:
-            case messages.ENUM_RENDER_STATUS.NO_RENDER:
+            case 1:
+            case 4:
                 res.send(prehtml);
                 break;
             default:
