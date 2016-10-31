@@ -1,5 +1,4 @@
 'use strict';
-var express = require('express');
 import * as io from 'socket.io';
 import * as http from 'http';
 
@@ -16,11 +15,8 @@ const debug = require('debug')('ngServer-Bridge_S2');
 
 export default class Bridge_S2 {
 
-    private BBB_Domain: string;
+    constructor(port: number) {
 
-    constructor(port: number, private bbb: Cache) {
-
-        const app = express();
         const httpServer  = http.createServer((req, res) => {
             debug('requesting ', req.url);
             res.writeHead(500, {'Content-Type': 'text/html'});
@@ -85,8 +81,8 @@ export default class Bridge_S2 {
                 //debug('responseCache = ', response.exportedCache);
 
                 const serialized = JSON.stringify(response.exportedCache);
-                const script = `<script type="text/javascript">window.ngServerCache = ${serialized};</script></body>`;
-                const superHTML: string = response.html.replace(/<\/body>/, script);
+                const script = `<script type="text/javascript">window.ngServerCache = ${serialized};</script></head>`;
+                const superHTML: string = response.html.replace(/<\/head>/, script);
 
                 //debug('Query strategy = ', Bridge_Pool.pool[response.uid].query);
 

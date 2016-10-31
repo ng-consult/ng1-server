@@ -1,0 +1,11 @@
+default: 'never'
+maxAge:
+ -
+   domain: /.*/
+   rules:
+    -
+      regex: /.*/
+      maxAge: 30
+      ignoreQuery: true
+never: []
+always: []

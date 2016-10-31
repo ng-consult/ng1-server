@@ -7,7 +7,7 @@ import * as path from 'path';
 
 const debug = require('debug')('ngServer-Client');
 
-export default class Client {
+class Client {
 
     private socket: SocketIOClient.Socket;
 
@@ -152,3 +152,5 @@ export default class Client {
     }
 
 }
+
+export = Client;

@@ -39,6 +39,7 @@ module.exports.testConnect = function() {
         });
 
 
+        /*
         it('Jade mddleWare should start', function(done) {
             jadeMiddleWareServer = require('./../../../test-server/server/jade/middleware.server').listen(3002, function(err) {
                 if(err) { debug(err);done(err);}
@@ -71,7 +72,7 @@ module.exports.testConnect = function() {
                 expect(err).to.be.undefined;
                 done();
             });
-        });
+        });*/
 
     });
 
@@ -98,6 +99,7 @@ module.exports.testClose= function() {
                 done();
             })
         });
+        /*
         it('Should close the Jade mddleWare server', function(done){
             jadeMiddleWareServer.close( function(err) {
                 if(err) { debug(err);done(err);}
@@ -122,7 +124,7 @@ module.exports.testClose= function() {
                 if(err) { debug(err);done(err);}
                 done();
             })
-        });
+        });*/
 
     });
 };

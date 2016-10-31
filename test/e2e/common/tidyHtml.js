@@ -11,6 +11,9 @@ module.exports = function tidyHTML(html) {
         "output-xml": "no",
         "input-xml": "no",
         "show-warnings": "yes",
+        "join-classes": "yes",//new
+        "literal-attributes": "yes",//new
+        "sort-attributes": "alpha",//new
         "numeric-entities": "yes",
         "quote-marks": "yes",
         "quote-nbsp": "yes",

@@ -1,8 +1,8 @@
 'use strict';
-import * as bunyan from 'bunyan';
-import * as path from 'path';
+
 import {MSG, ENUM_CACHE_STATUS} from './MESSAGES';
 import {RedisUrlCache} from 'redis-url-cache';
+import Validators from './validators';
 import Instance = RedisUrlCache.Instance;
 import CacheEngineCB = RedisUrlCache.CacheEngineCB;
 import CacheCB = RedisUrlCache.CacheCB;
@@ -14,12 +14,15 @@ import CallBackGetResultsParam = RedisUrlCache.CallBackGetResultsParam;
 import RedisStorageConfig = RedisUrlCache.RedisStorageConfig;
 import CacheCreator = RedisUrlCache.CacheCreator;
 import ServerLog from './serverLog';
-
+import * as bunyan from 'bunyan';
+import * as path from 'path';
+import * as yaml from 'js-yaml';
+import * as fs from 'fs-extra';
 
 const debug = require('debug')('ngServer-Cache');
 
 export class Cache {
-    
+
     private renderRules: IServerRenderRule;
     private cacheRules: CacheRules;
     private serverConfig: IServerConfig;
@@ -27,14 +30,15 @@ export class Cache {
 
     constructor(configDir: string, cb: Function) {
 
-        const serverConfigpath: string = path.join(configDir, 'serverConfig.js');
-        this.serverConfig = require(`${serverConfigpath}`);
 
-        const renderRulesPath: string = path.join(configDir, 'serverRenderRules.js');
-        this.renderRules = require(`${renderRulesPath}`);
+        const serverConfigpath: string = path.join(configDir, 'serverConfig.yml');
+        this.serverConfig =  yaml.load(fs.readFileSync(serverConfigpath, 'utf8'));
 
-        const cacheRulesPath: string = path.join(configDir, 'serverCacheRules.js');
-        this.cacheRules = require(`${cacheRulesPath}`);
+        const renderRulesPath: string = path.join(configDir, 'serverRenderRules.yml');
+        this.renderRules = Validators.unserializeServerRules(yaml.load(fs.readFileSync(renderRulesPath, 'utf8')));
+
+        const cacheRulesPath: string = path.join(configDir, 'serverCacheRules.yml');
+        this.cacheRules =  Validators.unserializeCacheRules(yaml.load(fs.readFileSync(cacheRulesPath, 'utf8')));
 
         CacheCreator.createCache('SERVER', true, this.serverConfig.redisConfig, this.cacheRules, (err) => {
             if (err) {

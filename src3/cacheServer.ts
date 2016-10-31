@@ -1,9 +1,4 @@
-import * as nodeurl from 'url';
-import * as path from 'path';
-import * as fs from 'fs-extra';
-import * as http from 'http';
-const request = require('request');
-import * as bunyan from 'bunyan';
+
 import {RedisUrlCache} from 'redis-url-cache';
 import RedisStorageConfig = RedisUrlCache.RedisStorageConfig;
 import CacheEngineCB = RedisUrlCache.CacheEngineCB;
@@ -11,11 +6,20 @@ import Instance = RedisUrlCache.Instance;
 import CacheCB = RedisUrlCache.CacheCB;
 import {IServerConfig, IRequestResult, IHeaders} from "./interfaces";
 import ServerLog from './serverLog';
+import Validators from './validators';
+
+import * as nodeurl from 'url';
+import * as path from 'path';
+import * as fs from 'fs-extra';
+import * as http from 'http';
+const request = require('request');
+import * as bunyan from 'bunyan';
+import * as yaml from 'js-yaml';
 
 const debug = require('debug')('ngServer-CacheServer');
 
 
-export default class CacheServer {
+class CacheServer {
 
     static cacheEngine:CacheEngineCB;
 
@@ -33,11 +37,13 @@ export default class CacheServer {
             throw `The config dir doesn't exists ${configDir}`;
         }
 
-        const serverConfigpath:string = path.join(configDir, 'serverConfig.js');
-        this.serverConfig = require(`${serverConfigpath}`);
+        const serverConfigpath:string = path.join(configDir, 'serverConfig.yml');
+        this.serverConfig = yaml.load(fs.readFileSync(serverConfigpath, 'utf8'));
 
-        const cacheRulesPath:string = path.join(configDir, 'slimerRestCacheRules.js');
-        this.cacheRules = require(`${cacheRulesPath}`);
+        const cacheRulesPath:string = path.join(configDir, 'slimerRestCacheRules.yml');
+        this.cacheRules = Validators.unserializeCacheRules( yaml.load(fs.readFileSync(cacheRulesPath, 'utf8')));
+
+        console.log(this.cacheRules);
 
         ServerLog.initLogs(this.serverConfig.logBasePath, this.serverConfig.gelf);
 
@@ -57,7 +63,6 @@ export default class CacheServer {
 
     public start() {
         const httpServer = http.createServer(this.urlServer);
-
         this.connectRedisUrlCache(err => {
             if (err) {
                 this.logger.error({err: err}, 'Error connecting with redis-url-cache');
@@ -75,7 +80,6 @@ export default class CacheServer {
             this.logger.warn('Cache Server launched');
             console.log('CacheSever ', this.instanceName, 'Launched');
         });
-
     }
 
     private urlServer = (request:http.IncomingMessage, response:http.ServerResponse) => {
@@ -306,3 +310,6 @@ class CacheServerRequest {
     }
 
 }
+
+
+export = CacheServer;

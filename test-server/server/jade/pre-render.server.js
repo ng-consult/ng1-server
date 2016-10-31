@@ -7,15 +7,14 @@ var path = require('path');
 var debug = require('debug')(require('./../utils').debugStr);
 
 var app = utils(express(), 'jade');
+var Client = require('./../../../dist/client');
 
 app.get('/*', function(req, res) {
 
     var jadeHtml = jade.renderFile( path.join(__dirname , 'views/index-classic.jade'), {});
 
-    var Client = require('./../../../dist/client').default;
-
     var client = new Client('http://127.0.0.1:8881');
-    
+
     var url = 'http://127.0.0.1:3001' + req.url;
     client.renderHTML(url, jadeHtml, (ngData) => {
         debug('jade Server render received response');

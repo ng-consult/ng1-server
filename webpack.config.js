@@ -11,14 +11,27 @@ fs.readdirSync('node_modules')
         nodeModules[mod] = 'commonjs ' + mod;
     });
 
+nodeModules['webpage'] = 'commonjs webpage';
+nodeModules['system'] = 'commonjs system';
+
 module.exports = {
 
-    entry:  './src2/index.ts' ,
+    entry:  {
+        'client': './src3/client.ts',
+        'bridge-server': './src3/bridge.ts',
+        'cache-server': './src3/cacheServer.ts',
+        'ng-server': './src3/masterProcess.ts',
+        'slimer-page': './src3/slimerPage.ts'
+    } ,
     externals: nodeModules,
     target: 'node',
+    node: {
+        __filename: false,
+        __dirname: false
+    },
     output: {
         path: path.join(__dirname, "dist"),
-        filename: "ngServer.js",
+        filename: "[name].js",
         library: 'angular.js-server',
         libraryTarget: 'commonjs2'
     },

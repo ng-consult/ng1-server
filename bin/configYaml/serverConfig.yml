@@ -1,0 +1,24 @@
+domain: 'http://localhost:3000'
+timeout: 10
+logBasePath: '/home/antoine/a-lucas/angular.js-server/logs'
+gelf:
+ enabled: true
+ host: '127.0.0.1'
+ port: 12203
+socketServers:
+ ccc_1:
+   protocol: 'http://'
+   host: '127.0.0.1'
+   port: 8881
+ ccc_2:
+   protocol: 'http://'
+   host: '127.0.0.1'
+   port: 8882
+ fff:
+     protocol: 'http://'
+     host: '127.0.0.1'
+     port: 8883
+redisConfig:
+ host: '127.0.0.1'
+ port: 6379
+ socket_keepalive: true

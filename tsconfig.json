@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es5",
     "allowUnreachableCode": false,
-    "module": "es6",
+    "module": "commonjs",
     "noImplicitAny": false,
     "declaration": false,
     "diagnostics": true,
@@ -12,26 +12,14 @@
     "moduleResolution": "node",
     "removeComments": true,
     "watch": false,
-    "preserveConstEnums": true,
-    "outDir": "compile"/*,
-    "outFile": "dist/ngServer.js"*/
+    "preserveConstEnums": true
   },
   "files": [
     "typings/index.d.ts",
     "src3/bridge.ts",
-    "src3/bridge_S1.ts",
-    "src3/bridge_S2.ts",
-    "src3/bridge_Pool.ts",
     "src3/client.ts",
-    "src3/cache.ts",
     "src3/cacheServer.ts",
-    "src3/masterProcess.ts",
-    "src3/MESSAGES.ts",
-    "src3/serverLog.ts",
-    "src3/slimerIO.ts",
-    "src3/slimerPage.ts",
-    "src3/slimerProcess.ts",
-    "src3/spawner.ts"
+    "src3/masterProcess.ts"
   ],
   "exclude": [
     "node_modules"

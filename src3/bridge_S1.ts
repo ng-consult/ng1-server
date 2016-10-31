@@ -21,7 +21,7 @@ export default class Bridge_S1 {
 
     static sockets: socketCollection = {};
 
-    constructor(port: number, private bbb: Cache) {
+    constructor(port: number, private cache: Cache) {
 
         debug('going to listen to port', port);
         const server = io.listen(port, {
@@ -66,7 +66,7 @@ export default class Bridge_S1 {
                 });
                 logger.debug('AAA_MSG.CHECK_URL');
 
-                this.bbb.checkURL(url, (status, data) => {
+                this.cache.checkURL(url, (status, data) => {
                     logger.debug({status: status, data: data}, 'AAA_MSG.CHECK_URL RESPONSE');
                     socket.emit(status, data);
                 });

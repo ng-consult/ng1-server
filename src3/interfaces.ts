@@ -5,6 +5,11 @@ import {RedisUrlCache} from 'redis-url-cache';
 import RedisStorageConfig = RedisUrlCache.RedisStorageConfig;
 
 
+export interface IServerRenderRuleStr {
+    strategy:string,
+    rules:string[]
+}
+
 export interface IServerRenderRule {
     strategy:string,
     rules:RegExp[]

@@ -1,4 +1,5 @@
 "use strict";
+
 var page = require('webpage').create();
 page.settings.userAgent = 'SpecialAgent';
 var system = require('system');
@@ -6,7 +7,6 @@ import {SlimerIO, SlimerSocket} from './slimerIO';
 
 import {ENUM_SLIMER_ERRORS, MSG, PARAM_SLIMER_ERROR} from './MESSAGES';
 
-declare var slimer:any;
 
 var uid:string = system.args[1];
 var url = system.args[2];
