@@ -5,16 +5,15 @@
     "get-slimer": "sh install-slimerjs.sh",
     "bower": "./node_modules/.bin/bower install",
     "typings": "./node_modules/.bin/typings install",
-    "build": "./node_modules/.bin/tsc ; node rollup.js",
+    "build": "./node_modules/.bin/webpack",
     "tap": "./node_modules/.bin/babel-node test-tape/socketServer.js | ./node_modules/.bin/tap-spec",
-    "doc": "node_modules/.bin/typedoc -out docs src --mode modules --module commonjs --target ES5 --readme ./README.md",
     "supertest": " --require source-map-support/register",
     "test": "rm -Rf ./coverage ; ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test -- -R spec",
     "codecov": "./node_modules/.bin/codecov",
-    "install": "npm run get-slimer ; npm run bower ; npm run typings ; ./node_modules/.bin/typings install"
+    "install": "npm run get-slimer ; npm run bower ; npm run typings"
   },
   "pre-commit": [],
-  "main": "dist/angular.js.server2.js",
+  "main": "dist/ng-server.js",
   "version": "1.0.0-0",
   "license": "MIT",
   "repository": {
@@ -35,16 +34,10 @@
     "gelf-stream": "^1.1.1",
     "js-yaml": "^3.6.1",
     "node-uuid": "^1.4.7",
-    "rollup": "^0.36.3",
-    "rollup-plugin-babel": "^2.6.1",
     "sinon": "^1.17.6",
-    "slimerjs": "^0.906.2",
     "socket.io": "^1.5.0",
     "tape-expect": "^1.2.0",
-    "tmp": "0.0.29",
-    "winston": "^2.2.0",
-    "winston-graylog2": "^0.5.1",
-    "winston-tcp-graylog": "^1.0.10"
+    "tmp": "0.0.29"
   },
   "devDependencies": {
     "async": "^2.0.1",
@@ -71,9 +64,7 @@
     "install": "^0.4.2",
     "istanbul": "^0.4.5",
     "jade": "^1.11.0",
-    "jsdom": "8.0.2",
     "jshint": "^2.9.1",
-    "jsonschema": "^1.1.0",
     "karma": "~0.10.2",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "~0.1.0",
@@ -109,7 +100,7 @@
     "tidy-html5": "^0.1.1",
     "ts-loader": "^0.8.2",
     "typescript": "latest",
-    "typings": "^1.3.3",
+    "typings": "latest",
     "webpack": "latest"
   }
 }

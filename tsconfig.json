@@ -16,10 +16,10 @@
   },
   "files": [
     "typings/index.d.ts",
-    "src3/bridge.ts",
-    "src3/client.ts",
-    "src3/cacheServer.ts",
-    "src3/masterProcess.ts"
+    "src/bridge.ts",
+    "src/client.ts",
+    "src/cacheServer.ts",
+    "src/masterProcess.ts"
   ],
   "exclude": [
     "node_modules"

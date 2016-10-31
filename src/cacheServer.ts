@@ -48,7 +48,7 @@ class CacheServer {
         ServerLog.initLogs(this.serverConfig.logBasePath, this.serverConfig.gelf);
 
         this.logger = ServerLog.Log.child({
-            script: 'FFF'
+            script: 'CacheServer'
         });
     }
 
@@ -93,6 +93,7 @@ class CacheServer {
             //debug('option call for ', request.url);
             //debug(request.headers);
             //debug(request);
+            //todo forward the option to destination
             response.writeHead(200);
             response.end();
             return;
@@ -101,14 +102,19 @@ class CacheServer {
             //debug('requesting ', request.method, request.url);
         }
 
-        const cacheServerRequest = new CacheServerRequest(this.serverConfig, request);
+        try {
+            const cacheServerRequest = new CacheServerRequest(this.serverConfig, request);
 
-        cacheServerRequest.getIt( (status, headers,content) => {
-            var headerKeys = Object.keys(headers);
-            response.setHeader('Access-Control-Expose-Headers', headerKeys.join(','));
-            response.writeHead(status, headers);
-            response.end(content);
-        });
+            cacheServerRequest.getIt( (status, headers,content) => {
+                var headerKeys = Object.keys(headers);
+                response.setHeader('Access-Control-Expose-Headers', headerKeys.join(','));
+                response.writeHead(status, headers);
+                response.end(content);
+            });
+        } catch(e) {
+            response.writeHead(501, {});
+            response.end('ERROR');
+        }
 
     }
 }
@@ -127,7 +133,7 @@ class CacheServerRequest {
         this.url = nodeurl.parse(request.url, true);
 
         this.logger = ServerLog.Log.child({
-            script: 'FFF',
+            script: 'CacheServer',
             url: this.url
         });
 
@@ -136,8 +142,7 @@ class CacheServerRequest {
         }
         catch(e) {
             this.logger.error({e: e}, 'Error executin cacheEngine.url()');
-            debug('Error with url: request.url', request.url);
-            debug(e);
+            debug('Error with url: request.url', request.url, e);
             throw e;
         }
 
@@ -185,6 +190,7 @@ class CacheServerRequest {
                             this.logger.error({cachingStatus: cachingStatus, headers: this.headers}, 'Empty response');
                             return cb(501, {'Content-Type': 'text/html'}, 'Error response is empty' + JSON.stringify(result));
                         }
+                        result.headers['caching-status'] = cachingStatus;
                         if (cachingStatus !== 'NEVER') {
                             this.urlCB.set(result.content, {
                                 status: result.status,
@@ -216,6 +222,7 @@ class CacheServerRequest {
                             return cb(501, {'Content-Type': 'text/html'}, 'Error ' + err);
 
                         }
+                        content.extra.headers['caching-status'] = cachingStatus;
                         content.extra.headers['ngServerCached'] = 'yes';
                         return cb(content.extra.status, content.extra.headers, content.content);
 

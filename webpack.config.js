@@ -17,11 +17,11 @@ nodeModules['system'] = 'commonjs system';
 module.exports = {
 
     entry:  {
-        'client': './src3/client.ts',
-        'bridge-server': './src3/bridge.ts',
-        'cache-server': './src3/cacheServer.ts',
-        'ng-server': './src3/masterProcess.ts',
-        'slimer-page': './src3/slimerPage.ts'
+        'client': './src/client.ts',
+        'bridge-server': './src/bridge.ts',
+        'cache-server': './src/cacheServer.ts',
+        'ng-server': './src/masterProcess.ts',
+        'slimer-page': './src/slimerPage.ts'
     } ,
     externals: nodeModules,
     target: 'node',

@@ -84,6 +84,8 @@ describe('Starting tests', function() {
 
         //common.describeURL('/Main/500', confJade);
 
+        common.testDescribeURL('/Main', confJade);
+
         common.testDescribeURL('/Todo', confJade);
 
         common.testClosePhantomJS();
