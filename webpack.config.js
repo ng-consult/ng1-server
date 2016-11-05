@@ -11,6 +11,7 @@ fs.readdirSync('node_modules')
         nodeModules[mod] = 'commonjs ' + mod;
     });
 
+nodeModules['iconv'] = 'commonjs iconv';
 nodeModules['webpage'] = 'commonjs webpage';
 nodeModules['system'] = 'commonjs system';
 

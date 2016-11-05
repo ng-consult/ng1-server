@@ -6,13 +6,10 @@ const path  = require('path');
 const yaml = require('js-yaml');
 const net = require('net');
 const fs = require('fs-extra');
+const utils = require('./../../../test-server/server/utils');
 
-const Master = require('./../../../dist/ng-server');
 const configPath = path.resolve(__dirname + './../../../bin/configYaml');
 const serverConfig = yaml.safeLoad(fs.readFileSync(path.join(configPath, 'serverConfig.yml'), 'utf8'));
-
-
-const master = new Master(configPath);
 
 
 const portInUse = (port, callback) => {
@@ -35,7 +32,7 @@ module.exports.testStart = () => {
 
     describe("starting the server", ()=> {
         it('should start', (done) => {
-            master.start( (err) => {
+            utils.startNgServer( configPath, (err) => {
                 if(err) return done(err);
                 done();
             });
@@ -75,8 +72,8 @@ module.exports.testStart = () => {
 
 module.exports.testStop = () => {
     describe('Stopping the servers', () => {
-        it('shoudl stop the server ok', (done)=> {
-            master.stop();
+        it('should stop the server ok', (done)=> {
+            utils.stopNgServer();
             done();
         });
     });

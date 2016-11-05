@@ -3,6 +3,8 @@
 var page = require('webpage').create();
 page.settings.userAgent = 'SpecialAgent';
 var system = require('system');
+const fs = require('fs');
+
 import {SlimerIO, SlimerSocket} from './slimerIO';
 
 import {ENUM_SLIMER_ERRORS, MSG, PARAM_SLIMER_ERROR} from './MESSAGES';
@@ -16,26 +18,32 @@ var filePath = system.args[5];
 
 const slimerIO = new SlimerIO(CCC_2_url);
 
-var renderType = typeof filePath !== 'undefined' && filePath.length > 0 ? 'file' : 'url';
+var renderType: string = typeof filePath !== 'undefined' && filePath.length > 0 ? 'file' : 'url';
 
-console.log('RENDERTYPE = ' + renderType);
+var html: string = null;
 
 if (renderType === 'file') {
-    var fs = require('fs');
+
     if (!fs.isFile(filePath)) {
+        console.log('FILE_ACCESS_ERROR  - file doesnt exists' + filePath);
         slimer.exit(ENUM_SLIMER_ERRORS.FILE_ACCESS_ERROR)
     }
     if (!fs.isReadable(filePath)) {
+        console.log('FILE_ACCESS_ERROR - permission issue for ' + filePath);
         slimer.exit(ENUM_SLIMER_ERRORS.FILE_ACCESS_ERROR)
     }
-    var html = fs.read(filePath, {
+    console.log('NO FILE ACCESS ERROR');
+
+    html = fs.read(filePath, {
         mode: 'r',
         charset: 'utf-8'
     });
+
+    console.log('HTML length = ' + html.length);
 }
 
 page.onLoadFinished = (status) => {
-    //console.log('Load Finished - Status: ' + status);
+    //csole.log('Load Finished - Status: ' + status);
 };
 
 page.onConsoleMessage = (msg, lineNum, sourceId) => {
@@ -43,7 +51,7 @@ page.onConsoleMessage = (msg, lineNum, sourceId) => {
 };
 
 page.onLoadStarted = () => {
-    //console.log('onLoadStarted');
+    console.log('onLoadStarted');
 };
 
 page.onResourceError = (error) => {
@@ -89,9 +97,9 @@ page.onResourceRequested = (requestData, networkRequest) => {
     if (requestData.method === 'GET' || requestData.method === 'OPTION') {
 
         const requestedUrl:string = requestData.url;
-        //don't redirct the socket.io client, and dont redirect the current page, nd dont redirect already redirected requests
+        //don't redirect the socket.io client, and don't redirect the current page, nd dont redirect already redirected requests
         if (requestedUrl.indexOf(FFF_URL) === -1 && requestedUrl.indexOf(url) === -1 && requestedUrl.indexOf('/socket.io/') === -1) {
-            networkRequest.changeUrl(FFF_URL + '/get?url=' + encodeURIComponent(requestedUrl) + '&original-url=' + encodeURIComponent(url));
+            networkRequest.changeUrl(FFF_URL + '/get?url=' + encodeURIComponent(requestedUrl));
         } else {
             //console.log('IGNORING URL ', requestedUrl);
         }
@@ -99,14 +107,17 @@ page.onResourceRequested = (requestData, networkRequest) => {
 };
 
 page.onInitialized = () => {
+    console.log('on INitialized');
+
     page.onCallback = (data)=> {
 
         switch (data.type) {
             case 'idle':
+                console.log('IDLE EVENT CAUGHT');
                 slimer.exit(0);
                 break;
             default:
-                throw 'unknown type ' + data.type;
+                throw 'onCallback(type) unknown type ' + data.type;
         }
     };
 
@@ -121,7 +132,7 @@ page.onInitialized = () => {
             debug: false
         };
         window.addEventListener('Idle', () => {
-            console.log('Idle event caught in phantom');
+            console.log('Idle event caught in slimerPage.ts');
             window['callPhantom']({type: 'idle'})
         });
     }, uid, CCC_2_url, FFF_URL);
@@ -171,6 +182,7 @@ const onError = (msg, trace) => {
 
     if(typeof trace === 'string') {
 
+        console.log('STRING TRACE = ', trace);
         trace = parseTrace(trace);
     }
 
@@ -182,11 +194,14 @@ const onError = (msg, trace) => {
     };
 
     if (trace && trace.length) {
+        console.log(JSON.stringify(trace));
         trace.forEach(function (t) {
             errorObject.trace.push(' -> ' + t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function + '")' : '' + '\n\n'));
         });
     }
-    console.log('ONERROR !!! ONERROR !!! : ' + msg);
+    console.log('ONERROR !!!! ONERROR !!! : ' + msg);
+    console.log('TRACE');
+    console.log(trace);
 
     console.log(JSON.stringify(errorObject));
 
@@ -202,6 +217,7 @@ const onError = (msg, trace) => {
 }
 
 page.onError = (msg, trace) => {
+    console.log('page.onError triggered');
     onError(msg, trace);
 };
 
@@ -220,7 +236,10 @@ if (renderType === 'url') {
 } else {
     try {
         page.setContent(html, url);
+        console.log('page.setContent() called');
     } catch (e) {
+        console.log('Error setting up content');
+        console.log(html);
         onError("page.setContent(html, url): " + e.message, e.stack);
     }
 

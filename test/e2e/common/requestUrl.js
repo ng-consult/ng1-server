@@ -39,7 +39,7 @@ module.exports.testDescribeURL = function (url, conf) {
         });
     });
 
-    describe('URL: ' + url, function () {
+    describe(`URL: ${url}`, function () {
 
         conf.forEach(function (serverData) {
 
@@ -48,19 +48,29 @@ module.exports.testDescribeURL = function (url, conf) {
                 it('phantom with js disabled', function (done) {
 
                     phantomHelper.jsDisabled(serverData.url + url).then((html) => {
+                        debug('noJS received ', url);
                         fs.writeFileSync(getFileName(url, serverData.prefix, 'js-disabled'), html, 'utf-8');
                         done();
                     }, (err) => {
+                        debug(err);
                         done(err);
+                    }).catch( (e) => {
+                        debug('excetion', e);
+                        done(e);
                     });
                 });
 
                 it('phantom with js enabled - wait 4000ms', function (done) {
 
                     phantomHelper.jsEnabled(serverData.url + url).then( html => {
+                        debug('success JS', url);
                         fs.writeFileSync(getFileName(url, serverData.prefix, 'js-enabled'), html, 'utf-8');
                         done();
                     }, err => {
+                        debug(err);
+                        done(err);
+                    }).catch((err) =>{
+                        debug(err);
                         done(err);
                     });
                 });
@@ -72,7 +82,7 @@ module.exports.testDescribeURL = function (url, conf) {
                             var file2 = fs.readFileSync(getFileName(url, serverData.prefix, serverData.equals[1]), 'utf-8').trim();
                             expect(file1).to.equal(file2);
                             done();
-                        } catch (e) {
+                        } catch( e)  {
                             done(e);
                         }
                     });

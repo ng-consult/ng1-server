@@ -9,10 +9,10 @@ var phInstance = null;
 const startPhantomInstance = () => {
     var defer = q.defer();
 
-    if (phInstance !== null) {
+    /*if (phInstance !== null) {
         //debug('PhantomJS instance already created');
         defer.resolve(phInstance);
-    } else {
+    } else {*/
         phantom.create(/*[], { warn: phDebug, debug: phDebug, error: phDebug, info: phDebug, log:phDebug}*/).then(function (instance) {
             debug('PhantomJS never created, instanciating');
             phInstance = instance;
@@ -22,7 +22,7 @@ const startPhantomInstance = () => {
             });
             defer.resolve(phInstance);
         });
-    }
+    //}
 
     return defer.promise;
 };
@@ -34,19 +34,27 @@ module.exports.jsDisabled = (url) => {
     const resultDefer = q.defer();
     const pjs = startPhantomInstance();
 
-    pjs.then(function (instance) {
-        return instance.createPage();
-    })
+    pjs
+        .then(function (instance) {
+            debug('noJS pge created');
+            return instance.createPage();
+        })
         .then(function (page) {
-            sitepage = page;
-            sitepage.on('onClosing', false, function (data) {
-                debug('Closing sitepage caught');
+            page.on('onClosing', false, function (data) {
+                debug('onClosing noJS sitepage caught');
             });
 
-            sitepage.on('onError', false, function (err) {
-                debug('sitepage error caught', JSON.stringify(err));
+            page.on('onError', false, function (err) {
+                debug('noJS error caught', JSON.stringify(err));
                 //done(JSON.stringify(err));
             });
+
+            page.on('onLog', false, function (log) {
+                debug('client noJS console.log', log);
+            });
+
+            sitepage = page;
+
             return page.setting('javascriptEnabled', false);
         })
         .then(function (what) {
@@ -70,53 +78,95 @@ module.exports.jsDisabled = (url) => {
     return resultDefer.promise;
 }
 
-module.exports.jsEnabled = (url) => {
+module.exports.jsEnabled = (url ) => {
     let sitepage = null;
 
     const resultDefer = q.defer();
     const pjs = startPhantomInstance();
 
-    pjs.then(function (instance) {
-        return instance.createPage();
-    }, function (e) {
-        resultDefer.reject(e);
-        throw new Error(e);
-    })
+    debug('Starting JS-Enabled for url', url);
+    pjs
+        .then(function (instance) {
+            return instance.createPage();
+        }, function (e) {
+            debug('failure', e);
+            resultDefer.reject(e);
+            throw new Error(e);
+        })
         .then(function (page) {
+            page.on('onClosing', false, function (data) {
+                debug('onClosing JS sitepage caught');
+            });
+            page.on('onError', false, function (err) {
+                debug('client JS console.error', JSON.stringify(err));
+                //done(JSON.stringify(err));
+            });
+            page.on('onConsoleMessage', false, function (msg, lineNum, sourceId) {
+                console.log('***CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
+            });
+
+            page.on('onResourceError', false, function(resourceError) {
+                console.error('Unable to load resource (#' + resourceError.id + 'URL:' + resourceError.url + ')');
+                console.error('Error code: ' + resourceError.errorCode + '. Description: ' + resourceError.errorString);
+                resultDefer.reject(resourceError);
+            });
+
+            page.on('onResourceTimeout', false, function(request) {
+                console.error('Response (#' + request.id + '): ' + JSON.stringify(request));
+                resultDefer.reject(request);
+            });
+
+            page.on('onError', false, function(err) {
+                var msgStack = ['ERROR: ' + msg];
+
+                if (trace && trace.length) {
+                    msgStack.push('TRACE:');
+                    trace.forEach(function(t) {
+                        msgStack.push(' -> ' + t.file + ': ' + t.line + (t.function ? ' (in function "' + t.function +'")' : ''));
+                    });
+                }
+                console.error(msgStack.join('\n'));
+                resultDefer.reject(msgStack);
+            })
+
             sitepage = page;
-            sitepage.on('onError', false, function (err) {
-                debug('client console.error', JSON.stringify(err));
-                //done(JSON.stringify(err));
-            });
-            sitepage.on('onLog', false, function (err) {
-                debug('client console.log', JSON.stringify(err));
-                //done(JSON.stringify(err));
-            });
+            return sitepage.setting('javascriptEnabled', true);
+
+        })
+        .then(function () {
             return sitepage.open(url);
         })
         .then(function (status) {
             if (status !== 'success') {
-                throw new Errror('status = ' + status);
+                throw new Error('status = ' + status);
             }
+            debug('success');
+            return true;
         })
         .then(function () {
 
             var defer = q.defer();
 
+            debug('logic comming');
+
             sitepage.on('onCallback', false, function (data) {
+                console.log('INSIDE CALLBACK');
+
                 defer.resolve(true);
             });
 
             sitepage.evaluate(function () {
+                console.log('adding event listener');
                 window.addEventListener('Idle', function () {
+                    console.log('INSIDE eventListenr - phantom IDLE caught');
                     window.callPhantom({});
                 });
-            }).then(function () {
             });
 
             return defer.promise;
         })
         .then(function () {
+            debug('going to return content');
             return sitepage.property('content')
         })
         .then(function (contentPromise) {
@@ -129,7 +179,7 @@ module.exports.jsEnabled = (url) => {
         });
 
     return resultDefer.promise;
-}
+};
 
 module.exports.closePhantom = () => {
     const defer = q.defer();

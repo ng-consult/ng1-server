@@ -44,12 +44,13 @@ export default class SlimerProcess {
 
     public kill(code:number) {
         debug('invoking OnProcessExit');
+        const processInfo = Bridge_Pool.pool[this.uid];
         this.onProcessExit(code, null);
-        debug('invoking spaner.exit()');
+        debug('invoking spawner.exit()');
         ServerLog.Log.child({
             uid: this.uid,
             script: 'Bridge_Pool'
-        }).debug({pid: Bridge_Pool.pool[this.uid].pid}, 'killing spawner');
+        }).debug({pid: processInfo.pid}, 'killing spawner');
         this.spawner.exit();
         //todo make sure we kill the pid too
     }
@@ -84,6 +85,7 @@ export default class SlimerProcess {
             //todo log something
             //todo check that the status is consistent with ... Bridge_S2
             //} else {
+
             logger.error('Spawner exited with an error');
             Bridge_Pool.pool[this.uid].status = ENUM_RENDER_STATUS.ERROR;
             Bridge_Pool.notify_CC_1(this.uid);

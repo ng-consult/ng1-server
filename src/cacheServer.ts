@@ -1,4 +1,4 @@
-
+import * as zlib from 'zlib';
 import {RedisUrlCache} from 'redis-url-cache';
 import RedisStorageConfig = RedisUrlCache.RedisStorageConfig;
 import CacheEngineCB = RedisUrlCache.CacheEngineCB;
@@ -8,6 +8,7 @@ import {IServerConfig, IRequestResult, IHeaders} from "./interfaces";
 import ServerLog from './serverLog';
 import Validators from './validators';
 
+const iconv = require('iconv');
 import * as nodeurl from 'url';
 import * as path from 'path';
 import * as fs from 'fs-extra';
@@ -78,6 +79,7 @@ class CacheServer {
             });
 
             this.logger.warn('Cache Server launched');
+            debug('CacheServer ', this.instanceName, 'Launched');
             console.log('CacheSever ', this.instanceName, 'Launched');
         });
     }
@@ -90,8 +92,8 @@ class CacheServer {
             response.setHeader('Access-Control-Allow-Headers', request.headers['access-control-request-headers']);
         }
         if ( request.method === 'OPTION' || request.method === 'OPTIONS' ) {
-            //debug('option call for ', request.url);
-            //debug(request.headers);
+            debug('option call for ', request.url);
+            debug(request.headers);
             //debug(request);
             //todo forward the option to destination
             response.writeHead(200);
@@ -99,7 +101,7 @@ class CacheServer {
             return;
         } else {
             this.logger.info({url: nodeurl.parse(request.url), method: request.method}, 'New request');
-            //debug('requesting ', request.method, request.url);
+            debug('requesting ', request.method, request.url);
         }
 
         try {
@@ -109,11 +111,13 @@ class CacheServer {
                 var headerKeys = Object.keys(headers);
                 response.setHeader('Access-Control-Expose-Headers', headerKeys.join(','));
                 response.writeHead(status, headers);
+                debug('ACTUALLY GOING TO SEND BACK headers = ', headers);
                 response.end(content);
             });
         } catch(e) {
+            debug("Excpetion caught");
             response.writeHead(501, {});
-            response.end('ERROR');
+            response.end(e.message);
         }
 
     }
@@ -149,6 +153,8 @@ class CacheServerRequest {
         if(typeof request.headers['referer'] === 'undefined') {
             const error = new Error('Error - the referer header is not set');
 
+            debug('no referer: headers = ', request.headers);
+
             this.logger.error({ headers: request.headers, err: error});
             throw error;
         }
@@ -161,6 +167,7 @@ class CacheServerRequest {
         parsedOriginalURL.search = null;
         this.originalURL = nodeurl.format(parsedOriginalURL);
         this.headers = request.headers;
+        debug('original headers = ', this.headers);
         delete this.headers['ngreferer'];
         //todo
         //Replicate all the headers from the original request
@@ -170,7 +177,7 @@ class CacheServerRequest {
 
         if (this.url.pathname !== '/get' || typeof this.url.query.url === 'undefined') {
             this.logger.warn( 'URL isnot valid' );
-            debug(this.url);
+            debug('URL is not valid', this.url.pathname, this.url.query);
             return cb(501, {'Content-Type': 'text/html'}, 'Forbidden');
         }
         this.detectCachingStatus((cachingStatus) => {
@@ -180,13 +187,16 @@ class CacheServerRequest {
                 case 'ERROR':
                 case 'NEVER':
                 case 'NOT_CACHED':
-                    this.requestURL2(this.headers, (err, result:IRequestResult) => {
+                    debug('IT IS NOT CACHED');
+                    this.requestURL(false, this.headers, (err, result:IRequestResult) => {
+                        debug('INSIDE GETIT CB');
                         if(err) {
-                            debug(err);
+                            debug('ERROR while requesting ', this.url.query.url, err);
                             this.logger.error({err: err, cachingStatus: cachingStatus, headers: this.headers}, err);
                             return cb(501, {'Content-Type': 'text/html'}, 'Error ' + err);
                         }
                         if(result.content.length === 0) {
+                            debug('ERROR while requesting ', this.url.query.url);
                             this.logger.error({cachingStatus: cachingStatus, headers: this.headers}, 'Empty response');
                             return cb(501, {'Content-Type': 'text/html'}, 'Error response is empty' + JSON.stringify(result));
                         }
@@ -214,6 +224,7 @@ class CacheServerRequest {
                     });
                     break;
                 case 'CACHED':
+                    debug('IT IS CACHED');
                     this.urlCB.get((err, content) => {
                         if (err) {
                             //todo log the error
@@ -233,13 +244,77 @@ class CacheServerRequest {
     }
 
 
-    private requestURL2(headers: Object, cb: Function) {
+    //convert to utf-8
+    private decode(headers, body) {
+        debug('DECODE CALLED', headers, body.substr(0, 30));
 
-        // this section newheaders should be removed
+        const re = /charset=([^()<>@,;:\"/[\]?.=\s]*)/i;
+
+        if(headers['content-type']) {
+            const charset = re.test(headers['content-type']) ? re.exec(headers['content-type'])[1] : 'utf-8';
+            debug('charset detected: ', charset);
+            if(charset === 'utf-8') {
+                return body;
+            }
+            var ic = new iconv.Iconv(charset, 'UTF-8');
+            var buffer = ic.convert(body);
+            return buffer.toString('utf-8');
+        }
+        throw new Error('content-type is missing');
+    }
+
+    private requestURL(binary: boolean ,headers: Object, cb: Function) {
+
+        debug('CALLING REQUEST URL with headers!', headers);
+
+
+
         const newHeaders = {};
         newHeaders['origin'] = this.originalURL;
         newHeaders['user-agent'] = headers['user-agent'] ? headers['user-agent'] : 'Super User Agent';
-        newHeaders['accept-encoding'] = headers['accept-encoding'] ? headers['accept-encoding'] : 'gzip, deflate, sdch';
+        if ( typeof newHeaders['accept-encoding'] !== 'undefined') {
+            delete newHeaders['accept-encoding'];
+            //todo enable GZIP compression - but then find a way to detect if the server supports gzip/deflate before sending the request - and set encoding = null
+            //newHeaders['accept-encoding'] = headers['accept-encoding'] ? headers['accept-encoding'] : 'gzip, deflate';
+            // to enable Gzip compression, use the following code:
+
+            /**
+             *
+             *
+         req.on('response', (res: http.IncomingMessage) => {
+            let output;
+             if( res.headers['content-encoding'] === 'gzip' ) {
+                const gzip = zlib.createGunzip();
+                res.pipe(gzip);
+                output = gzip;
+            } else if(res.headers['content-encoding'] === 'deflate' ) {
+                const deflate = zlib.createDeflate();
+                res.pipe(deflate);
+                output = deflate;
+            }
+             else {
+                output = res;
+            }
+
+             output.on('end', function() {
+                debug('on END');
+                callback(null, output.toString('UTF-8'));
+            });
+
+            const callback = (err: Error, body: string) => {
+            debug('callback called');
+            if(err) {
+
+                return cb(err, dataResponse);
+            }
+            dataResponse.content = body;
+            dataResponse.headers['content-length'] = body.length + '';
+            dataResponse.headers['content-encoding'] = 'identity';
+            debug('RESPONSE: ', dataResponse.headers, dataResponse.status, dataResponse.content.substr(0, 30));
+            cb(null, dataResponse);
+        }
+             */
+        }
         if(headers['cookie']) newHeaders['cookie'] = headers['cookie'];
 
         //debug('requestURL, sending Headers to ', this.url.query.url, JSON.stringify(newHeaders));
@@ -247,45 +322,62 @@ class CacheServerRequest {
         const parsedURL = nodeurl.parse(this.url.query.url);
         const url = parsedURL.host === null ? this.serverConfig.domain + this.url.query.url : this.url.query.url;
 
+        debug('GOING TO REQUEST', url, newHeaders)
+
         request( {
             url: url,
             headers: newHeaders
-        },  (err, response, body) => {
-            if (err) {
-                //todo log error
-                this.logger.error({err: err, url: url, headers: newHeaders, response: response}, 'Error getting the url');
-                return cb(err);
+        }, (err: Error, response: http.IncomingMessage, body: string) => {
+
+            debug('INSIDE CALLBACK');
+
+            if(err) {
+                debug('Error caught in request callback', err);
+                return cb(err, null);
             }
-            if(body.length === 0) {
-                this.logger.error({err: err, url: url, headers: newHeaders, response: response}, 'Empty body');
-                return cb('no response: ' + JSON.stringify(response.headers));
+
+            debug('body received, body.length  = ', body.length);
+
+            /*try {
+                body = this.decode(response.headers, body);
+            } catch(e) {
+                return cb(e, null);
             }
-            //debug('requestURL, response headers : ', JSON.stringify(response.headers));
-            const data:IRequestResult = {
+
+            debug('after decoding, body.length = ', body.length);
+*/
+            const dataResponse:IRequestResult = {
                 status: response.statusCode,
                 content: body,
-                headers: this.extractHeaders(response.headers)
+                headers:  this.extractHeaders(response.headers)
             };
-            cb(null, data);
+
+            debug('RESPONSE HEADERS', dataResponse.headers);
+            debug('body length = ', body.length);
+
+            cb(null, dataResponse);
         });
+
+
     }
 
-    private extractHeaders(receivedHeaders):IHeaders {
+    private extractHeaders(receivedHeaders: Object):IHeaders {
         const headers = {};
         const headersToExtract = [
             'access-control-allow-origin',
             'cache-control',
             'content-encoding',
-            'content-length',
             'content-type',
             'etag',
+            'set-cookie',
+            'vary',
+            'connection',
             'expires',
             'date',
             'last-modified'
         ];
 
-        let key, keys = Object.keys(receivedHeaders);
-        let n = keys.length - 1;
+        let keys = Object.keys(receivedHeaders);
         let newReceivedHeaders = {};
         keys.forEach( (key) => {
             newReceivedHeaders[key.toLowerCase()] = receivedHeaders[key];

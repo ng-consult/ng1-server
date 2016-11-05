@@ -6,7 +6,7 @@
  A - client only
     AA - REST set ON
          1a - clear all cache
-         2 - Launch on 30000 with REST URL not SET
+         2 - Launch on 3000 with REST URL not SET
          3 - save output1 + recorded time1
          4 - Launch on 30000 with REST URL not SET 2dd time
          5 - save output2 + recorded time2
@@ -50,8 +50,8 @@ describe('Starting tests', function() {
     this.timeout(5000);
 
     describe('Testing test server connectivity',  () => {
-        testWebServer.testConnect();
-        testWebServer.testClose();
+        testWebServer.testStart();
+        testWebServer.testStop();
     });
 
     describe('Testing ngServer connectivity', () => {
@@ -63,26 +63,26 @@ describe('Starting tests', function() {
     describe("JADE - E2E", () => {
 
         testNgServer.testStart();
-        testWebServer.testConnect();
+        testWebServer.testStart();
 
         var confJade = [
             {
                 prefix: 'noserver-jade',
                 desc: "No Server Rendering",
-                url: "http://127.0.0.1:3000",
+                url: "http://localhost:3000",
                 equals: [],
                 cache: false
             },
             {
                 prefix: 'server-jade',
                 desc: "Server Rendering",
-                url: "http://127.0.0.1:3001",
+                url: "http://localhost:3001",
                 equals: ['js-disabled', 'js-enabled'],
                 cache: true
             }
         ];
 
-        //common.describeURL('/Main/500', confJade);
+        common.testDescribeURL('/Main/500', confJade);
 
         common.testDescribeURL('/Main', confJade);
 
@@ -90,7 +90,7 @@ describe('Starting tests', function() {
 
         common.testClosePhantomJS();
 
-        testWebServer.testClose();
+        testWebServer.testStop();
         testNgServer.testStop();
 
     });

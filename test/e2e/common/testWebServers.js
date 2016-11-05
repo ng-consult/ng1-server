@@ -1,130 +1,143 @@
+"use strict";
+
 var chai = require('chai');
 var debug = require('debug')('mocha-test-server');
 var expect = chai.expect;
+var request = require('request');
+var fs = require('fs');
+var yaml = require('js-yaml');
+var path = require('path');
+const utils = require('./../../../test-server/server/utils');
 
-var apiServer ,
-    jadeClassicServer,
-    jadePreRenderServer,
-    jadeMiddleWareServer,
-    swigClassicServer,
-    swigPreRenderServer,
-    swigMiddleWareServer;
 
-module.exports.testConnect = function() {
-    describe('Starting test server', function(){
+const loadedURLs = {};
 
-        it('Api should start', function(done) {
-            apiServer = require('./../../../test-server/server/api/api-server').listen(8080, function(err) {
-                if(err) { debug(err);done(err);}
-                expect(err).to.be.undefined;
+const serverConfig = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname + './../../../bin/configYaml/serverConfig.yml')), 'utf-8');
+
+const cacheServerURL = serverConfig.socketServers.fff.protocol + serverConfig.socketServers.fff.host + ':' + serverConfig.socketServers.fff.port;
+
+const buildRequestURL = (url) => {
+    return cacheServerURL + '/get?url=' + url;
+};
+
+let runningServers = [];
+
+module.exports.getFailedUrl = (url, headers, expectedStatus) => {
+    it(`${url} should fail`, (done) => {
+        request({
+            uri: buildRequestURL(url),
+            headers: headers
+        }, (error, response) => {
+            if(error) {
+                return done(error);
+            }
+            expect(response.statusCode).eql(expectedStatus);
+            done();
+        });
+    });
+};
+
+module.exports.getSuccessUrl = (url, headers, expectedStatus, expectedHeaders, expectedBody) => {
+
+    describe(`${url}`, () => {
+
+        let responseData,
+            bodyData,
+            timer;
+
+        if(typeof loadedURLs[url] === 'undefined') {
+
+            it(`retrieving ${url} directly via request`, (done) => {
+                timer = Date.now();
+                request({
+                    uri: url,
+                    method: 'GET'
+                }, (error, response, body) => {
+                    if(error) {
+                        return done(error);
+                    }
+                    timer = Date.now() - timer;
+                    expect(response.statusCode).eql(200);
+                    loadedURLs[url] = {
+                        body: body,
+                        headers: response.headers,
+                        timer: timer
+                    };
+                    done();
+                });
+            });
+
+        }
+
+        it(`should retrieve with a a statusCode of ${expectedStatus}`, (done) => {
+            timer = Date.now();
+            request({
+                uri: buildRequestURL(url),
+                method: 'GET',
+                headers: headers
+            }, (error, response, body) => {
+                if(error) {
+                    return done(error);
+                }
+                bodyData = body;
+                responseData = response;
+                timer = Date.now() - timer;
+                expect(response.statusCode).eql(expectedStatus);
                 done();
             });
         });
 
-        it('Jade No server side rendering should start', function(done) {
-            jadeClassicServer = require('./../../../test-server/server/jade/classic.server').listen(3000, function(err) {
-                if(err) { debug(err);done(err);}
-                expect(err).to.be.undefined;
-                done();
+
+        for(var i in expectedHeaders) {
+            it(`${i} should equal ${expectedHeaders[i]}`, () => {
+                expect(typeof responseData.headers[i]).not.eql('undefined');
+                expect(responseData.headers[i]).eql(expectedHeaders[i]);
             });
+        }
+
+        it(`content-type should be correct`, () => {
+            expect(typeof responseData.headers['content-type']).not.eql('undefined');
+            expect(responseData.headers['content-type']).eql(loadedURLs[url].headers['content-type']);
         });
 
-
-        it('Jade server side rendering should start', function(done) {
-            jadePreRenderServer = require('./../../../test-server/server/jade/pre-render.server').listen(3001, function(err) {
-                if(err) { debug(err);done(err);}
-                expect(err).to.be.undefined;
-                done();
+        if(expectedBody === true) {
+            it(`body content matches direct request body content`, () => {
+                expect(bodyData).eql(loadedURLs[url].body);
             });
+        }
+
+    });
+};
+
+module.exports.testStart = function() {
+    describe('Starting test servers', function(){
+
+
+        it(`All servers should start with cacheServerURL = ${cacheServerURL}`, (done) => {
+
+            utils.startWebServers(cacheServerURL, (err, servers) => {
+                if(err) {
+                    return done(err);
+                }
+                runningServers = servers;
+                done();
+            })
         });
-
-
-        /*
-        it('Jade mddleWare should start', function(done) {
-            jadeMiddleWareServer = require('./../../../test-server/server/jade/middleware.server').listen(3002, function(err) {
-                if(err) { debug(err);done(err);}
-                expect(err).to.be.undefined;
-                done();
-            });
-        });
-
-        it('Swig No server side rendering should start', function(done) {
-            swigClassicServer = require('./../../../test-server/server/swig/classic.server').listen(3003, function(err) {
-                if(err) { debug(err);done(err);}
-                expect(err).to.be.undefined;
-                done();
-            });
-        });
-
-
-        it('Swig server side rendering should start', function(done) {
-            swigPreRenderServer = require('./../../../test-server/server/swig/pre-render.server').listen(3004, function(err) {
-                if(err) { debug(err);done(err);}
-                expect(err).to.be.undefined;
-                done();
-            });
-        });
-
-
-        it('Swig mddleWare should start', function(done) {
-            swigMiddleWareServer = require('./../../../test-server/server/swig/middleware.server').listen(3005, function(err) {
-                if(err) { debug(err);done(err);}
-                expect(err).to.be.undefined;
-                done();
-            });
-        });*/
 
     });
 
 };
 
-module.exports.testClose= function() {
-    describe('Stopping the test servers', function() {
-        it('Should close the API server', function(done){
-            apiServer.close( function(err) {
-                if(err) { debug(err);done(err);}
-                debug('Apiserver closed');
-                done();
-            })
-        });
-        it('Should close the Jade No server side rendering  server', function(done){
-            jadeClassicServer.close( function(err) {
-                if(err) { debug(err);done(err);}
-                done();
-            })
-        });
-        it('Should close the Jade server side rendering server', function(done){
-            jadePreRenderServer.close( function(err) {
-                if(err) { debug(err);done(err);}
-                done();
-            })
-        });
-        /*
-        it('Should close the Jade mddleWare server', function(done){
-            jadeMiddleWareServer.close( function(err) {
-                if(err) { debug(err);done(err);}
-                done();
-            })
-        });
+module.exports.testStop= function() {
+    describe(`Stopping the test servers`, function() {
 
-        it('Should close the Swug No server side rendering  server', function(done){
-            swigClassicServer.close( function(err) {
-                if(err) { debug(err);done(err);}
-                done();
-            })
-        });
-        it('Should close the Swig server side rendering server', function(done){
-            swigPreRenderServer.close( function(err) {
-                if(err) { debug(err);done(err);}
-                done();
-            })
-        });
-        it('Should close the Swig mddleWare server', function(done){
-            swigMiddleWareServer.close( function(err) {
-                if(err) { debug(err);done(err);}
-                done();
-            })
-        });*/
+        it('Should close all the servers', function(done){
 
+            utils.stopWebServers(runningServers, err => {
+                if(err) return done(err);
+                runningServers = [];
+                done();
+            });
+        });
     });
 };

@@ -4,7 +4,7 @@ var favicon = require('express-favicon');
 var express = require('express');
 var path = require('path');
 var cons = require('consolidate');
-var process = require('process');
+//var process = require('process');
 
 var debugStr = "test-server";
 
@@ -30,12 +30,12 @@ module.exports.express = function (app, viewEngine) {
             app.engine('html', cons.swig);
             app.set('view engine', 'html');
             break;
-        case 'jade':
-            app.engine('jade', cons.jade);
-            app.set('view engine', 'jade');
+        case 'pug':
+            app.engine('pug', cons.pug);
+            app.set('view engine', 'pug');
             break;
         default:
-            throw new Error('unknown templating');
+            throw new Error('unknown templating '+ viewEngine);
     }
 
     app.set('views', path.resolve(__dirname + '/' + viewEngine + '/views'));
@@ -43,15 +43,25 @@ module.exports.express = function (app, viewEngine) {
     return app;
 };
 
+process.setMaxListeners(30);
 
-var serve = (expressApp, description, port) => {
+var serve = (expressApp, description, port, serverConfig) => {
     return new Promise((resolve, reject) => {
-        expressApp.listen(port, function () {
+
+        if(typeof serverConfig !== 'undefined') {
+            expressApp.locals = Object.assign(expressApp.locals,  {serverConfig: serverConfig});
+        }
+
+        const server = expressApp.listen(port, function () {
             debug(description + ' started on 127.0.0.1:' + port);
-            resolve(true);
+            resolve( {
+                server: server,
+                description: description,
+                port: port
+            });
         });
 
-        process.on('uncaughtException', function (err) {
+        process.once('uncaughtException',  (err) => {
             reject(err);
         });
     });
@@ -80,35 +90,85 @@ module.exports.startStatic = function() {
     });
 };
 
-module.exports.testServers = function () {
+module.exports.stopWebServers = (runningServers, cb) => {
 
+    const nbRunningServers = runningServers.length;
+    let nbServerStopped = 0;
+
+    debug('NB SERVERS TO STOP: ', nbRunningServers);
+
+    runningServers.forEach( server => {
+        debug(`stopping ${server.description} on port ${server.port}`);
+        server.server.close( err => {
+            if(err) { debug(err); return cb(err);}
+            nbServerStopped++;
+            debug(`server ${server.description} stopped` );
+            if(nbServerStopped === nbRunningServers) {
+                debug('All servers stopped successfully');
+                cb(null);
+            }
+        })
+    });
+};
+
+module.exports.startWebServers = function (restServerURL, cb) {
 
     var apiServer = require('./api/api-server');
+    var rfcServer = require('./rfc/server');
 
-    var jadeClassicServer = require('./jade/classic.server');
-    var jadePreRenderServer = require('./jade/pre-render.server');
-    //var jadeMiddleWareServer = require('./jade/middleware.server');
+    var jadeClassicServer = require('./pug/classic.server')();
+    var jadePreRenderServer = require('./pug/pre-render.server')();
+    //var jadeMiddleWareServer = require('./pug/middleware.server')();
 
-    var swigClassicServer = require('./swig/classic.server');
-    var swigPreRenderServer = require('./swig/pre-render.server');
-    //var swigMiddleWareServer = require('./swig/middleware.server');
+    var swigClassicServer = require('./swig/classic.server')();
+    var swigPreRenderServer = require('./swig/pre-render.server')();
+    //var swigMiddleWareServer = require('./swig/middleware.server')();
 
-    Promise.all([
+    const promiseArray = [
         serve(jadeClassicServer, 'jade - no server side rendering', 3000),
         serve(jadePreRenderServer, 'jade - server side rendering', 3001),
-        //serve(jadeMiddleWareServer, 'jade - server side rendering middleware', 3002),
+        //serve(jadeMiddleWareServer, 'jade - server side rendering middleware', 3003),
 
-        serve(swigClassicServer, 'swig - no server side rendering', 3003),
-        serve(swigPreRenderServer, 'swig - server side rendering', 3004),
-        //serve(swigMiddleWareServer, 'swig - server side rendering middleware', 3005),
+        serve(swigClassicServer, 'swig - no server side rendering', 3004),
+        serve(swigPreRenderServer, 'swig - server side rendering', 3005),
+        //serve(swigMiddleWareServer, 'swig - server side rendering middleware', 3007),
 
-        serve(apiServer, 'api.server', 8080),
-    ]).then(() => {
+        serve(rfcServer, 'rfc server', 3030),
+
+        serve(apiServer, 'api.server', 8080)
+    ];
+
+    if(typeof restServerURL == 'string' &&  restServerURL.length > 0) {
+        const jadeClassicServerREST = require('./pug/classic.server')();
+        const swigClassicServerREST = require('./swig/pre-render.server')();
+        promiseArray.push(serve(jadeClassicServerREST, 'jade - no server side rendering with REST caching', 3002, {restServerURL: restServerURL}));
+        promiseArray.push(serve(swigClassicServerREST, 'swig - no server side rendering with REST caching', 3006, {restServerURL: restServerURL}));
+    }
+
+    Promise.all(promiseArray).then((servers) => {
         debug('Servers started');
+        cb(null, servers);
     }, err => {
         debug('Some error happened while starting the servers', err);
-
+        cb(err, null);
     });
 
+};
 
+
+/*
+    ngServer
+ */
+
+let master = null;
+
+module.exports.startNgServer = (configPath, cb) => {
+    const Master = require('./../../dist/ng-server');
+    master = new Master(configPath);
+    master.start( cb );
+};
+
+module.exports.stopNgServer = () => {
+    master.stop();
+    master = null;
 };

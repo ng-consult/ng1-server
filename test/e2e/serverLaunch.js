@@ -1,4 +1,10 @@
-var launch = require('./common/testLaunchNgServer');
+var launchNg = require('./common/testLaunchNgServer');
+var launchS = require('./common/testWebServers');
 
-launch.testStart();
-launch.testStop();
+launchNg.testStart();
+launchNg.testStop();
+
+launchS.testStart();
+launchS.testStop();
+
+

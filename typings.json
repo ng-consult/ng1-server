@@ -8,6 +8,7 @@
     "express-serve-static-core": "registry:dt/express-serve-static-core#4.0.0+20161012061536",
     "form-data": "registry:dt/form-data#0.0.0+20160724024111",
     "fs-extra": "registry:dt/fs-extra#0.0.0+20161004190449",
+    "iconv": "registry:dt/iconv#2.1.11+20160417151847",
     "jquery": "registry:dt/jquery#1.10.0+20160929162922",
     "js-yaml": "registry:dt/js-yaml#3.5.2+20160316171810",
     "mime": "registry:dt/mime#0.0.0+20160316155526",

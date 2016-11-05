@@ -10,7 +10,7 @@ var config = require('./../config');
 var angularServer = new angularDomServer(config);
 angularServer.config.server.setDomain('http://localhost:3002');
 
-var app = utils(express(), 'jade');
+var app = utils(express(), 'pug');
 
 app.get('/*', angularServer.middleware, function(req, res) {
     res.render('index-classic');
