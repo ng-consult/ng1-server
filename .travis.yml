@@ -1,6 +1,13 @@
 sudo: required
 dist: trusty
 language: node_js
+before_install:
+  - sudo apt-get install tidy libtidy-0.99-0 build-essential git cmake xsltproc xvfb -y
+#  - echo 'Installing firefox binaries'
+#  - sudo apt-get install libpthread.so libdl.so libstdc++.so libm.so libgcc_s.so libc.so ld-linux-x86-64.so libXrender1.so libasound.so.2 libgtk-x11-2.0.so.0
+#  - wget https://ftp.mozilla.org/pub/firefox/releases/49.0/linux-x86_64/en-US/firefox-49.0.tar.bz2
+  - sh -e /etc/init.d/xvfb start
+  - npm install
 env:
   - CXX=g++-4.8
   - SLIMERJSLAUNCHER=$(which firefox) DISPLAY=:99.0 PATH=$TRAVIS_BUILD_DIR/slimerjs:$PATH
@@ -11,14 +18,6 @@ cache:
   - typings
 addons:
   firefox: "49.0"
-before_install:
-  - sudo apt-get install tidy libtidy-0.99-0 build-essential git cmake xsltproc xvfb -y
-#  - echo 'Installing firefox binaries'
-#  - sudo apt-get install libpthread.so libdl.so libstdc++.so libm.so libgcc_s.so libc.so ld-linux-x86-64.so libXrender1.so libasound.so.2 libgtk-x11-2.0.so.0
-#  - wget https://ftp.mozilla.org/pub/firefox/releases/49.0/linux-x86_64/en-US/firefox-49.0.tar.bz2
-  - sh -e /etc/init.d/xvfb start
-
-  - npm install
 install:
   - npm run bower
   - npm run typings
