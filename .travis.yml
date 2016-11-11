@@ -11,13 +11,12 @@ before_install:
   - sh -e /etc/init.d/xvfb start
   - npm install
 env:
-  - CXX=g++-4.8
-  - SLIMERJSLAUNCHER=$(which firefox) DISPLAY=:99.0 PATH=$TRAVIS_BUILD_DIR/slimerjs:$PATH
+  - CXX=g++-4.8 SLIMERJSLAUNCHER=$(which firefox) DISPLAY=:99.0 PATH=$TRAVIS_BUILD_DIR/slimerjs:$PATH
 cache:
   directories:
-  - node_modules
+#  - node_modules
   - test-server/bower
-  - typings
+#  - typings
 addons:
   firefox: "49.0"
 install:
