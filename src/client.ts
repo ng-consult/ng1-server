@@ -3,8 +3,6 @@
 import * as io from 'socket.io-client';
 import {MSG, PARAM_CLIENT_REQUEST, PARAM_RENDER_STATUS, ENUM_CACHE_STATUS, PARAM_CLIENT_ANSWER, ENUM_RENDER_STATUS} from './MESSAGES';
 import {Request, Response} from "express-serve-static-core";
-import * as path from 'path';
-
 const debug = require('debug')('ngServer-Client');
 
 class Client {

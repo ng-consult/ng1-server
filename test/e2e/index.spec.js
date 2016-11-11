@@ -44,10 +44,17 @@ var common = require('./common/requestUrl');
 var debug = require('debug')('mocha-test-server');
 var testNgServer = require('./common/testLaunchNgServer');
 var testWebServer = require('./common/testWebServers');
+const redisUtils = require('./common/redis');
 
 describe('Starting tests', function() {
 
     this.timeout(5000);
+
+
+    describe('creating rest & Server Instances', () => {
+        redisUtils.createRedisConfig();
+    });
+
 
     describe('Testing test server connectivity',  () => {
         testWebServer.testStart();

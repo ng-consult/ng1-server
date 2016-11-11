@@ -168,7 +168,12 @@ module.exports.startNgServer = (configPath, cb) => {
     master.start( cb );
 };
 
-module.exports.stopNgServer = () => {
-    master.stop();
-    master = null;
+module.exports.stopNgServer = (cb) => {
+    
+    master.stop( (err) => {
+        if(err) return cb(err);
+        master = null;
+        cb();
+    } );
+
 };

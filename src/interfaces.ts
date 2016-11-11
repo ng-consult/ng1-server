@@ -1,9 +1,7 @@
 'use strict';
 import {ENUM_RENDER_STATUS, ENUM_CACHE_STATUS,PARAM_CLIENT_REQUEST} from './MESSAGES';
 import SlimerProcess from './slimerProcess';
-import {RedisUrlCache} from 'redis-url-cache';
-import RedisStorageConfig = RedisUrlCache.RedisStorageConfig;
-
+import {RedisStorageConfig} from 'redis-url-cache';
 
 export interface IServerRenderRuleStr {
     strategy:string,

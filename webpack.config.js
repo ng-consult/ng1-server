@@ -20,9 +20,10 @@ module.exports = {
     entry:  {
         'client': './src/client.ts',
         'bridge-server': './src/bridge.ts',
-        'cache-server': './src/cacheServer.ts',
+        //'cache-server': './src/cacheServer.ts',
         'ng-server': './src/masterProcess.ts',
-        'slimer-page': './src/slimerPage.ts'
+        'slimer-page': './src/slimerPage.ts'/*,
+        'validators': './src/validators.ts'*/
     } ,
     externals: nodeModules,
     target: 'node',

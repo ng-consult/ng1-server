@@ -1,24 +1,14 @@
 'use strict';
 
 import {MSG, ENUM_CACHE_STATUS} from './MESSAGES';
-import {RedisUrlCache} from 'redis-url-cache';
+import {Instance, CacheEngineCB, CacheCB, CacheRules, CallBackBooleanParam, CallBackStringParam, CallBackGetResultsParam,RedisStorageConfig, CacheCreator} from 'redis-url-cache';
 import Validators from './validators';
-import Instance = RedisUrlCache.Instance;
-import CacheEngineCB = RedisUrlCache.CacheEngineCB;
-import CacheCB = RedisUrlCache.CacheCB;
-import {IServerConfig, IServerRenderRule} from "./interfaces";
-import CacheRules = RedisUrlCache.CacheRules;
-import CallBackBooleanParam = RedisUrlCache.CallBackBooleanParam;
-import CallBackStringParam = RedisUrlCache.CallBackStringParam;
-import CallBackGetResultsParam = RedisUrlCache.CallBackGetResultsParam;
-import RedisStorageConfig = RedisUrlCache.RedisStorageConfig;
-import CacheCreator = RedisUrlCache.CacheCreator;
 import ServerLog from './serverLog';
 import * as bunyan from 'bunyan';
 import * as path from 'path';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs-extra';
-
+import {IServerConfig, IServerRenderRule} from './interfaces'
 const debug = require('debug')('ngServer-Cache');
 
 export class Cache {
@@ -30,7 +20,6 @@ export class Cache {
 
     constructor(configDir: string, cb: Function) {
 
-
         const serverConfigpath: string = path.join(configDir, 'serverConfig.yml');
         this.serverConfig =  yaml.load(fs.readFileSync(serverConfigpath, 'utf8'));
 
@@ -38,11 +27,13 @@ export class Cache {
         this.renderRules = Validators.unserializeServerRules(yaml.load(fs.readFileSync(renderRulesPath, 'utf8')));
 
         const cacheRulesPath: string = path.join(configDir, 'serverCacheRules.yml');
-        this.cacheRules =  Validators.unserializeCacheRules(yaml.load(fs.readFileSync(cacheRulesPath, 'utf8')));
+        this.cacheRules =  CacheEngineCB.helpers.unserializeCacheRules(yaml.load(fs.readFileSync(cacheRulesPath, 'utf8')));
 
         CacheCreator.createCache('SERVER', true, this.serverConfig.redisConfig, this.cacheRules, (err) => {
             if (err) {
+                debug('Some error: ', err);
                 const error = new Error(err);
+
                 this.logger.error(error);
                 return cb(err);
             }

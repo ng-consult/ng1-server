@@ -4,10 +4,7 @@ import * as http from 'http';
 
 import Bridge_Pool from './bridge_Pool';
 import {MSG, PARAM_WEBAPP_LOG, PARAM_SLIMER_ERROR, PARAM_IDLE, ENUM_CACHE_STATUS} from './MESSAGES';
-import {RedisUrlCache} from 'redis-url-cache';
-import RedisStorageConfig = RedisUrlCache.RedisStorageConfig;
-import CacheEngineCB = RedisUrlCache.CacheEngineCB;
-import Instance = RedisUrlCache.Instance;
+import {RedisStorageConfig, CacheEngineCB, Instance} from 'redis-url-cache';
 import {Cache, UrlCache} from "./cache";
 import ServerLog from './serverLog';
 

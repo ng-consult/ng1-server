@@ -73,8 +73,10 @@ module.exports.testStart = () => {
 module.exports.testStop = () => {
     describe('Stopping the servers', () => {
         it('should stop the server ok', (done)=> {
-            utils.stopNgServer();
-            done();
+            utils.stopNgServer( err => {
+                if(err) return done(err);
+                done();
+            });
         });
     });
 

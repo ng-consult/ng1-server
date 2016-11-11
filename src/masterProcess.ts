@@ -2,15 +2,12 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as async from  'async';
 import * as yaml from 'js-yaml';
-
 import {IServerConfig} from './interfaces';
-import {RedisUrlCache} from 'redis-url-cache';
-import CacheCreator = RedisUrlCache.CacheCreator;
-import CacheEngineCB = RedisUrlCache.CacheEngineCB; //for testing only
-import Instance = RedisUrlCache.Instance; //for testing only
+import {CacheCreator, CacheEngineCB, Instance, CacheRules} from 'redis-url-cache';
 import Spawner from './spawner';
 import ServerLog from './serverLog';
-import Validators from "./validators";
+import * as CacheServer from 'cdn-server';
+import {ICDNConfig} from "cdn-server/index";
 
 const debug = require('debug')('ngServer');
 
@@ -18,10 +15,9 @@ class MasterProcess {
 
     //private serverLog: ServerLog;
     private CCC_BinPath:string;
-    private SLIMER_REST_SERVER_BinPath:string = path.resolve(__dirname + './../bin/fff.js');
     private serverConfig:IServerConfig;
     private spawnBridge: Spawner;
-    private spawnFFF: Spawner;
+    private cdnServer: CacheServer.CacheServer;
 
     constructor(private configDir:string) {
         debug('DIRNAME = ', __dirname);
@@ -59,10 +55,8 @@ class MasterProcess {
         const slimerRestCacheModulePath = path.join(this.configDir, 'slimerRestCacheRules.yml');
 
         const cacheRules = {
-            Slimer_Rest: Validators.unserializeCacheRules(yaml.load(fs.readFileSync(slimerRestCacheModulePath, 'utf8')))
+            Slimer_Rest: CacheEngineCB.helpers.unserializeCacheRules(yaml.load(fs.readFileSync(slimerRestCacheModulePath, 'utf8')))
         };
-
-        console.log('YO', cacheRules.Slimer_Rest.maxAge);
 
         let parrallelFns = {};
         for(var key in cacheRules) {
@@ -82,8 +76,10 @@ class MasterProcess {
                     //this.serverLog.log('server', ["Error creating cache for", cacheData.t], {rules: cacheData.r, err: err, instance: cacheData.t});
                 } else {
                     this.launchCCC();
-                    this.launchFFF();
-                    cb(null);
+                    this.launchCDNServer( () => {
+                        cb(null);
+                    });
+
                 }
             }
         );
@@ -92,14 +88,9 @@ class MasterProcess {
 
     stop(cb: Function) {
         this.spawnBridge.exit();
-        this.spawnFFF.exit();
-    }
-
-    public addTestURL(cb: Function) {
-        const instance = new Instance('SERVER', this.serverConfig.redisConfig, {}, (err) => {
-            const cacheEngine = new CacheEngineCB('http://localhost:3000',instance);
-            var url = cacheEngine.url('/home');
-            return url.set('<b>CachedContent</b>', {}, false, cb);
+        this.cdnServer.stop( (err) => {
+            if(err) return cb(err);
+            cb();
         });
     }
 
@@ -109,10 +100,30 @@ class MasterProcess {
         this.spawnBridge.launch(false, ()=>{}, ()=>{});
     }
 
-    private launchFFF() {
-        this.spawnFFF = new Spawner('FFF', this.SLIMER_REST_SERVER_BinPath);
-        this.spawnFFF.setParameters([this.configDir]);
-        this.spawnFFF.launch(false, ()=>{}, ()=>{});
+    private launchCDNServer( cb: Function) {
+
+
+
+        const cacheRules:CacheRules = CacheEngineCB.helpers.unserializeCacheRules(yaml.load(fs.readFileSync(path.join(this.configDir, 'slimerRestCacheRules.yml'), 'utf8')));
+
+        const cdnConfig:ICDNConfig = {
+            defaultDomain: this.serverConfig.domain,
+            port: this.serverConfig.socketServers.fff.port,
+            instanceName: 'SLIMER_REST',
+            redisConfig: this.serverConfig.redisConfig,
+            cacheRules: cacheRules
+        };
+
+        debug('cahche Server = ');
+        debug(CacheServer);
+
+        debug('cdnConfig', cdnConfig);
+
+        this.cdnServer = new CacheServer(cdnConfig, ServerLog.Log.child({
+            script: 'CacheServer'
+        }));
+
+        this.cdnServer.start(cb)
     }
 }
 

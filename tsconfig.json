@@ -18,7 +18,6 @@
     "typings/index.d.ts",
     "src/bridge.ts",
     "src/client.ts",
-    "src/cacheServer.ts",
     "src/masterProcess.ts"
   ],
   "exclude": [

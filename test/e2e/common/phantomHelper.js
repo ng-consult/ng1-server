@@ -116,7 +116,7 @@ module.exports.jsEnabled = (url ) => {
                 resultDefer.reject(request);
             });
 
-            page.on('onError', false, function(err) {
+            page.on('onError', false, function(msg, trace) {
                 var msgStack = ['ERROR: ' + msg];
 
                 if (trace && trace.length) {
