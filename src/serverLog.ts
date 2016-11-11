@@ -32,32 +32,43 @@ export default class ServerLog {
 
     static initLogs(basePath: string, gelf) {
 
-        fs.ensureDirSync(basePath);
-        fs.chmodSync(basePath, '777');
+
+        let logPath: string;
+
+        try{
+            logPath = basePath;
+            fs.ensureDirSync(logPath);
+            fs.chmodSync(logPath, '777');
+        } catch(e) {
+            logPath = path.join(__dirname, basePath);
+            fs.ensureDirSync(logPath);
+            fs.chmodSync(logPath, '777');
+        }
+
 
         const appStreams: bunyan.Stream[] = [
             {
                 level: 'trace',
-                path: path.join(basePath, 'trace.log')
+                path: path.join(logPath, 'trace.log')
             },
             {
                 level: 'info',
-                path: path.join(basePath, 'info.log')
+                path: path.join(logPath, 'info.log')
             },
             {
                 level: 'error',
-                path: path.join(basePath, 'error.log')
+                path: path.join(logPath, 'error.log')
             }
         ];
 
         const webAppStreams: bunyan.Stream[] = [
             {
                 level: 'trace',
-                path: path.join(basePath, 'web-app.log')
+                path: path.join(logPath, 'web-app.log')
             },
             {
                 level: 'error',
-                path: path.join(basePath, 'web-app-error.log')
+                path: path.join(logPath, 'web-app-error.log')
             }
         ];
 

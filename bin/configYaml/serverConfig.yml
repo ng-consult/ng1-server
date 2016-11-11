@@ -1,6 +1,6 @@
 domain: 'http://localhost:3000'
 timeout: 10
-logBasePath: '/home/antoine/a-lucas/angular.js-server/logs'
+logBasePath: '/logs'
 gelf:
  enabled: true
  host: '127.0.0.1'
