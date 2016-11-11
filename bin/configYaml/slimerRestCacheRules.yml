@@ -1,7 +1,7 @@
 default: 'never'
 maxAge:
  -
-   domain: /(localhost|127.0.0.1):(8080|300)/
+   domain: /(localhost|127.0.0.1):(8080|300|888)/
    rules:
     -
       regex: /.*/

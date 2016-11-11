@@ -29,7 +29,7 @@ export default class ServerLog {
             spawner: typeof elem.spawner !== 'undefined' ? elem.spawner.getSpawner(): null
         };
     }
-    
+
     static initLogs(basePath: string, gelf) {
 
         fs.ensureDirSync(basePath);
@@ -77,7 +77,7 @@ export default class ServerLog {
             });
         }
 
-        
+
         ServerLog.Log = bunyan.createLogger(
             {
                 name: 'ServerLog',
@@ -97,10 +97,5 @@ export default class ServerLog {
         ServerLog.WebAppLog.addSerializers({
             pool: ServerLog.poolSerializer
         });
-
     }
-
-
 }
-
-

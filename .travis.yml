@@ -1,6 +1,8 @@
 sudo: required
 dist: trusty
 language: node_js
+services:
+  - redis-server
 before_install:
   - sudo apt-get install tidy libtidy-0.99-0 build-essential git cmake xsltproc xvfb -y
 #  - echo 'Installing firefox binaries'
