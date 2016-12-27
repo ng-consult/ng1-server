@@ -3,7 +3,7 @@
     "async": "registry:dt/async#2.0.1+20160804113311",
     "bunyan": "registry:dt/bunyan#0.0.0+20161019135123",
     "debug": "registry:dt/debug#0.0.0+20160317120654",
-    "es6-promise": "registry:dt/es6-promise#0.0.0+20160614011821",
+    "es6-shim": "registry:dt/es6-shim#0.31.2+20160602141504",
     "express": "registry:dt/express#4.0.0+20160708185218",
     "express-serve-static-core": "registry:dt/express-serve-static-core#4.0.0+20161012061536",
     "form-data": "registry:dt/form-data#0.0.0+20160724024111",

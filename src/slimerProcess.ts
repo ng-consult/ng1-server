@@ -8,7 +8,7 @@ const debug = require('debug')('ngServer-SlimerProcess');
 
 export default class SlimerProcess {
 
-    private timeout:NodeJS.Timer;
+    private timeout:number;
 
 // All this because slimer exit() and stderr don't work well - or at least I don't know how
     private spawner:Spawner;
@@ -26,8 +26,8 @@ export default class SlimerProcess {
             path.join(__dirname, 'slimer-page.js'),
             this.uid,
             Bridge_Pool.pool[uid].query.url,
-            Bridge_Pool.generateFullURL(Bridge_Pool.serverConfig.socketServers.ccc_2),
-            Bridge_Pool.generateFullURL(Bridge_Pool.serverConfig.socketServers.fff),
+            Bridge_Pool.generateFullURL(Bridge_Pool.serverConfig.socketServers.bridge_internal),
+            Bridge_Pool.generateFullURL(Bridge_Pool.serverConfig.socketServers.proxy),
             Bridge_Pool.pool[uid].query.tmp ? Bridge_Pool.pool[uid].query.tmp : ''
         ]);
 
@@ -88,7 +88,7 @@ export default class SlimerProcess {
 
             logger.error('Spawner exited with an error');
             Bridge_Pool.pool[this.uid].status = ENUM_RENDER_STATUS.ERROR;
-            Bridge_Pool.notify_CC_1(this.uid);
+            Bridge_Pool.notifyBridgeInternal(this.uid);
             Bridge_Pool.deleteUID(this.uid);
             Bridge_Pool.next();
             //}

@@ -66,7 +66,6 @@ describe('Starting tests', function() {
         testNgServer.testStop();
     });
 
-
     describe("JADE - E2E", () => {
 
         testNgServer.testStart();

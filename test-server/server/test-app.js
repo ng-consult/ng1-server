@@ -11,7 +11,7 @@ var debug = require('debug')(utils.debugStr);
 
 const serverConfig = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname + './../../bin/configYaml/serverConfig.yml')), 'utf-8');
 
-const cacheServerURL = serverConfig.socketServers.fff.protocol + serverConfig.socketServers.fff.host + ':' + serverConfig.socketServers.fff.port;
+const cacheServerURL = serverConfig.socketServers.proxy.protocol + serverConfig.socketServers.proxy.host + ':' + serverConfig.socketServers.proxy.port;
 
 
 utils.startWebServers(cacheServerURL, function(err, runningServers) {

@@ -54,7 +54,7 @@ export default class Bridge_Pool {
         Bridge_Pool.order.push(uid);
 
         if( Bridge_Pool.next() !== uid) {
-            Bridge_Pool.notify_CC_1(uid);
+            Bridge_Pool.notifyBridgeInternal(uid);
         }
     }
 
@@ -69,14 +69,14 @@ export default class Bridge_Pool {
         Bridge_Pool.pool[nextUID].status = ENUM_RENDER_STATUS.STARTED;
         Bridge_Pool.pool[nextUID].benchmark.started = Date.now();
         Bridge_Pool.pool[nextUID].spawner = new SlimerProcess(nextUID);
-        Bridge_Pool.notify_CC_1(nextUID);
+        Bridge_Pool.notifyBridgeInternal(nextUID);
         return nextUID;
     }
 
     static sendHTML_to_Client(uid: string, html: string) {
         Bridge_Pool.pool[uid].html = html;
         Bridge_Pool.pool[uid].status = ENUM_RENDER_STATUS.HTML;
-        Bridge_Pool.notify_CC_1(uid);
+        Bridge_Pool.notifyBridgeInternal(uid);
 
         //todo investigate
 
@@ -86,7 +86,7 @@ export default class Bridge_Pool {
         }
     }
 
-    static notify_CC_1(uid: string): void {
+    static notifyBridgeInternal(uid: string): void {
         if(typeof Bridge_Pool.pool[uid] === 'undefined') {
             //log error
         }
@@ -103,7 +103,7 @@ export default class Bridge_Pool {
         }
     }
 
-    static CCC_1_socketDisconnected(socketId: string) {
+    static bridgeInternalSocketDisconnected(socketId: string) {
 
         //possible bug when the Client closes the socket on HTML/ERROR before Bridge_Pool receives the close information
         //Probably possible to use socket.id instead of uid

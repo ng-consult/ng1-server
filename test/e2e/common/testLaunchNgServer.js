@@ -48,19 +48,19 @@ module.exports.testStart = () => {
         });
 
         it('port for Bridge_1', (done) => {
-            portInUse(serverConfig.socketServers.ccc_1.port, (res) => {
+            portInUse(serverConfig.socketServers.bridge_external.port, (res) => {
                 expect(res).eql(true);
                 done();
             });
         });
         it('port for Bridge_2', (done) => {
-            portInUse(serverConfig.socketServers.ccc_2.port, (res) => {
+            portInUse(serverConfig.socketServers.bridge_internal.port, (res) => {
                 expect(res).eql(true);
                 done();
             });
         });
         it('port for CacheServer', (done) => {
-            portInUse(serverConfig.socketServers.fff.port, (res) => {
+            portInUse(serverConfig.socketServers.proxy.port, (res) => {
                 expect(res).eql(true);
                 done();
             });
@@ -89,19 +89,19 @@ module.exports.testStop = () => {
         });
 
         it('port for Bridge_1', (done) => {
-            portInUse(serverConfig.socketServers.ccc_1.port, (res) => {
+            portInUse(serverConfig.socketServers.bridge_external.port, (res) => {
                 expect(res).eql(false);
                 done();
             });
         });
         it('port for Bridge_2', (done) => {
-            portInUse(serverConfig.socketServers.ccc_2.port, (res) => {
+            portInUse(serverConfig.socketServers.bridge_internal.port, (res) => {
                 expect(res).eql(false);
                 done();
             });
         });
         it('port for CacheServer', (done) => {
-            portInUse(serverConfig.socketServers.fff.port, (res) => {
+            portInUse(serverConfig.socketServers.proxy.port, (res) => {
                 expect(res).eql(false);
                 done();
             });

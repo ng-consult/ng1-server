@@ -6,15 +6,15 @@ gelf:
  host: '127.0.0.1'
  port: 12203
 socketServers:
- ccc_1:
+ bridge_external:
    protocol: 'http://'
    host: '127.0.0.1'
    port: 8881
- ccc_2:
+ bridge_internal:
    protocol: 'http://'
    host: '127.0.0.1'
    port: 8882
- fff:
+ proxy:
      protocol: 'http://'
      host: '127.0.0.1'
      port: 8883

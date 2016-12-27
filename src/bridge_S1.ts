@@ -11,7 +11,7 @@ import * as tmp from 'tmp';
 import {Cache} from './cache';
 import ServerLog from './serverLog';
 
-const debug = require('debug')('ngServer-CCC_1');
+const debug = require('debug')('ngServer-Bridge_external');
 
 interface socketCollection {
     [id: string]: SocketIO.Socket
@@ -55,7 +55,7 @@ export default class Bridge_S1 {
             socket.on('disconnect', () => {
                 debug('Bridge_S1 disconnected ', socket.id);
                 delete Bridge_S1.sockets[socket.id];
-                Bridge_Pool.CCC_1_socketDisconnected(socket.id);
+                Bridge_Pool.bridgeInternalSocketDisconnected(socket.id);
             });
 
             socket.on(MSG.CHECK_URL, url => {
@@ -83,6 +83,8 @@ export default class Bridge_S1 {
         const fileObj = tmp.fileSync({ mode: 777, prefix: 'prefix-', postfix: '.html' });
         fs.writeSync(fileObj.fd, html, 0, 'utf-8');
         fs.closeSync(fileObj.fd);
+        fs.chmodSync(fileObj.name, '0777');
+
         return fileObj.name;
     }
 

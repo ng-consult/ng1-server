@@ -28,9 +28,9 @@ export interface IServerConfig {
         port?: number
     },
     socketServers:{
-        ccc_1: IDomainInfo,
-        ccc_2: IDomainInfo,
-        fff: IDomainInfo, //slimer & rest
+        bridge_external: IDomainInfo,
+        bridge_internal: IDomainInfo,
+        proxy: IDomainInfo, //slimer & rest
     },
     redisConfig:RedisStorageConfig
 }

@@ -8,7 +8,7 @@ export const MSG = {
     ANSWER: 'PARAM_CLIENT_ANSWER', //sends after receive CHECK_URL from Client
     RENDER_STATUS: 'ENUM_CACHE_STATUS', //sent to Client to update status
     // WebApp -> Bridge
-    IDLE: 'IDLE', // Sends to CCC_1 when the idle is reached nd html is available
+    IDLE: 'IDLE', // Sends to Bridge External when the idle is reached nd html is available
     LOG: 'LOG', // Sends to Bridge_S2
     // all
     ERROR: 'ERROR', //when so js error happens on the webapp client,

@@ -35,9 +35,9 @@ class Bridge {
             };
 
             try {
-                this.Bridge_S1 = new Bridge_S1(serverConfig.socketServers.ccc_1.port, bbb);
+                this.Bridge_S1 = new Bridge_S1(serverConfig.socketServers.bridge_external.port, bbb);
 
-                this.Bridge_S2 = new Bridge_S2(serverConfig.socketServers.ccc_2.port);
+                this.Bridge_S2 = new Bridge_S2(serverConfig.socketServers.bridge_internal.port);
             } catch(e) {
                 logger.error(e);
                 throw e;

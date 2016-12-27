@@ -38,7 +38,7 @@ export default class Bridge_S2 {
 
         server.on('connection', socket => {
 
-            debug('ccc_2 new connection');
+            debug('bridge_internal new connection');
 
             socket.on(MSG.LOG, (data: PARAM_WEBAPP_LOG) => {
                 debug('going to log type / args ', data.type, data.args);
@@ -75,7 +75,7 @@ export default class Bridge_S2 {
 
                 debug('received IDLE from EEE', response.uid, response.url, response.html.length);
 
-                //debug('responseCache = ', response.exportedCache);
+                debug('responseCache = ', response.exportedCache);
 
                 const serialized = JSON.stringify(response.exportedCache);
                 const script = `<script type="text/javascript">window.ngServerCache = ${serialized};</script></head>`;
@@ -99,7 +99,7 @@ export default class Bridge_S2 {
 
             socket.on('disconnect', () => {
                 // EEE disconnected
-                debug('ccc_2  deconnected');
+                debug('bridge_internal  deconnected');
             });
         });
     }

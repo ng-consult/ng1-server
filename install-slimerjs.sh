@@ -6,10 +6,10 @@ bash -c '[ -d ./slimerjs_git ] && rm -Rf ./slimerjs_git'
 
 git clone https://github.com/laurentj/slimerjs.git ./slimerjs_git
 cd slimerjs_git
-git checkout 0.10.1
+git checkout 0.10.2
 ./buildpackage.sh
 
-mv _dist/slimerjs-0.10.1 ./../slimerjs
+mv _dist/slimerjs-0.10.2 ./../slimerjs
 
 cd ..
 rm -Rf slimerjs_git

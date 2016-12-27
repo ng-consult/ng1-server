@@ -45,12 +45,8 @@ module.exports.express = function (app, viewEngine) {
 
 process.setMaxListeners(30);
 
-var serve = (expressApp, description, port, serverConfig) => {
+var serve = (expressApp, description, port) => {
     return new Promise((resolve, reject) => {
-
-        if(typeof serverConfig !== 'undefined') {
-            expressApp.locals = Object.assign(expressApp.locals,  {serverConfig: serverConfig});
-        }
 
         const server = expressApp.listen(port, function () {
             debug(description + ' started on 127.0.0.1:' + port);
@@ -113,15 +109,16 @@ module.exports.stopWebServers = (runningServers, cb) => {
 
 module.exports.startWebServers = function (restServerURL, cb) {
 
-    var apiServer = require('./api/api-server');
-    var rfcServer = require('./rfc/server');
+    const apiServer = require('./api/api-server');
+    const rfcServer = require('./rfc/server');
 
-    var jadeClassicServer = require('./pug/classic.server')();
-    var jadePreRenderServer = require('./pug/pre-render.server')();
-    //var jadeMiddleWareServer = require('./pug/middleware.server')();
+    const debug = false;
+    const jadeClassicServer = require('./pug/classic.server')({debug: debug});
+    const jadePreRenderServer = require('./pug/pre-render.server')({debug: debug});
+    //const jadeMiddleWareServer = require('./pug/middleware.server')();
 
-    var swigClassicServer = require('./swig/classic.server')();
-    var swigPreRenderServer = require('./swig/pre-render.server')();
+    //var swigClassicServer = require('./swig/classic.server')();
+    //var swigPreRenderServer = require('./swig/pre-render.server')();
     //var swigMiddleWareServer = require('./swig/middleware.server')();
 
     const promiseArray = [
@@ -129,8 +126,8 @@ module.exports.startWebServers = function (restServerURL, cb) {
         serve(jadePreRenderServer, 'jade - server side rendering', 3001),
         //serve(jadeMiddleWareServer, 'jade - server side rendering middleware', 3003),
 
-        serve(swigClassicServer, 'swig - no server side rendering', 3004),
-        serve(swigPreRenderServer, 'swig - server side rendering', 3005),
+        //serve(swigClassicServer, 'swig - no server side rendering', 3004),
+        //serve(swigPreRenderServer, 'swig - server side rendering', 3005),
         //serve(swigMiddleWareServer, 'swig - server side rendering middleware', 3007),
 
         serve(rfcServer, 'rfc server', 3030),
@@ -139,10 +136,10 @@ module.exports.startWebServers = function (restServerURL, cb) {
     ];
 
     if(typeof restServerURL == 'string' &&  restServerURL.length > 0) {
-        const jadeClassicServerREST = require('./pug/classic.server')();
-        const swigClassicServerREST = require('./swig/pre-render.server')();
-        promiseArray.push(serve(jadeClassicServerREST, 'jade - no server side rendering with REST caching', 3002, {restServerURL: restServerURL}));
-        promiseArray.push(serve(swigClassicServerREST, 'swig - no server side rendering with REST caching', 3006, {restServerURL: restServerURL}));
+        const jadeClassicServerREST = require('./pug/classic.server')({restServerURL: restServerURL, restCache: true});
+        const swigClassicServerREST = require('./swig/pre-render.server')({restServerURL: restServerURL, restCache: true});
+        promiseArray.push(serve(jadeClassicServerREST, 'jade - no server side rendering with REST caching', 3002));
+        promiseArray.push(serve(swigClassicServerREST, 'swig - no server side rendering with REST caching', 3006));
     }
 
     Promise.all(promiseArray).then((servers) => {
@@ -158,7 +155,7 @@ module.exports.startWebServers = function (restServerURL, cb) {
 
 /*
     ngServer
- */
+*/
 
 let master = null;
 
@@ -169,7 +166,7 @@ module.exports.startNgServer = (configPath, cb) => {
 };
 
 module.exports.stopNgServer = (cb) => {
-    
+
     master.stop( (err) => {
         if(err) return cb(err);
         master = null;

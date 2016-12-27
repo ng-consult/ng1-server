@@ -6,17 +6,16 @@ var system = require('system');
 const fs = require('fs');
 
 import {SlimerIO, SlimerSocket} from './slimerIO';
-
 import {ENUM_SLIMER_ERRORS, MSG, PARAM_SLIMER_ERROR} from './MESSAGES';
 
 
 var uid:string = system.args[1];
 var url = system.args[2];
-var CCC_2_url:string = system.args[3];
-var FFF_URL = system.args[4];
+var bridge_internal_url:string = system.args[3];
+var PROXY_URL = system.args[4];
 var filePath = system.args[5];
 
-const slimerIO = new SlimerIO(CCC_2_url);
+const slimerIO = new SlimerIO(bridge_internal_url);
 
 var renderType: string = typeof filePath !== 'undefined' && filePath.length > 0 ? 'file' : 'url';
 
@@ -32,14 +31,13 @@ if (renderType === 'file') {
         console.log('FILE_ACCESS_ERROR - permission issue for ' + filePath);
         slimer.exit(ENUM_SLIMER_ERRORS.FILE_ACCESS_ERROR)
     }
-    console.log('NO FILE ACCESS ERROR');
 
     html = fs.read(filePath, {
         mode: 'r',
         charset: 'utf-8'
     });
 
-    console.log('HTML length = ' + html.length);
+    //console.log('HTML length = ' + html.length);
 }
 
 page.onLoadFinished = (status) => {
@@ -56,7 +54,7 @@ page.onLoadStarted = () => {
 
 page.onResourceError = (error) => {
     console.log('RESOURCE ERROR: ' + JSON.stringify(error));
-    slimerIO.createSocket('CCC2', CCC_2_url, uid, function (socket:SlimerSocket) {
+    slimerIO.createSocket('BI', bridge_internal_url, uid, function (socket:SlimerSocket) {
         const errorObject = {
             uid: uid,
             message: error.errorString,
@@ -75,7 +73,7 @@ page.onResourceError = (error) => {
 
 page.onResourceTimeout = (error) => {
     console.log('RESOURCE TIMEOUT: ' + JSON.stringify(error));
-    slimerIO.createSocket('CCC2', CCC_2_url, uid, function (socket:SlimerSocket) {
+    slimerIO.createSocket('BI', bridge_internal_url, uid, function (socket:SlimerSocket) {
         const errorObject = {
             uid: uid,
             message: error.errorString,
@@ -96,10 +94,11 @@ page.onResourceRequested = (requestData, networkRequest) => {
 
     if (requestData.method === 'GET' || requestData.method === 'OPTION') {
 
+        //console.log('requesting ', JSON.stringify(requestData));
         const requestedUrl:string = requestData.url;
         //don't redirect the socket.io client, and don't redirect the current page, nd dont redirect already redirected requests
-        if (requestedUrl.indexOf(FFF_URL) === -1 && requestedUrl.indexOf(url) === -1 && requestedUrl.indexOf('/socket.io/') === -1) {
-            networkRequest.changeUrl(FFF_URL + '/get?url=' + encodeURIComponent(requestedUrl));
+        if (requestedUrl.indexOf(PROXY_URL) === -1 && requestedUrl.indexOf(url) === -1 && requestedUrl.indexOf('/socket.io/') === -1) {
+            networkRequest.changeUrl(PROXY_URL + '/get?url=' + encodeURIComponent(requestedUrl));
         } else {
             //console.log('IGNORING URL ', requestedUrl);
         }
@@ -107,8 +106,6 @@ page.onResourceRequested = (requestData, networkRequest) => {
 };
 
 page.onInitialized = () => {
-    console.log('on INitialized');
-
     page.onCallback = (data)=> {
 
         switch (data.type) {
@@ -121,21 +118,22 @@ page.onInitialized = () => {
         }
     };
 
-    page.evaluate((uid, CCC_2_url, FFF_URL) => {
+    page.evaluate((uid, bridge_internal_url, PROXY_URL) => {
         //throw new Error('test error');
         window['onServer'] = true;
-        window['serverConfig'] = {
+        window['serverConfig'] = window['serverConfig'] || {};
+        window['serverConfig'] = Object.assign( window['serverConfig'], {
             uid: uid,
-            socketServerURL: CCC_2_url,
+            socketServerURL: bridge_internal_url,
             clientTimeoutValue: 200,
-            restServerURL: FFF_URL,
+            restServerURL: PROXY_URL,
             debug: false
-        };
+        });
         window.addEventListener('Idle', () => {
             console.log('Idle event caught in slimerPage.ts');
             window['callPhantom']({type: 'idle'})
         });
-    }, uid, CCC_2_url, FFF_URL);
+    }, uid, bridge_internal_url, PROXY_URL);
 
 };
 
@@ -205,7 +203,7 @@ const onError = (msg, trace) => {
 
     console.log(JSON.stringify(errorObject));
 
-    slimerIO.createSocket('CCC2', CCC_2_url, uid, function (socket:SlimerSocket) {
+    slimerIO.createSocket('BI', bridge_internal_url, uid, function (socket:SlimerSocket) {
         socket.emit(MSG.ERROR, JSON.stringify(errorObject));
 
         socket.on(MSG.ERROR + uid, () => {

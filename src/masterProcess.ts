@@ -108,7 +108,7 @@ class MasterProcess {
 
         const cdnConfig:ICDNConfig = {
             defaultDomain: this.serverConfig.domain,
-            port: this.serverConfig.socketServers.fff.port,
+            port: this.serverConfig.socketServers.proxy.port,
             instanceName: 'SLIMER_REST',
             redisConfig: this.serverConfig.redisConfig,
             cacheRules: cacheRules

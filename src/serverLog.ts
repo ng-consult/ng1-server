@@ -33,16 +33,25 @@ export default class ServerLog {
     static initLogs(basePath: string, gelf) {
 
 
-        let logPath: string;
+        let logPath: string = basePath;
 
         try{
-            logPath = basePath;
             fs.ensureDirSync(logPath);
             fs.chmodSync(logPath, '777');
+            debug(`${logPath} is used to store log Files`);
         } catch(e) {
+            debug(`CANNOT create log ${logPath}`);
             logPath = path.join(__dirname, basePath);
-            fs.ensureDirSync(logPath);
-            fs.chmodSync(logPath, '777');
+            try {
+                fs.ensureDirSync(logPath);
+                fs.chmodSync(logPath, '777');
+                debug(`${logPath} is used to store log Files`);
+            } catch(e) {
+                debug(e);
+                debug(`CANNOT create log ${logPath}`);
+                throw new Error(e);
+            }
+
         }
 
 

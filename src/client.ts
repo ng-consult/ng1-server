@@ -125,7 +125,7 @@ class Client {
         debug('Emitting GET_URL from Client to Bridge');
 
         this.socket.on(MSG.RENDER_STATUS, (response:PARAM_CLIENT_ANSWER) => {
-            debug('Response received from CCC_1', ENUM_RENDER_STATUS[response.status]);
+            debug('Response received from Bridge External', ENUM_RENDER_STATUS[response.status]);
             switch (response.status) {
                 case ENUM_RENDER_STATUS.HTML:
                     debug('Client - closing socket');

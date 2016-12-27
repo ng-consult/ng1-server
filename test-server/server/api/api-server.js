@@ -9,7 +9,7 @@ var apiServer = express();
 
 
 apiServer.options('*', function(req, res, next) {
-    debug('OPTION CALLED', req.url);
+    debug('aipServer.options(*) OPTION CALLED', req.url);
     next();
 });
 
@@ -19,13 +19,14 @@ apiServer.use(function(req, res, next) {
     res.setHeader('Access-Control-Request-Method', '*');
     res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
     //res.setHeader('Access-Control-Allow-Headers', '*');
+    debug('ApiServer: ', req.method);
     if ( req.method === 'OPTIONS' ) {
+        debug('apiServer.use(), req.method === OPTIONS');
         res.writeHead(200);
         res.end();
         return;
     }
 
-    debug('Inside CORS');
     //todo uncoment this for testing
     //res.header('Access-Control-Allow-Headers', 'ngServerRest');
     next();
@@ -67,6 +68,7 @@ apiServer.get("*", function(req, res, next) {
 });
 */
 apiServer.get('/products/:time', function(req, res) {
+    debug('/products/:time called with method', req.method);
     setTimeout( function() {
         debug('Sending back products');
         res.set("Connection", "close");
