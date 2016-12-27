@@ -89,10 +89,10 @@ travis_nanoseconds() {
   local os=$(uname)
 
   if hash gdate > /dev/null 2>&1; then
-    
+
     cmd="gdate"
   elif [[ "$os" = Darwin ]]; then
-    
+
     format="+%s000000000"
   fi
 
@@ -152,10 +152,10 @@ travis_wait() {
   local timeout=$1
 
   if [[ $timeout =~ ^[0-9]+$ ]]; then
-    
+
     shift
   else
-    
+
     timeout=20
   fi
 
@@ -188,14 +188,14 @@ travis_wait() {
 }
 
 travis_jigger() {
-  
+
   local cmd_pid=$1
   shift
-  local timeout=$1 
+  local timeout=$1
   shift
   local count=0
 
-  
+
   echo -e "\n"
 
   while [ $count -lt $timeout ]; do
@@ -298,7 +298,7 @@ sudo sed -e 's/^\(127\.0\.0\.1.*\)$/\1 '`hostname`'/' -i'.bak' /etc/hosts
 sudo sed -e 's/^\([0-9a-f:]\+\) localhost/\1/' -i'.bak' /etc/hosts
 test -f /etc/mavenrc && sudo sed -e 's/M2_HOME=\(.\+\)$/M2_HOME=${M2_HOME:-\1}/' -i'.bak' /etc/mavenrc
 if [ $(command -v sw_vers) ]; then
-  echo "Fix WWDRCA Certificate"
+  echo "Fix WWDRCA Certificate"git
   sudo security delete-certificate -Z 0950B6CD3D2F37EA246A1AAA20DFAADBD6FE1F75 /Library/Keychains/System.keychain
   wget -q https://developer.apple.com/certificationauthority/AppleWWDRCA.cer
   sudo security add-certificates -k /Library/Keychains/System.keychain AppleWWDRCA.cer
@@ -353,7 +353,7 @@ export GIT_ASKPASS=echo
 
 travis_fold start git.checkout
   if [[ ! -d ng-consult/angular.js-server/.git ]]; then
-    travis_cmd git\ clone\ --depth\=50\ --branch\=\'\'\ git@github.com:ng-consult/angular.js-server.git\ ng-consult/angular.js-server --assert --echo --retry --timing
+    travis_cmd git\ clone\ --depth\=50\ --branch\=\'master\'\ https://github.com/ng-consult/angular.js-server.git\ ng-consult/angular.js-server --assert --echo --retry --timing
   else
     travis_cmd git\ -C\ ng-consult/angular.js-server\ fetch\ origin --assert --echo --retry --timing
     travis_cmd git\ -C\ ng-consult/angular.js-server\ reset\ --hard --assert --echo
@@ -478,7 +478,7 @@ travis_fold start cache.1
   set +e
   if [[ -f $CASHER_DIR/bin/casher ]]; then
     travis_cmd type\ rvm\ \&\>/dev/null\ \|\|\ source\ \~/.rvm/scripts/rvm --timing
-    travis_cmd rvm\ \$\(travis_internal_ruby\)\ --fuzzy\ do\ \$CASHER_DIR/bin/casher\ fetch\ https://s3.amazonaws.com/cache_bucket/1234567890//cache-trusty-f3229c1e87844dd12bfcceadb2cd05cc2dfde87db8327fccb58b06138837fde6--node-5.11.tgz\\\?X-Amz-Algorithm\\\=AWS4-HMAC-SHA256\\\&X-Amz-Credential\\\=abcdef0123456789\\\%2F20161227\\\%2Fus-east-1\\\%2Fs3\\\%2Faws4_request\\\&X-Amz-Date\\\=20161227T032506Z\\\&X-Amz-Expires\\\=60\\\&X-Amz-Signature\\\=27e318e929873764fe7f2fb164431744fdfc979f2479a4ac3e5633c1a421515e\\\&X-Amz-SignedHeaders\\\=host\ https://s3.amazonaws.com/cache_bucket/1234567890//cache--node-5.11.tgz\\\?X-Amz-Algorithm\\\=AWS4-HMAC-SHA256\\\&X-Amz-Credential\\\=abcdef0123456789\\\%2F20161227\\\%2Fus-east-1\\\%2Fs3\\\%2Faws4_request\\\&X-Amz-Date\\\=20161227T032506Z\\\&X-Amz-Expires\\\=60\\\&X-Amz-Signature\\\=46a152b506ec8c5f31375ff24b68cfa5adb5f4fed2d8fc00371d41188e03bc1d\\\&X-Amz-SignedHeaders\\\=host\ https://s3.amazonaws.com/cache_bucket/1234567890/cache-trusty-f3229c1e87844dd12bfcceadb2cd05cc2dfde87db8327fccb58b06138837fde6--node-5.11.tgz\\\?X-Amz-Algorithm\\\=AWS4-HMAC-SHA256\\\&X-Amz-Credential\\\=abcdef0123456789\\\%2F20161227\\\%2Fus-east-1\\\%2Fs3\\\%2Faws4_request\\\&X-Amz-Date\\\=20161227T032506Z\\\&X-Amz-Expires\\\=60\\\&X-Amz-Signature\\\=7e2ca367db270f873304c6afadbfe6457e56b9979b43aa6cabe7f27b7cda1241\\\&X-Amz-SignedHeaders\\\=host\ https://s3.amazonaws.com/cache_bucket/1234567890/cache--node-5.11.tgz\\\?X-Amz-Algorithm\\\=AWS4-HMAC-SHA256\\\&X-Amz-Credential\\\=abcdef0123456789\\\%2F20161227\\\%2Fus-east-1\\\%2Fs3\\\%2Faws4_request\\\&X-Amz-Date\\\=20161227T032506Z\\\&X-Amz-Expires\\\=60\\\&X-Amz-Signature\\\=36f3abfe577d7fe33ac23e9bfae5b74ff0d3e1469ded2247d3a3e9b09910df14\\\&X-Amz-SignedHeaders\\\=host --timing
+    travis_cmd rvm\ \$\(travis_internal_ruby\)\ --fuzzy\ do\ \$CASHER_DIR/bin/casher\ fetch\ https://s3.amazonaws.com/cache_bucket/1234567890//cache-trusty-f3229c1e87844dd12bfcceadb2cd05cc2dfde87db8327fccb58b06138837fde6--node-5.11.tgz\\\?X-Amz-Algorithm\\\=AWS4-HMAC-SHA256\\\&X-Amz-Credential\\\=abcdef0123456789\\\%2F20161227\\\%2Fus-east-1\\\%2Fs3\\\%2Faws4_request\\\&X-Amz-Date\\\=20161227T051531Z\\\&X-Amz-Expires\\\=60\\\&X-Amz-Signature\\\=469d9e255cf7e5897ca6396182d5cfb9c80d3f75bcdece07763cc08663e781e1\\\&X-Amz-SignedHeaders\\\=host\ https://s3.amazonaws.com/cache_bucket/1234567890//cache--node-5.11.tgz\\\?X-Amz-Algorithm\\\=AWS4-HMAC-SHA256\\\&X-Amz-Credential\\\=abcdef0123456789\\\%2F20161227\\\%2Fus-east-1\\\%2Fs3\\\%2Faws4_request\\\&X-Amz-Date\\\=20161227T051531Z\\\&X-Amz-Expires\\\=60\\\&X-Amz-Signature\\\=496614a44db4cdcaa56e2bf4a852313d72df9af2d90bfc6a0648aa4d1d25fb82\\\&X-Amz-SignedHeaders\\\=host\ https://s3.amazonaws.com/cache_bucket/1234567890/cache-trusty-f3229c1e87844dd12bfcceadb2cd05cc2dfde87db8327fccb58b06138837fde6--node-5.11.tgz\\\?X-Amz-Algorithm\\\=AWS4-HMAC-SHA256\\\&X-Amz-Credential\\\=abcdef0123456789\\\%2F20161227\\\%2Fus-east-1\\\%2Fs3\\\%2Faws4_request\\\&X-Amz-Date\\\=20161227T051531Z\\\&X-Amz-Expires\\\=60\\\&X-Amz-Signature\\\=7133690ac56d193a143a86ac2564f2a6c15f68fdfe69ef76d5ab13ab7202e1f8\\\&X-Amz-SignedHeaders\\\=host\ https://s3.amazonaws.com/cache_bucket/1234567890/cache--node-5.11.tgz\\\?X-Amz-Algorithm\\\=AWS4-HMAC-SHA256\\\&X-Amz-Credential\\\=abcdef0123456789\\\%2F20161227\\\%2Fus-east-1\\\%2Fs3\\\%2Faws4_request\\\&X-Amz-Date\\\=20161227T051531Z\\\&X-Amz-Expires\\\=60\\\&X-Amz-Signature\\\=69517215286c3ebc81369b20f2d3a9f58b404565fd5cbb8dc7161f6faa6dd1bb\\\&X-Amz-SignedHeaders\\\=host --timing
   fi
   if [[ -n $ERREXIT_SET ]]; then
     set -e
@@ -551,7 +551,7 @@ travis_fold start cache.2
   set +e
   if [[ -f $CASHER_DIR/bin/casher ]]; then
     travis_cmd type\ rvm\ \&\>/dev/null\ \|\|\ source\ \~/.rvm/scripts/rvm --timing
-    travis_cmd rvm\ \$\(travis_internal_ruby\)\ --fuzzy\ do\ \$CASHER_DIR/bin/casher\ push\ https://s3.amazonaws.com/cache_bucket/1234567890//cache-trusty-f3229c1e87844dd12bfcceadb2cd05cc2dfde87db8327fccb58b06138837fde6--node-5.11.tgz\\\?X-Amz-Algorithm\\\=AWS4-HMAC-SHA256\\\&X-Amz-Credential\\\=abcdef0123456789\\\%2F20161227\\\%2Fus-east-1\\\%2Fs3\\\%2Faws4_request\\\&X-Amz-Date\\\=20161227T032506Z\\\&X-Amz-Expires\\\=60\\\&X-Amz-Signature\\\=7b45b1771f63f810534651d53e5b192a451bb02e2dd5c265142f43129d674076\\\&X-Amz-SignedHeaders\\\=host --timing
+    travis_cmd rvm\ \$\(travis_internal_ruby\)\ --fuzzy\ do\ \$CASHER_DIR/bin/casher\ push\ https://s3.amazonaws.com/cache_bucket/1234567890//cache-trusty-f3229c1e87844dd12bfcceadb2cd05cc2dfde87db8327fccb58b06138837fde6--node-5.11.tgz\\\?X-Amz-Algorithm\\\=AWS4-HMAC-SHA256\\\&X-Amz-Credential\\\=abcdef0123456789\\\%2F20161227\\\%2Fus-east-1\\\%2Fs3\\\%2Faws4_request\\\&X-Amz-Date\\\=20161227T051531Z\\\&X-Amz-Expires\\\=60\\\&X-Amz-Signature\\\=e2b511ceeeb5ac2a339111b53e791943a5a2b79797d83ed8920a35ed0c180031\\\&X-Amz-SignedHeaders\\\=host --timing
   fi
   if [[ -n $ERREXIT_SET ]]; then
     set -e
