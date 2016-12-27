@@ -2,7 +2,7 @@
   "name": "angular.js-server",
   "author": "Antoine LUCAS <antoine.lucas.australia@gmail.com>",
   "scripts": {
-    "get-slimer": "sh install-slimerjs.sh",
+    "getslimer": "sh install-slimerjs.sh",
     "bower": "./node_modules/.bin/bower install",
     "typings": "./node_modules/.bin/typings install",
     "build": "./node_modules/.bin/webpack",
@@ -10,7 +10,7 @@
     "supertest": " --require source-map-support/register",
     "test": "rm -Rf ./coverage ; ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test -- -R spec",
     "codecov": "./node_modules/.bin/codecov",
-    "install": "npm run get-slimer ; npm run bower ; npm run typings"
+    "install": "npm run getslimer ; npm run bower ; npm run typings"
   },
   "pre-commit": [],
   "main": "dist/ng-server.js",
