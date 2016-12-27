@@ -23,6 +23,7 @@ install:
   - npm run bower
   - npm run typings
   - npm run build
+  - npm run get-slimer
 node_js:
   - "5.11"
 notifications:
