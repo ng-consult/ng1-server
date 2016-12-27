@@ -50,6 +50,7 @@ var serve = (expressApp, description, port) => {
 
         const server = expressApp.listen(port, function () {
             debug(description + ' started on 127.0.0.1:' + port);
+
             resolve( {
                 server: server,
                 description: description,
@@ -58,6 +59,7 @@ var serve = (expressApp, description, port) => {
         });
 
         process.once('uncaughtException',  (err) => {
+            debug('Some **** happened', err);
             reject(err);
         });
     });
@@ -112,9 +114,9 @@ module.exports.startWebServers = function (restServerURL, cb) {
     const apiServer = require('./api/api-server');
     const rfcServer = require('./rfc/server');
 
-    const debug = false;
-    const jadeClassicServer = require('./pug/classic.server')({debug: debug});
-    const jadePreRenderServer = require('./pug/pre-render.server')({debug: debug});
+    const appDebug = false;
+    const jadeClassicServer = require('./pug/classic.server')({debug: appDebug});
+    const jadePreRenderServer = require('./pug/pre-render.server')({debug: appDebug});
     //const jadeMiddleWareServer = require('./pug/middleware.server')();
 
     //var swigClassicServer = require('./swig/classic.server')();
@@ -135,9 +137,9 @@ module.exports.startWebServers = function (restServerURL, cb) {
         serve(apiServer, 'api.server', 8080)
     ];
 
-    if(typeof restServerURL == 'string' &&  restServerURL.length > 0) {
-        const jadeClassicServerREST = require('./pug/classic.server')({restServerURL: restServerURL, restCache: true});
-        const swigClassicServerREST = require('./swig/pre-render.server')({restServerURL: restServerURL, restCache: true});
+    if(typeof restServerURL === 'string' &&  restServerURL.length > 0) {
+        const jadeClassicServerREST = require('./pug/classic.server')({restServerURL: restServerURL, restCache: true, debug: appDebug});
+        const swigClassicServerREST = require('./swig/pre-render.server')({restServerURL: restServerURL, restCache: true, debug: appDebug});
         promiseArray.push(serve(jadeClassicServerREST, 'jade - no server side rendering with REST caching', 3002));
         promiseArray.push(serve(swigClassicServerREST, 'swig - no server side rendering with REST caching', 3006));
     }
@@ -145,7 +147,10 @@ module.exports.startWebServers = function (restServerURL, cb) {
     Promise.all(promiseArray).then((servers) => {
         debug('Servers started');
         cb(null, servers);
-    }, err => {
+    }, (err) => {
+        debug('Some error happened while starting the servers', err);
+        cb(err, null);
+    }).catch( (err) => {
         debug('Some error happened while starting the servers', err);
         cb(err, null);
     });

@@ -8,7 +8,6 @@ import {IServerConfig, IDomainInfo, UrlPool} from "./interfaces";
 import ServerLog from './serverLog';
 import SlimerProcess from "./slimerProcess";
 
-const slimerjs  = require('slimerjs');
 
 const debug = require('debug')('ngServer-Bridge_Pool');
 

@@ -111,12 +111,12 @@ module.exports.getSuccessUrl = (url, headers, expectedStatus, expectedHeaders, e
 
 module.exports.testStart = function() {
     describe('Starting test servers', function(){
-
-
+        
         it(`All servers should start with cacheServerURL = ${cacheServerURL}`, (done) => {
 
             utils.startWebServers(cacheServerURL, (err, servers) => {
                 if(err) {
+                    console.log('Error starting servers: ', err);
                     return done(err);
                 }
                 runningServers = servers;
