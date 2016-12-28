@@ -1,6 +1,6 @@
-# Angular.JS-server  
+# ng1-server  
 
-[![Build Status](https://travis-ci.org/ng-consult/angular.js-server.svg?branch=master)](https://travis-ci.org/ng-consult/angular.js-server)  [![codecov](https://codecov.io/gh/ng-consult/angular.js-server/branch/master/graph/badge.svg)](https://codecov.io/gh/ng-consult/angular.js-server)
+[![Build Status](https://travis-ci.org/ng-consult/ng1-server.svg?branch=master)](https://travis-ci.org/ng-consult/ng1-server)  [![codecov](https://codecov.io/gh/ng-consult/ng1-server/branch/master/graph/badge.svg)](https://codecov.io/gh/ng-consult/ng1-server)
 
 ## Introduction
 
@@ -21,7 +21,7 @@ What does server side rendering means for angular?
 - You can start developing your website with Angular, server side render it, and later port it into a mobile app with [cordova]()
 
 <!--
-[//]: # ##Comparing server prerendering with no prerendering
+[//]: # ##Comparing server pre-rendering with no pre-rendering
 
 [//]: # ![MEAN.js HTML with Angular.js](screenshots/no-prerender.png)
 [//]: # **MEAN.js HTML with Angular.js**
@@ -61,7 +61,7 @@ It is composed by 4 main components,
 This library uses 
 - [Slimer.JS](https://slimerjs.org/) to execute the angular app in a browser like environment on the server, 
 - [simple-url-cache](https://www.npmjs.com/package/simple-url-cache) to handle the url caching and 
-- [angular.js-server client library](https://github.com/a-lucas/angular.js-server-bower) to link this all together.
+- [ng1-server client library](https://github.com/ng-consult/ng1-server-bower) to link this all together.
 
 <!--
 To explain what is going on under the hood, let's use a todo case scenario and compare it with angular-server's flow.
@@ -78,7 +78,7 @@ To explain what is going on under the hood, let's use a todo case scenario and c
 *At this stage, the HTML you have in the web inspector is what ng-server aims for.*
 We'll call it **GoalHTML**.
 
-## Angular.js-server's flow
+## ng1-server's flow
 
 1. The browser request `/Todo`
 2. The server receives and ask : **Should `/Todo` be rendered ?**
@@ -152,7 +152,7 @@ cd bin
 
 **Dependencies**
 
-This library depends on a compatible version of [Angular.js-server client](https://github.com/a-lucas/angular.js-server-bower "Angular.js-server")
+This library depends on a compatible version of [ng1-server client](https://github.com/ng-consult/ng1-server-bower "ng1-server")
 
 Just add the `server` module as a dependency.
 

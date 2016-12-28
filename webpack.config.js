@@ -32,7 +32,7 @@ module.exports = {
     output: {
         path: path.join(__dirname, "dist"),
         filename: "[name].js",
-        library: 'angular.js-server',
+        library: 'ng1-server',
         libraryTarget: 'commonjs2'
     },
     resolve: {
