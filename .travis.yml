@@ -14,9 +14,9 @@ env:
   - CXX=g++-4.8 SLIMERJSLAUNCHER=$(which firefox) DISPLAY=:99.0 PATH=$TRAVIS_BUILD_DIR/slimerjs:$PATH
 cache:
   directories:
-#  - node_modules
+  - node_modules
   - test-server/bower
-#  - typings
+  - typings
 addons:
   firefox: "49.0"
 install:
@@ -29,29 +29,8 @@ node_js:
 notifications:
   email:
     recipients:
-      - cooluhuru@gmail.com
+      - antoine.lucas.australia@gmail.com
     on_success: never
     on_failure: always
 after_success:
   - npm run codecov
-
-
-
-# To run dockerr locally: sudo apt-get install libgmp3-dev
-# install gem and bundler
-
-# gem install travis -v 1.8.5 --no-rdoc --no-ri
-# rbenv rehash
-
-# cd ~
-#git clone https://github.com/travis-ci/travis-build.git
-#ln -s ~/travis-build/ ~/.travis/travis-build
-#sudo gem install bundler
-#bundle install --gemfile ~/.travis/travis-build/Gemfile
-#cd repo-dir/
-#travis login -g <github_token>
-#vim .travis.yaml
-#travis lint # to validate script
-#travis compile # to transform into shell script
-
-#docker pull quay.io/travisci/travis-node-js

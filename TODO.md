@@ -5,7 +5,7 @@
 - load testing
 - memory leak testing
 
-### Remove the style injected by angualr in the head on page load, so they are not defined two times
+### Remove the style injected by angular in the head on page load, so they are not defined two times
 
 It will help remove the tidy library used to display only the body in the tests
 
@@ -13,21 +13,6 @@ It will help remove the tidy library used to display only the body in the tests
 <style type="text/css">@charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-clo
 ```
         
-### better structure for the $window custom properties 
-
-    serverConfig {
-        
-        // on Server   
-        debug
-        timeout TODO
-        $restCacheEmitter
-        $cacheFactory
-        
-        // on Client
-        debug       
-        $angularServerCache                
-    }
-
 ### Pending
 
 1. More testing
@@ -46,11 +31,13 @@ It will help remove the tidy library used to display only the body in the tests
 
 ```
 
- Connect with http://elephant.io/ to teh renderer server, and then send the url/html to get the rendered result.
+ Connect with http://elephant.io/ to the renderer server, and then send the url/html to get the rendered result.
  
- <!--
-
+ 
 ### Steps for log visuzalization
+
+
+<!--
 
 1 - install GrayLog
 

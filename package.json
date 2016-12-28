@@ -1,5 +1,5 @@
 {
-  "name": "angular.js-server",
+  "name": "ng1-server",
   "author": "Antoine LUCAS <antoine.lucas.australia@gmail.com>",
   "scripts": {
     "getslimer": "sh install-slimerjs.sh",
@@ -14,11 +14,11 @@
   },
   "pre-commit": [],
   "main": "dist/ng-server.js",
-  "version": "1.0.0-3",
-  "license": "MIT",
+  "version": "1.0.0-beta4",
+  "license": "GLGPL v3",
   "repository": {
     "type": "git",
-    "url": "https://github.com/a-lucas/angular.js-server.git"
+    "url": "https://github.com/ng-consult/ng1-server.git"
   },
   "engines": {
     "node": ">=5.12.0",

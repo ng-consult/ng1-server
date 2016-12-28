@@ -1,3 +1,0 @@
-/*
-    This is a prebuild image of the project at  
- */
