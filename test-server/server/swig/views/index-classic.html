@@ -1,15 +1,43 @@
 <html ng-app="myApp">
 <head>
-    <base href="/" />
+    <base href="/"/>
 </head>
 <body>
 
-    {% include "./angular.html" %}
+{% include "./angular.html" %}
 
-    <script src="public/angular/angular.js"></script>
-    <script src="public/angular-resource/angular-resource.js"></script>
-    <script src="public/angular-route/angular-route.js"></script>
-    <script src="public/ng1-server/dist/ng1-server.js"></script>
-    <script src="public/angular.js-server-test-client/dist/app.js"></script>
+<script src="public/angular/angular.js"></script>
+<script src="public/angular-resource/angular-resource.js"></script>
+<script src="public/angular-route/angular-route.js"></script>
+<script src="public/ng1-server/dist/ng1-server.js"></script>
+<script src="public/angular.js-server-test-client/dist/app.js"></script>
+<script type="text/javascript">
+    if (typeof Object.assign != 'function') {
+        (function () {
+            Object.assign = function (target) {
+                'use strict';
+                if (target === undefined || target === null) {
+                    throw new TypeError('Cannot convert undefined or null to object');
+                }
+
+                var output = Object(target);
+                for (var index = 1; index < arguments.length; index++) {
+                    var source = arguments[index];
+                    if (source !== undefined && source !== null) {
+                        for (var nextKey in source) {
+                            if (source.hasOwnProperty(nextKey)) {
+                                output[nextKey] = source[nextKey];
+                            }
+                        }
+                    }
+                }
+                return output;
+            };
+        })();
+    }
+    window.serverConfig = window.serverConfig || {};
+
+    window.serverConfig = Object.assign(window.serverConfig, {{JSON.stringify(ngServerConf)}});
+</script>
 </body>
 </html>

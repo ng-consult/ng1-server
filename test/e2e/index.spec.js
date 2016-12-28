@@ -117,42 +117,44 @@ describe('Starting tests', function() {
 
     });
 
-/*
-    describe.skip("SWIG - E2E", function() {
-        testServer.testConnect();
+
+    describe("SWIG - E2E", function() {
+        testNgServer.testStart();
+        testWebServer.testStart();
 
         var confSwig = [
             {
                 prefix: 'noserver-swig',
                 desc: "No Server Rendering",
-                url: "http://127.0.0.1:3003",
+                url: "http://localhost:3001",
                 equals: [],
                 cache: false
             },
             {
                 prefix: 'server-swig',
                 desc: "Server Rendering",
-                url: "http://127.0.0.1:3004",
+                url: "http://localhost:3006",
                 equals: ['js-disabled', 'js-enabled'],
                 cache: true
-            },
+            }/*,
             {
                 prefix: 'server-middleware-swig',
                 desc: "Server MiddleWare Rendering",
                 url: "http://127.0.0.1:3005",
                 equals: ['js-disabled', 'js-enabled'],
                 cache: true
-            }
+            }*/
         ];
 
-        common.describeURL('/Main/500', confSwig);
+        common.testDescribeURL('/Main/500', confSwig);
 
-        common.describeURL('/Todo', confSwig);
+        common.testDescribeURL('/Todo', confSwig);
 
-        common.closePhantomJS();
+        common.testClosePhantomJS();
 
-        testServer.testClose();
-    })
-*/
+        testWebServer.testStop();
+        testNgServer.testStop();
+    });
+
 });
 

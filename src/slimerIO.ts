@@ -42,7 +42,7 @@ export class SlimerIO {
     }
 
     private initializePage(url: string) {
-        console.log('initializing slimer-socket.io');
+        //console.log('initializing slimer-socket.io');
         //console.log(getHTML(url));
         this.page = webpage.create();
 

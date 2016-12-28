@@ -49,7 +49,7 @@ page.onConsoleMessage = (msg, lineNum, sourceId) => {
 };
 
 page.onLoadStarted = () => {
-    console.log('onLoadStarted');
+    //console.log('onLoadStarted');
 };
 
 page.onResourceError = (error) => {
@@ -83,7 +83,7 @@ page.onResourceTimeout = (error) => {
 
         socket.on(MSG.ERROR + uid, () => {
             socket.close();
-            console.log('closing with code ' + ENUM_SLIMER_ERRORS.NETWORK_ERROR);
+            //console.log('closing with code ' + ENUM_SLIMER_ERRORS.NETWORK_ERROR);
             slimer.exit(ENUM_SLIMER_ERRORS.NETWORK_ERROR);
         });
     });
@@ -110,7 +110,7 @@ page.onInitialized = () => {
 
         switch (data.type) {
             case 'idle':
-                console.log('IDLE EVENT CAUGHT');
+                //console.log('IDLE EVENT CAUGHT');
                 slimer.exit(0);
                 break;
             default:
@@ -130,7 +130,7 @@ page.onInitialized = () => {
             debug: false
         });
         window.addEventListener('Idle', () => {
-            console.log('Idle event caught in slimerPage.ts');
+            //console.log('Idle event caught in slimerPage.ts');
             window['callPhantom']({type: 'idle'})
         });
     }, uid, bridge_internal_url, PROXY_URL);
@@ -234,7 +234,7 @@ if (renderType === 'url') {
 } else {
     try {
         page.setContent(html, url);
-        console.log('page.setContent() called');
+        //console.log('page.setContent() called');
     } catch (e) {
         console.log('Error setting up content');
         console.log(html);
