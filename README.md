@@ -37,14 +37,16 @@ What does server side rendering means for angular?
 It is composed by 4 main components, 
 
 1. **The Client library**
-    By design, can be platform independent, language independent. This is a simple websocket client that queries the render for an url or an url+html. It gets notified in Real time by **(2)** about the status of the query.
+    By design, can be platform independent, language independent. This is a simple websocket client that queries the render for an url or an url+html. It gets notified in Real time by 
+    **(the bridge)** about the status of the query.
 2. **The Bridge**
-    The Bridge has two socket servers listening on two different ports. First port is dedicated for external communications with the client **(1)**. The second port is dedicated to internal communications with **(4)**.
+    The Bridge has two socket servers listening on two different ports. First port is dedicated for external communications with the client **(the client)**. 
+    The second port is dedicated to internal communications with **(the Angular client module)**.
     Bridge reponsabilties are : 
-    - Listen for **(1)**, and update **(1)** in real time as soon someting new happens( queues, starting, finished, error)
-    - Manage the internal pool of 1's requests
-    - Spawn processes launching a [slimer.js]() instance rendering the URL/HTML (1) ask for.
-    - Once the webapp launches inside slimer, listen socket requests from **(4)** about logging and application state (`error` | `idle`)        
+    - Listen and updates the **(the client library)** in real time as soon someting new happens( queues, starting, finished, error)
+    - Manage the internal pool of requests
+    - Spawn processes launching a [slimer.js](https://slimerjs.org/) instance rendering the URL/HTML.
+    - Once the webapp launches inside slimer, listen socket requests from **the ngServer client module** about logging and application state (`error` | `idle`)        
 
 3. **A Cache Web Server.**
     The cache server is a custom proxy that will cache urls depending on regex rules you specify in the config file `slimerRestCacheRules.js`
@@ -53,11 +55,11 @@ It is composed by 4 main components,
     - The Webapp client module to fetch $http REST queries and templates.
     
 4. **NgServer client module**
-    This library modifies severall providers : `$cacheFactory`, `$q`, `$log` and connects to **(2)**'s socket server.
-    Once `IDLE`, it then export the `$cacheFactory`'s content that has been cached server side to **(2)** alongside with the page's rendered HTML.
+    This library modifies severall providers : `$cacheFactory`, `$q`, `$log` and connects to **(the bridge)**'s socket server.
+    Once `IDLE`, it then export the `$cacheFactory`'s content that has been cached server side to **(the bridge)** alongside with the page's rendered HTML.
      
 This library uses 
-- [Slimer.JS]() to execute the angular app in a browser like environment on the server, 
+- [Slimer.JS](https://slimerjs.org/) to execute the angular app in a browser like environment on the server, 
 - [simple-url-cache](https://www.npmjs.com/package/simple-url-cache) to handle the url caching and 
 - [angular.js-server client library](https://github.com/a-lucas/angular.js-server-bower) to link this all together.
 
@@ -125,29 +127,24 @@ This is a work in progress, later, this will be packaged into a `.deb` file, and
 
 You need to get node installed and a `REDIS` server available.
 
-First, you will need to modify the files in `REPOSITORY_PATH/bin/configSample`. and edit your redis connection infos.
+First, you will need to modify the files in `REPOSITORY_PATH/bin/configYaml`. and edit your redis connection infos.
 
 Then 
 
 ```bash
 #Terminal 1
-cd REPOSITORY_PATH/bin 
-chmod +x *
-DEBUG=ngServer* ./master.js REPOSITORY_PATH/bin/configSample
+cd REPOSITORY_PATH/test-server/server 
+DEBUG=test-server,ngServer* node test-app.js
 ```
 
-By Default, ngServer listen on port **8881**. 
+By Default, ngServer listen on port **8881, 8882 and 8883**. 
 
-To check if this works, you can run inside these commands: 
+To check if this works, you can run this: 
 
 ```bash
 #Terminal 2
-cd test-server/server
-DEBUG=test-server,ngServer* node test-app.js
-
-#Terminal 3
 cd bin
-./aaa.js
+./client.js
 ```
 
 ### Integrating with your app: 
@@ -167,7 +164,7 @@ Your angular app must use [html5mode](). The reason behind this requirement is t
 
 ***Angular.js 1.5.x***
 
-This has been written with 1.5.x in mind.
+This has been written with 1.5.x in mind - but it should work with 1.3+ .
 
 ### Running the client
  
@@ -310,6 +307,33 @@ Then you need to include the module `server` as a dependency in your AngularJS a
 npm install angular.js-server
 ```
 -->
+
+# Caching and rendering rules
+
+There are 3 configuration files, all filled up with regexes.
+
+**serverRenderRules.yml**
+
+Tells the server which URL it should pre-render. Those not pre-rendered will return the original HTML.
+
+`strategy` is `always` or `never`
+`rules[]` contains a list of Regexes. If strategy is always, then every URL matching this list will be pre-rendered. Otherwise they will be ignored. 
+
+**serverCacheRules.yml** 
+
+Now the URL is pre-rendered, should the server cache this URL for next time?
+
+**slimerRestCacheRules.yml**
+
+Configures what dependencies / REST url will be cached.
+
+ex1: Scripts dependencies, want to cache all calls to angular-ui ? angular-material? your sources? This is recommended because this will greatly improves the pre-rendering speed.
+
+ex2: Some $http rest calls are known to be static? Some other changes once in a while? You can cache them too !
+
+Both `serverCacheRules.yml` and `slimerRestCacheRules.yml` files format specification follows [redis-url-cache config file format](https://ng-consult.github.io/redis-url-cache/api.html#config.cache-rules).
+
+
 #WIP
 
 This work is incomplete and in progress - DON'T use it on prod withouth prior testing.
