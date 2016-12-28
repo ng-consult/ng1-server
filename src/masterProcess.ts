@@ -3,27 +3,27 @@ import * as fs from 'fs-extra';
 import * as async from  'async';
 import * as yaml from 'js-yaml';
 import {IServerConfig} from './interfaces';
-import {CacheCreator, CacheEngineCB, Instance, CacheRules} from 'redis-url-cache';
+import {CacheCreator, CacheEngineCB, CacheRules} from 'redis-url-cache';
 import Spawner from './spawner';
 import ServerLog from './serverLog';
-import * as CacheServer from 'cdn-server';
-import {ICDNConfig} from "cdn-server/index";
+import {CacheServer, ICDNConfig} from 'cdn-server';
+
 
 const debug = require('debug')('ngServer');
 
 class MasterProcess {
 
     //private serverLog: ServerLog;
-    private CCC_BinPath:string;
+    private bridgeBinPath:string;
     private serverConfig:IServerConfig;
     private spawnBridge: Spawner;
-    private cdnServer: CacheServer.CacheServer;
+    private cdnServer: CacheServer;
 
     constructor(private configDir:string) {
         debug('DIRNAME = ', __dirname);
 
-        this.CCC_BinPath =  path.resolve( __dirname + './../bin/ccc.js');
-        debug('BIN PATH = ', this.CCC_BinPath);
+        this.bridgeBinPath =  path.resolve( __dirname + './../bin/bridge.js');
+        debug('BIN PATH = ', this.bridgeBinPath);
 
 
         if (!fs.existsSync(configDir)) {
@@ -75,7 +75,7 @@ class MasterProcess {
                     return cb(err);
                     //this.serverLog.log('server', ["Error creating cache for", cacheData.t], {rules: cacheData.r, err: err, instance: cacheData.t});
                 } else {
-                    this.launchCCC();
+                    this.launchBridge();
                     this.launchCDNServer( () => {
                         cb(null);
                     });
@@ -94,15 +94,13 @@ class MasterProcess {
         });
     }
 
-    private launchCCC() {
-        this.spawnBridge = new Spawner('Bridge', this.CCC_BinPath);
+    private launchBridge() {
+        this.spawnBridge = new Spawner('Bridge', this.bridgeBinPath);
         this.spawnBridge.setParameters([this.configDir]);
         this.spawnBridge.launch(false, ()=>{}, ()=>{});
     }
 
     private launchCDNServer( cb: Function) {
-
-
 
         const cacheRules:CacheRules = CacheEngineCB.helpers.unserializeCacheRules(yaml.load(fs.readFileSync(path.join(this.configDir, 'slimerRestCacheRules.yml'), 'utf8')));
 

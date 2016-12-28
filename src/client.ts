@@ -9,8 +9,8 @@ class Client {
 
     private socket: SocketIOClient.Socket;
 
-    constructor(private CCC_Domain:string) {
-        this.socket = io.connect(this.CCC_Domain);
+    constructor(private bridgeAddress:string) {
+        this.socket = io.connect(this.bridgeAddress);
         this.socket.on('connect', () => {
             debug('Client connected to Bridge');
         });

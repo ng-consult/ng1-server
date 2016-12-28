@@ -95,7 +95,7 @@ export default class Bridge_S1 {
             uid: uid,
             status: status.status
         });
-        logger.debug('Bridge_S1 emit.CCC_MSG_1.RENDER_STATUS');
+        logger.debug('Bridge_S1 emit.Bridge_MSG_1.RENDER_STATUS');
         Bridge_S1.sockets[socketID].emit(MSG.RENDER_STATUS, status);
     }
 

@@ -48,7 +48,7 @@ const redisUtils = require('./common/redis');
 
 describe('Starting tests', function() {
 
-    this.timeout(5000);
+    this.timeout(50000);
 
 
     describe('creating rest & Server Instances', () => {
@@ -56,14 +56,30 @@ describe('Starting tests', function() {
     });
 
 
-    describe('Testing test server connectivity',  () => {
+    describe('Testing start test server and ngServer connectivity',  () => {
         testWebServer.testStart();
-        testWebServer.testStop();
+        testNgServer.testStart();
     });
 
-    describe('Testing ngServer connectivity', () => {
-        testNgServer.testStart();
+/*
+    describe('testing connectivity', () => {
+        testWebServer.getSuccessUrl('http://127.0.0.1:8080/products/500', [], 200, [], false);
+    });
+*/
+    /*
+    describe.only('59 seconds', () => {
+        it('waits', (done) => {
+            setTimeout(()=> {
+                done();
+            }, 49000)
+        });
+
+    });
+*/
+
+    describe('Testing stop test & ngServer connectivity', () => {
         testNgServer.testStop();
+        testWebServer.testStop();
     });
 
     describe("JADE - E2E", () => {

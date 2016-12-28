@@ -90,7 +90,7 @@ export default class Bridge_S2 {
                             ServerLog.Log.child({uid: response.uid, script: 'Bridge_S2'}).error({response: response, err: err});
                             throw err;
                         }
-                        debug('Cache on CCC_MSG_2.CACHE_IT status = ', status);
+                        debug('Cache on Bridge_MSG_2.CACHE_IT status = ', status);
                     });
                 }
                 Bridge_Pool.sendHTML_to_Client(response.uid, superHTML);

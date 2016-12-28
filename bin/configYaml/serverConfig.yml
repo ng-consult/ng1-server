@@ -15,9 +15,9 @@ socketServers:
    host: '127.0.0.1'
    port: 8882
  proxy:
-     protocol: 'http://'
-     host: '127.0.0.1'
-     port: 8883
+   protocol: 'http://'
+   host: '127.0.0.1'
+   port: 8883
 redisConfig:
  host: '127.0.0.1'
  port: 6379

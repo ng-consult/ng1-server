@@ -71,6 +71,7 @@ module.exports.getSuccessUrl = (url, headers, expectedStatus, expectedHeaders, e
 
         it(`should retrieve with a a statusCode of ${expectedStatus}`, (done) => {
             timer = Date.now();
+            console.log('GOING TO REQUEST', buildRequestURL(url));
             request({
                 uri: buildRequestURL(url),
                 method: 'GET',
@@ -111,7 +112,7 @@ module.exports.getSuccessUrl = (url, headers, expectedStatus, expectedHeaders, e
 
 module.exports.testStart = function() {
     describe('Starting test servers', function(){
-        
+
         it(`All servers should start with cacheServerURL = ${cacheServerURL}`, (done) => {
 
             utils.startWebServers(cacheServerURL, (err, servers) => {
