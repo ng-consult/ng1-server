@@ -8,7 +8,7 @@
     "build": "./node_modules/.bin/webpack",
     "tap": "./node_modules/.bin/babel-node test-tape/socketServer.js | ./node_modules/.bin/tap-spec",
     "supertest": " --require source-map-support/register",
-    "test": "rm -Rf ./coverage ; DEBUG=test-server,ngServer* ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test -- -R spec",
+    "test": "rm -Rf ./coverage ;./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test -- -R spec",
     "codecov": "./node_modules/.bin/codecov",
     "install": "npm run getslimer ; npm run bower ; npm run typings"
   },

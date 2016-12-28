@@ -1,6 +1,6 @@
 # Angular.JS-server  
 
-<!--[![Build Status](https://travis-ci.org/a-lucas/angular.js-server.svg?branch=master)](https://travis-ci.org/a-lucas/angular.js-server)-->
+[![Build Status](https://travis-ci.org/ng-consult/angular.js-server.svg?branch=master)](https://travis-ci.org/ng-consult/angular.js-server)  [![codecov](https://codecov.io/gh/ng-consult/angular.js-server/branch/master/graph/badge.svg)](https://codecov.io/gh/ng-consult/angular.js-server)
 
 ## Introduction
 
