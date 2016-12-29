@@ -382,13 +382,10 @@ Enables the REST caching functionality. Every subsequent $http call will be goin
  
 **restServerURL** *default = null*
 
-if `restCacheEnabled`, this setting is required. The restServerURL will proxy all $http request, and will cache them according to the `slimerRestCacheRules.yml` rules.
- 
-
+If `restCacheEnabled`, this setting is required. The restServerURL will proxy all $http request, and will cache them according to the `slimerRestCacheRules.yml` rules.
 
 
 ## Server configuration
-
 
 ###serverConfig.yml
 
@@ -454,14 +451,14 @@ Tells the server which URL it should pre-render. Those not pre-rendered will ret
 
 Example 1: pre-render every URLs.
 
-```
+```yaml
 strategy: 'always'
 rules: []
 ```
 
 Example 2: pre-render only URLS ending with `.html`.
 
-```
+```yaml
 strategy: 'always'
 rules: 
     - /.*\.html$/   
@@ -470,7 +467,7 @@ rules:
 
 Example 3: pre-render everything execpt URLS containing `user`.
 
-```
+```yaml
 strategy: 'never'
 rules: 
     - /user/   
