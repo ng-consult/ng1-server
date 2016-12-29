@@ -15,8 +15,3 @@ cd ..
 rm -Rf slimerjs_git
 
 echo "SlimerJS installed"
-
-#wget http://download.slimerjs.org/releases/0.10.1/slimerjs-0.10.1.zip
-#unzip slimerjs-0.10.1.zip
-#mv slimerjs-0.10.1 ./slimerjs
-#rm slimerjs-0.10.1.zip

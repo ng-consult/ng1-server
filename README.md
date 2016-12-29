@@ -45,10 +45,10 @@ It gets notified in real time by **the bridge** about the status of the query.
 
 The Bridge has two socket servers listening on two different ports. First port is dedicated for external communications with the **client**. 
 The second port is dedicated to internal communications with **the Angular client module (ng1-server-bower)**.
-Bridge reponsabilities are : 
-    - Listen and updates the **the client** in real time as soon something new happens( queues, starting, finished, error).
-    - Spawns and manage the internal pool of **slimer.js instances**.
-    - Once the web-app launches inside slimer, listen socket requests from **the ng1-server client module** about logging and application state (`error` | `idle`)        
+
+- Listen and updates the **the client** in real time as soon something new happens( queues, starting, finished, error).
+- Spawns and manage the internal pool of **slimer.js instances**.
+- Once the web-app launches inside slimer, listen socket requests from **the ng1-server client module** about logging and application state (`error` | `idle`)        
 
 ###The slimer.JS instances
 
@@ -62,29 +62,31 @@ Each pre-rendering is made via slimer.js which is similar to phantom.js. It simu
 ###The ng1-Server-bower client module
 
 This module is included inside the angualr web-app and modifies several providers to adapt with the server side environment.
+
 *When running on server:*
- - Forwards all $log calls to **the bridge**
- - When detecting the IDLE event, it sends the rendered HTML to the **bridge** AND exports the `$cacheFactory`'s content to **the bridge**
+
+- Forwards all $log calls to **the bridge**
+- When detecting the IDLE event, it sends the rendered HTML to the **bridge** AND exports the `$cacheFactory`'s content to **the bridge**
     
 *When running on the client's browser:*
- - Replays the `$cacheFactory` content for faser client side rendering
- - If enabled, forward all `$http` calls to the **cache web server**
+
+- Replays the `$cacheFactory` content for faser client side rendering
+- If enabled, forward all `$http` calls to the **cache web server**
     
 ###A Cache Web Server
 
 The cache server is a custom proxy/cdn that will cache urls depending on regex rules you specify in the config file `slimerRestCacheRules.yaml`
 It is used by **the slimmer.js instances** and **the ng1-server-bower angualr module**
-    
-     
+         
 ## Main dependencies
 
 This library uses 
 
-- [Bunyan]() to log server related metrics and web app behavior. It also integrtes with [Graylog]()
+- [Bunyan](https://github.com/trentm/node-bunyan) to log server related metrics and web app behavior. It also integrtes with [Graylog](https://www.graylog.org/)
 - [Slimer.JS](https://slimerjs.org/) to execute the angular app in a browser like environment on the server, 
 - [redis-url-cache](https://www.npmjs.com/package/redis-url-cache) to handle the url caching and 
 - [ng1-server client library](https://github.com/ng-consult/ng1-server-bower) to link this all together.
-- [socket-io]() to establish communication between the application modules. 
+- [socket-io](http://socket.io/) to establish communication between the application modules. 
 
 <!--
 To explain what is going on under the hood, let's use a todo case scenario and compare it with angular-server's flow.
@@ -179,7 +181,7 @@ Just add the `server` module as a dependency.
 
 ***html5mode***
 
-Your angular app must use [html5mode](). The reason behind this requirement is that browsers don't send the hashbang fragment to the server.
+Your angular app must use [html5mode](https://docs.angularjs.org/guide/$location). The reason behind this requirement is that browsers don't send the hashbang fragment to the server.
 
 ***Angular.js 1.5.x***
 
@@ -331,7 +333,24 @@ npm install angular.js-server
 
 ## Client configuration
 
-You'll need to define a global `serverConfig` variable for the client app.
+You shouldn't have to change a line of code into your angular.js existing web-app.
+
+*install ng1-server-bower*
+
+```bash
+
+bower install ng1-server
+```
+
+
+Then include the `server` module into your web-app.
+
+```javascript
+angular.module('your-app',['server']);
+```
+
+
+You will then have to define a global `serverConfig` variable for the client app.
 
 ```javascript
 
@@ -366,24 +385,103 @@ Enables the REST caching functionality. Every subsequent $http call will be goin
 if `restCacheEnabled`, this setting is required. The restServerURL will proxy all $http request, and will cache them according to the `slimerRestCacheRules.yml` rules.
  
 
+
+
 ## Server configuration
 
-### Caching and rendering rules
 
-There are 3 configuration files, all filled up with regexes.
+###serverConfig.yml
 
-**serverRenderRules.yml**
+```yaml
+domain: 'http://localhost:3000'
+timeout: 10
+logBasePath: '/logs'
+gelf:
+ enabled: true
+ host: '127.0.0.1'
+ port: 12203
+socketServers:
+ bridge_external:
+   protocol: 'http://'
+   host: '127.0.0.1'
+   port: 8881
+ bridge_internal:
+   protocol: 'http://'
+   host: '127.0.0.1'
+   port: 8882
+ proxy:
+   protocol: 'http://'
+   host: '127.0.0.1'
+   port: 8883
+redisConfig:
+ host: '127.0.0.1'
+ port: 6379
+ socket_keepalive: true
+
+```
+
+**domain** 
+
+Your webapp domain name (including the port)
+
+**timeout**
+
+Number in seconds after the server rendering will be considered as timed out.
+
+**logbasePath**
+
+Path where all server side log file will be stored. It will attempt to create them under `/` first. If failed, it will use the relative path from where the server is launched.
+
+**gelf**
+
+Turns Graylog supports on.
+
+**socketServers**
+
+Defines all server addresses
+
+**redisConfig**
+
+Information about your redis server.
+
+
+###serverRenderRules.yml
 
 Tells the server which URL it should pre-render. Those not pre-rendered will return the original HTML.
 
 `strategy` is `always` or `never`
 `rules[]` contains a list of Regexes. If strategy is always, then every URL matching this list will be pre-rendered. Otherwise they will be ignored. 
 
-**serverCacheRules.yml** 
+Example 1: pre-render every URLs.
 
-Now the URL is pre-rendered, should the server cache this URL for next time?
+```
+strategy: 'always'
+rules: []
+```
 
-**slimerRestCacheRules.yml**
+Example 2: pre-render only URLS ending with `.html`.
+
+```
+strategy: 'always'
+rules: 
+    - /.*\.html$/   
+```
+
+
+Example 3: pre-render everything execpt URLS containing `user`.
+
+```
+strategy: 'never'
+rules: 
+    - /user/   
+```
+
+
+###serverCacheRules.yml 
+
+Now the URL is pre-rendered, should the server cache this HTML for next time?
+
+###slimerRestCacheRules.yml
 
 Configures what dependencies / REST url will be cached.
 

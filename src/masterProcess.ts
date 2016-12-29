@@ -112,11 +112,6 @@ class MasterProcess {
             cacheRules: cacheRules
         };
 
-        debug('cahche Server = ');
-        debug(CacheServer);
-
-        debug('cdnConfig', cdnConfig);
-
         this.cdnServer = new CacheServer(cdnConfig, ServerLog.Log.child({
             script: 'CacheServer'
         }));

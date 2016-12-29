@@ -16,9 +16,10 @@ It will help remove the tidy library used to display only the body in the tests
 ### Pending
 
 1. More testing
-4. Write unit tests
-5. Write e2e tests  
-6. Package it into a .deb
+2. Write unit tests
+3. Package it into a .deb
+4. Benchmarks
+5. Memory testing
  
 ###PHP integration
 ```php
@@ -34,7 +35,7 @@ It will help remove the tidy library used to display only the body in the tests
  Connect with http://elephant.io/ to the renderer server, and then send the url/html to get the rendered result.
  
  
-### Steps for log visuzalization
+### Steps for log visualization
 
 
 <!--
