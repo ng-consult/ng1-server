@@ -34,34 +34,57 @@ What does server side rendering means for angular?
 ## How does it works?
 
 
-It is composed by 4 main components, 
+It is composed by 5 main components, 
 
-1. **The Client library**
-    By design, can be platform independent, language independent. This is a simple websocket client that queries the render for an url or an url+html. It gets notified in Real time by 
-    **(the bridge)** about the status of the query.
-2. **The Bridge**
-    The Bridge has two socket servers listening on two different ports. First port is dedicated for external communications with the client **(the client)**. 
-    The second port is dedicated to internal communications with **(the Angular client module)**.
-    Bridge reponsabilties are : 
-    - Listen and updates the **(the client library)** in real time as soon someting new happens( queues, starting, finished, error)
-    - Manage the internal pool of requests
-    - Spawn processes launching a [slimer.js](https://slimerjs.org/) instance rendering the URL/HTML.
-    - Once the webapp launches inside slimer, listen socket requests from **the ngServer client module** about logging and application state (`error` | `idle`)        
+###The Client
 
-3. **A Cache Web Server.**
-    The cache server is a custom proxy that will cache urls depending on regex rules you specify in the config file `slimerRestCacheRules.js`
-    The same cache server is used both by 
-    - Slimer.js to request external scripts (for example, Angular.js's cdn, you might want to cache it to accelerate the page rendering speed server side)
-    - The Webapp client module to fetch $http REST queries and templates.
+By design, it can be platform independent, language independent. This is a simple websocket client that queries the rendering server (Bridge) for an url or an url+html. 
+It gets notified in real time by **the bridge** about the status of the query.
+
+###The Bridge
+
+The Bridge has two socket servers listening on two different ports. First port is dedicated for external communications with the **client**. 
+The second port is dedicated to internal communications with **the Angular client module (ng1-server-bower)**.
+Bridge reponsabilities are : 
+    - Listen and updates the **the client** in real time as soon something new happens( queues, starting, finished, error).
+    - Spawns and manage the internal pool of **slimer.js instances**.
+    - Once the web-app launches inside slimer, listen socket requests from **the ng1-server client module** about logging and application state (`error` | `idle`)        
+
+###The slimer.JS instances
+
+Each pre-rendering is made via slimer.js which is similar to phantom.js. It simulates a real web-browser environment, and execute the URL/HTML.
+
+- Communicates with it parent's process trough websocket, sending runtimes error informations
+- Intercept every network communication ( `<script>` loading, '$http' calls, and forward them to the **cache  web server**.
+- Makes sure no zombie are left behind
+- Handles runtimes error
+
+###The ng1-Server-bower client module
+
+This module is included inside the angualr web-app and modifies several providers to adapt with the server side environment.
+*When running on server:*
+ - Forwards all $log calls to **the bridge**
+ - When detecting the IDLE event, it sends the rendered HTML to the **bridge** AND exports the `$cacheFactory`'s content to **the bridge**
     
-4. **NgServer client module**
-    This library modifies severall providers : `$cacheFactory`, `$q`, `$log` and connects to **(the bridge)**'s socket server.
-    Once `IDLE`, it then export the `$cacheFactory`'s content that has been cached server side to **(the bridge)** alongside with the page's rendered HTML.
+*When running on the client's browser:*
+ - Replays the `$cacheFactory` content for faser client side rendering
+ - If enabled, forward all `$http` calls to the **cache web server**
+    
+###A Cache Web Server
+
+The cache server is a custom proxy/cdn that will cache urls depending on regex rules you specify in the config file `slimerRestCacheRules.yaml`
+It is used by **the slimmer.js instances** and **the ng1-server-bower angualr module**
+    
      
+## Main dependencies
+
 This library uses 
+
+- [Bunyan]() to log server related metrics and web app behavior. It also integrtes with [Graylog]()
 - [Slimer.JS](https://slimerjs.org/) to execute the angular app in a browser like environment on the server, 
-- [simple-url-cache](https://www.npmjs.com/package/simple-url-cache) to handle the url caching and 
+- [redis-url-cache](https://www.npmjs.com/package/redis-url-cache) to handle the url caching and 
 - [ng1-server client library](https://github.com/ng-consult/ng1-server-bower) to link this all together.
+- [socket-io]() to establish communication between the application modules. 
 
 <!--
 To explain what is going on under the hood, let's use a todo case scenario and compare it with angular-server's flow.
@@ -105,10 +128,6 @@ We'll call it **GoalHTML**.
 -->
 ## Getting started
 
-### WARNING
-
-#### This only works on my local machine, due to external beta packages not published on NPM. Be patient. Also test are not there, so really not ready, but getting there.
-
 ### Installation
 
 ```bash
@@ -120,14 +139,13 @@ npm i
 npm run install
 ```
 
-
 ### Starting the server
 
 This is a work in progress, later, this will be packaged into a `.deb` file, and the config folder will be static.
 
 You need to get node installed and a `REDIS` server available.
 
-First, you will need to modify the files in `REPOSITORY_PATH/bin/configYaml`. and edit your redis connection infos.
+First, you will need to modify the files in `REPOSITORY_PATH/bin/configYaml`. and edit your redis connection info.
 
 Then 
 
@@ -146,6 +164,7 @@ To check if this works, you can run this:
 cd bin
 ./client.js
 ```
+
 
 ### Integrating with your app: 
 
@@ -308,7 +327,48 @@ npm install angular.js-server
 ```
 -->
 
-# Caching and rendering rules
+# Configuration
+
+## Client configuration
+
+You'll need to define a global `serverConfig` variable for the client app.
+
+```javascript
+
+var serverConfig = {
+    clientTimeoutValue: number,
+    debug: boolean,
+    httpCache: boolean,
+    restCacheEnabled: boolean,    
+    restServerURL: string
+}
+
+```
+
+**clientTimeoutValue** *default = 200*
+ 
+You shouldn't have to change/set this setting. It is used by the client to triggerthe IDLE status of the app. Once a potential IDLE status is detetcetd, it will check again in 200ms if the app status has changed since then. If no, then this is an IDLE.
+
+**debug** *default = false*
+
+Turns the `$log.dev` on the client. 
+
+**httpCache** *default = false*
+
+After the client replays all the $http calls, set $http.cache to this value.
+
+**restCacheEnabled** *default = false*
+
+Enables the REST caching functionality. Every subsequent $http call will be going trough the `restServerURL`. 
+ 
+**restServerURL** *default = null*
+
+if `restCacheEnabled`, this setting is required. The restServerURL will proxy all $http request, and will cache them according to the `slimerRestCacheRules.yml` rules.
+ 
+
+## Server configuration
+
+### Caching and rendering rules
 
 There are 3 configuration files, all filled up with regexes.
 
