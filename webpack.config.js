@@ -19,7 +19,6 @@ module.exports = {
 
     entry:  {
         'client': './src/client.ts',
-        'bridge-server': './src/bridge.ts',
         'ng-server': './src/masterProcess.ts',
         'slimer-page': './src/slimerPage.ts'
     } ,

@@ -8,23 +8,28 @@ import * as path from 'path';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs-extra';
 
-class Bridge {
+export default class Bridge {
 
     private Bridge_S1: Bridge_S1;
     private Bridge_S2: Bridge_S2;
+    private serverConfig: IServerConfig;
 
-    constructor(configDir: string) {
+    constructor(private configDir: string) {
 
         const serverConfigpath: string = path.join(configDir, 'serverConfig.yml');
 
-        const serverConfig: IServerConfig =  yaml.load(fs.readFileSync(serverConfigpath, 'utf8'));
+        this.serverConfig =  yaml.load(fs.readFileSync(serverConfigpath, 'utf8'));
 
-        Bridge_Pool.init(serverConfig);
-        ServerLog.initLogs(serverConfig.logBasePath, serverConfig.gelf);
+        Bridge_Pool.init(this.serverConfig);
+        ServerLog.initLogs(this.serverConfig.logBasePath, this.serverConfig.gelf);
 
+
+    }
+
+    start(cb: Function) : void {
         const logger = ServerLog.Log.child({ script: 'Bridge' });
 
-        const bbb = new Cache(configDir, (err) => {
+        const cache = new Cache(this.configDir, (err) => {
             if(err) {
                 if(typeof err === 'string') {
                     logger.error(new Error(err));
@@ -35,17 +40,21 @@ class Bridge {
             };
 
             try {
-                this.Bridge_S1 = new Bridge_S1(serverConfig.socketServers.bridge_external.port, bbb);
+                this.Bridge_S1 = new Bridge_S1(this.serverConfig.socketServers.bridge_external.port, cache);
 
-                this.Bridge_S2 = new Bridge_S2(serverConfig.socketServers.bridge_internal.port);
+                this.Bridge_S2 = new Bridge_S2(this.serverConfig.socketServers.bridge_internal.port);
+
+                cb();
             } catch(e) {
                 logger.error(e);
-                throw e;
+                cb(e);
             }
         });
     }
 
+    stop(cb: Function): void {
+        this.Bridge_S1.stop();
+        this.Bridge_S2.stop(cb);
+    }
+
 }
-
-
-export = Bridge;

@@ -12,15 +12,18 @@ const debug = require('debug')('ngServer-Bridge_S2');
 
 export default class Bridge_S2 {
 
+    private httpServer: http.Server;
+    private socketServer: SocketIO.Server;
+
     constructor(port: number) {
 
-        const httpServer  = http.createServer((req, res) => {
+        this.httpServer  = http.createServer((req, res) => {
             debug('requesting ', req.url);
             res.writeHead(500, {'Content-Type': 'text/html'});
             res.end('Forbidden');
         });
 
-        const server: SocketIO.Server = io.listen(httpServer, {
+        this.socketServer  = io.listen(this.httpServer, {
             allowRequest: function(handshake, cb){
                 debug(handshake._query);
 
@@ -34,9 +37,9 @@ export default class Bridge_S2 {
             }
         });
 
-        httpServer.listen(port);
+        this.httpServer.listen(port);
 
-        server.on('connection', socket => {
+        this.socketServer.on('connection', (socket: SocketIO.Socket) => {
 
             debug('bridge_internal new connection');
 
@@ -101,6 +104,14 @@ export default class Bridge_S2 {
                 // EEE disconnected
                 debug('bridge_internal  deconnected');
             });
+        });
+    }
+
+    stop(cb): void {
+
+        this.socketServer.close();
+        this.httpServer.close( () => {
+           cb();
         });
     }
 }

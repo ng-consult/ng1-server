@@ -4,7 +4,7 @@
     "angular": "~1.5.0",
     "angular-resource": "~1.5.0",
     "angular-route": "~1.5.0",
-    "ng1-server": "2.0.0-beta2",
+    "ng1-server": "2.0.0-beta3",
     "angular.js-server-test-client": "1.1.3"
   }
 }

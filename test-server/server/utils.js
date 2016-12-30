@@ -164,6 +164,7 @@ module.exports.startWebServers = function (restServerURL, cb) {
 
 let master = null;
 
+
 module.exports.startNgServer = (configPath, cb) => {
     const Master = require('./../../dist/ng-server');
     master = new Master(configPath);

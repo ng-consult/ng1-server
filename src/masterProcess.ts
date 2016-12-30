@@ -4,9 +4,9 @@ import * as async from  'async';
 import * as yaml from 'js-yaml';
 import {IServerConfig} from './interfaces';
 import {CacheCreator, CacheEngineCB, CacheRules} from 'redis-url-cache';
-import Spawner from './spawner';
 import ServerLog from './serverLog';
 import {CacheServer, ICDNConfig} from 'cdn-server';
+import Bridge from './bridge';
 
 
 const debug = require('debug')('ngServer');
@@ -14,18 +14,13 @@ const debug = require('debug')('ngServer');
 class MasterProcess {
 
     //private serverLog: ServerLog;
-    private bridgeBinPath:string;
     private serverConfig:IServerConfig;
-    private spawnBridge: Spawner;
     private cdnServer: CacheServer;
+    private bridge: Bridge;
 
     constructor(private configDir:string) {
         debug('DIRNAME = ', __dirname);
-
-        this.bridgeBinPath =  path.resolve( __dirname + './../bin/bridge.js');
-        debug('BIN PATH = ', this.bridgeBinPath);
-
-
+        
         if (!fs.existsSync(configDir)) {
             throw `The config dir doesn't exists ${configDir}`;
         }
@@ -70,16 +65,19 @@ class MasterProcess {
 
         debug('Starting');
 
-        async.parallel(parrallelFns, (err, results) => {
+        async.parallel(parrallelFns, (err) => {
                 if( err) {
                     return cb(err);
                     //this.serverLog.log('server', ["Error creating cache for", cacheData.t], {rules: cacheData.r, err: err, instance: cacheData.t});
                 } else {
-                    this.launchBridge();
-                    this.launchCDNServer( () => {
-                        cb(null);
+                    this.bridge = new Bridge(this.configDir);
+                    this.bridge.start( (err) => {
+                        if(err) return cb(err);
+                        this.launchCDNServer( (err) => {
+                            if(err) return cb(err);
+                            cb();
+                        });
                     });
-
                 }
             }
         );
@@ -87,17 +85,12 @@ class MasterProcess {
 
 
     stop(cb: Function) {
-        this.spawnBridge.exit();
-        this.cdnServer.stop( (err) => {
-            if(err) return cb(err);
-            cb();
+        this.bridge.stop( () => {
+            this.cdnServer.stop( (err) => {
+                if(err) return cb(err);
+                cb();
+            });
         });
-    }
-
-    private launchBridge() {
-        this.spawnBridge = new Spawner('Bridge', this.bridgeBinPath);
-        this.spawnBridge.setParameters([this.configDir]);
-        this.spawnBridge.launch(false, ()=>{}, ()=>{});
     }
 
     private launchCDNServer( cb: Function) {

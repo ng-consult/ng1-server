@@ -21,17 +21,19 @@ export default class Bridge_S1 {
 
     static sockets: socketCollection = {};
 
+    private server: SocketIO.Server;
+
     constructor(port: number, private cache: Cache) {
 
         debug('going to listen to port', port);
-        const server = io.listen(port, {
+        this.server = io.listen(port, {
             allowRequest: function(handshake, cb){
                 //todo Make sure only Client can connect
                 cb(null, true);
             }
         });
 
-        server.on('connection', socket => {
+        this.server.on('connection', socket => {
 
             debug('Bridge_S1 new connection ', socket.id)
             Bridge_S1.sockets[socket.id] = socket;
@@ -97,6 +99,10 @@ export default class Bridge_S1 {
         });
         logger.debug('Bridge_S1 emit.Bridge_MSG_1.RENDER_STATUS');
         Bridge_S1.sockets[socketID].emit(MSG.RENDER_STATUS, status);
+    }
+
+    stop(): void {
+        this.server.close();
     }
 
 }

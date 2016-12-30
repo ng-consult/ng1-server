@@ -6,7 +6,11 @@
 
 <!--Official site: https://a-lucas.github.io/angular.js-server/-->
 
-[Angular.js](https://angularjs.org/ "A super hero framework")  is a super heroic framework originally designed for web apps development. It usage has quickly expanded for hybrid mobile application development, with one mojo: one language to rule it all.
+> This is a server side rendering  for Angular 1. For Angular2+, you may look at [Angular universal](https://universal.angular.io/)
+
+> A port of this server to Angular2 is not on the roadmap - but it is technically possible to adapt ng1-server-bower for angular2+.
+
+[Angular.js](https://angularjs.org/ "A super hero framework") is a super heroic framework originally designed for web apps development. It usage has quickly expanded for hybrid mobile application development, with one mojo: one language to rule it all.
   
 The only missing piece is server-side rendering, which this package aims to fix. 
 
@@ -32,7 +36,6 @@ What does server side rendering means for angular?
 [//]: # You can check this out by yourself at this url: https://github.com/a-lucas/mean
 -->
 ## How does it works?
-
 
 It is composed by 5 main components, 
 
@@ -77,7 +80,23 @@ This module is included inside the angualr web-app and modifies several provider
 
 The cache server is a custom proxy/cdn that will cache urls depending on regex rules you specify in the config file `slimerRestCacheRules.yaml`
 It is used by **the slimmer.js instances** and **the ng1-server-bower angualr module**
+
          
+## Beta
+
+This is a beta, and it is still WIP.
+What need to be done before reaching stable release is : 
+
+
+- All cases for e2e testing have to be implemented [Documented here](test/README.md)
+- Packaging the server into `.deb`, `.rpm`, `mac os` and windows `.exe` binaries ( possible with [nexe](https://github.com/nexe) ) 
+
+## Test
+
+Testing methodology is [documented here](test/README.md)
+
+Simply run `npm run test` or [check the travis output](https://travis-ci.org/ng-consult/ng1-server)
+
 ## Main dependencies
 
 This library uses 
@@ -358,7 +377,7 @@ var serverConfig = {
     clientTimeoutValue: number,
     debug: boolean,
     httpCache: boolean,
-    restCacheEnabled: boolean,    
+    restCache: boolean,    
     restServerURL: string
 }
 
