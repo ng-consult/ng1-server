@@ -1,12 +1,13 @@
 # ng1-server  
 
-[![Build Status](https://travis-ci.org/ng-consult/ng1-server.svg?branch=master)](https://travis-ci.org/ng-consult/ng1-server)  [![codecov](https://codecov.io/gh/ng-consult/ng1-server/branch/master/graph/badge.svg)](https://codecov.io/gh/ng-consult/ng1-server)
+This is a server side rendering engine for Angular 1. For Angular2+, you may look at [Angular universal](https://universal.angular.io/),
+
+[![Build Status](https://travis-ci.org/ng-consult/ng1-server.svg?branch=master)](https://travis-ci.org/ng-consult/ng1-server)  
+[![codecov](https://codecov.io/gh/ng-consult/ng1-server/branch/master/graph/badge.svg)](https://codecov.io/gh/ng-consult/ng1-server)
 
 ## Introduction
 
 <!--Official site: https://a-lucas.github.io/angular.js-server/-->
-
-> This is a server side rendering  for Angular 1. For Angular2+, you may look at [Angular universal](https://universal.angular.io/)
 
 > A port of this server to Angular2 is not on the roadmap - but it is technically possible to adapt ng1-server-bower for angular2+.
 
@@ -35,6 +36,199 @@ What does server side rendering means for angular?
 
 [//]: # You can check this out by yourself at this url: https://github.com/a-lucas/mean
 -->
+
+
+## Getting started
+
+### Pre-requirement
+
+First install ng1-server globally
+
+```bash
+# Needs firefox engine
+sudo apt-get install firefox
+
+npm install -g ng1-server
+```
+
+Then install the angular client side ng-server module: 
+
+```bash
+bower install --save ng1-server
+```
+
+You will also need to have a [Redis](https://redis.io/) server available.
+
+***html5mode***
+
+Your angular app must use [html5mode](https://docs.angularjs.org/guide/$location). The reason behind this requirement is that browsers don't send the hashbang fragment to the server.
+
+***Angular.js 1.5.x***
+
+This has been written with 1.5.x in mind - but it should work with 1.3+ .
+
+
+### Client configuration
+
+Include the `server` module into your web-app.
+
+```javascript
+angular.module('your-app',['server']);
+```
+
+You will then have to define a global `serverConfig` variable for the client app.
+
+```javascript
+
+var serverConfig = {
+    clientTimeoutValue: number,
+    debug: boolean,
+    httpCache: boolean,
+    restCache: boolean,    
+    restServerURL: string
+}
+
+```
+
+**clientTimeoutValue** *default = 200*
+ 
+You shouldn't have to change/set this setting. It is used by the client to triggerthe IDLE status of the app. Once a potential IDLE status is detetcetd, it will check again in 200ms if the app status has changed since then. If no, then this is an IDLE.
+
+**debug** *default = false*
+
+Turns the `$log.dev` on the client. 
+
+**httpCache** *default = false*
+
+After the client replays all the $http calls, set $http.cache to this value.
+
+**restCacheEnabled** *default = false*
+
+Enables the REST caching functionality. Every subsequent $http call will be going trough the `restServerURL`. 
+ 
+**restServerURL** *default = null*
+
+If `restCacheEnabled`, this setting is required. The restServerURL will proxy all $http request, and will cache them according to the `slimerRestCacheRules.yml` rules.
+
+
+
+
+### ng-server configuration
+
+Create a folder `configYaml` isnide your webapp folder, and copy paste the content of `bin/configYaml` inside it.
+
+Modify the config files at your wish, then start the server passing the absolute path to your configYaml folder: 
+
+```bash
+ng1-server PATH-TO-configYaml
+```
+
+
+####serverConfig.yml
+
+```yaml
+domain: 'http://localhost:3000'
+timeout: 10
+logBasePath: '/logs'
+gelf:
+ enabled: true
+ host: '127.0.0.1'
+ port: 12203
+socketServers:
+ bridge_external:
+   protocol: 'http://'
+   host: '127.0.0.1'
+   port: 8881
+ bridge_internal:
+   protocol: 'http://'
+   host: '127.0.0.1'
+   port: 8882
+ proxy:
+   protocol: 'http://'
+   host: '127.0.0.1'
+   port: 8883
+redisConfig:
+ host: '127.0.0.1'
+ port: 6379
+ socket_keepalive: true
+
+```
+
+**domain** 
+
+Your webapp domain name (including the port)
+
+**timeout**
+
+Number in seconds after the server rendering will be considered as timed out.
+
+**logbasePath**
+
+Path where all server side log file will be stored. It will attempt to create them under `/` first. If failed, it will use the relative path from where the server is launched.
+
+**gelf**
+
+Turns Graylog supports on.
+
+**socketServers**
+
+Defines all server addresses
+
+**redisConfig**
+
+Information about your redis server.
+
+
+####serverRenderRules.yml
+
+Tells the server which URL it should pre-render. Those not pre-rendered will return the original HTML.
+
+`strategy` is `always` or `never`
+`rules[]` contains a list of Regexes. If strategy is always, then every URL matching this list will be pre-rendered. Otherwise they will be ignored. 
+
+Example 1: pre-render every URLs.
+
+```yaml
+strategy: 'always'
+rules: []
+```
+
+Example 2: pre-render only URLS ending with `.html`.
+
+```yaml
+strategy: 'always'
+rules: 
+    - /.*\.html$/   
+```
+
+
+Example 3: pre-render everything execpt URLS containing `user`.
+
+```yaml
+strategy: 'never'
+rules: 
+    - /user/   
+```
+
+
+####serverCacheRules.yml 
+
+Now the URL is pre-rendered, should the server cache this HTML for next time?
+
+####slimerRestCacheRules.yml
+
+Configures what dependencies / REST url will be cached.
+
+ex1: Scripts dependencies, want to cache all calls to angular-ui ? angular-material? your sources? This is recommended because this will greatly improves the pre-rendering speed.
+
+ex2: Some $http rest calls are known to be static? Some other changes once in a while? You can cache them too !
+
+Both `serverCacheRules.yml` and `slimerRestCacheRules.yml` files format specification follows [redis-url-cache config file format](https://ng-consult.github.io/redis-url-cache/api.html#config.cache-rules).
+
+
+
+
+
 ## How does it works?
 
 It is composed by 5 main components, 
@@ -93,8 +287,6 @@ What need to be done before reaching stable release is :
 
 ## Test
 
-Testing methodology is [documented here](test/README.md)
-
 Simply run `npm run test` or [check the travis output](https://travis-ci.org/ng-consult/ng1-server)
 
 ## Main dependencies
@@ -147,64 +339,7 @@ We'll call it **GoalHTML**.
 
 >> Note: All logging and error handling have been skipped for padding purposes
 -->
-## Getting started
 
-### Installation
-
-```bash
-# Needs firefox engine
-sudo apt-get install firefox
-
-# classic scripts
-npm i
-npm run install
-```
-
-### Starting the server
-
-This is a work in progress, later, this will be packaged into a `.deb` file, and the config folder will be static.
-
-You need to get node installed and a `REDIS` server available.
-
-First, you will need to modify the files in `REPOSITORY_PATH/bin/configYaml`. and edit your redis connection info.
-
-Then 
-
-```bash
-#Terminal 1
-cd REPOSITORY_PATH/test-server/server 
-DEBUG=test-server,ngServer* node test-app.js
-```
-
-By Default, ngServer listen on port **8881, 8882 and 8883**. 
-
-To check if this works, you can run this: 
-
-```bash
-#Terminal 2
-cd bin
-./client.js
-```
-
-
-### Integrating with your app: 
-
-
-**Dependencies**
-
-This library depends on a compatible version of [ng1-server client](https://github.com/ng-consult/ng1-server-bower "ng1-server")
-
-Just add the `server` module as a dependency.
-
-**Requirements**
-
-***html5mode***
-
-Your angular app must use [html5mode](https://docs.angularjs.org/guide/$location). The reason behind this requirement is that browsers don't send the hashbang fragment to the server.
-
-***Angular.js 1.5.x***
-
-This has been written with 1.5.x in mind - but it should work with 1.3+ .
 
 ### Running the client
  
@@ -247,7 +382,8 @@ client.renderHTML(url, html, function( response ) {
 
 
 ### File logging
-ngServer uses Bunyan to log usefull informations and any errors raised.
+
+ngServer uses Bunyan to log useful information and any errors raised.
 
 The following log files are created, depending on the value of `serverConfig.logBasePath`: 
 
@@ -347,166 +483,6 @@ Then you need to include the module `server` as a dependency in your AngularJS a
 npm install angular.js-server
 ```
 -->
-
-# Configuration
-
-## Client configuration
-
-You shouldn't have to change a line of code into your angular.js existing web-app.
-
-*install ng1-server-bower*
-
-```bash
-
-bower install ng1-server
-```
-
-
-Then include the `server` module into your web-app.
-
-```javascript
-angular.module('your-app',['server']);
-```
-
-
-You will then have to define a global `serverConfig` variable for the client app.
-
-```javascript
-
-var serverConfig = {
-    clientTimeoutValue: number,
-    debug: boolean,
-    httpCache: boolean,
-    restCache: boolean,    
-    restServerURL: string
-}
-
-```
-
-**clientTimeoutValue** *default = 200*
- 
-You shouldn't have to change/set this setting. It is used by the client to triggerthe IDLE status of the app. Once a potential IDLE status is detetcetd, it will check again in 200ms if the app status has changed since then. If no, then this is an IDLE.
-
-**debug** *default = false*
-
-Turns the `$log.dev` on the client. 
-
-**httpCache** *default = false*
-
-After the client replays all the $http calls, set $http.cache to this value.
-
-**restCacheEnabled** *default = false*
-
-Enables the REST caching functionality. Every subsequent $http call will be going trough the `restServerURL`. 
- 
-**restServerURL** *default = null*
-
-If `restCacheEnabled`, this setting is required. The restServerURL will proxy all $http request, and will cache them according to the `slimerRestCacheRules.yml` rules.
-
-
-## Server configuration
-
-###serverConfig.yml
-
-```yaml
-domain: 'http://localhost:3000'
-timeout: 10
-logBasePath: '/logs'
-gelf:
- enabled: true
- host: '127.0.0.1'
- port: 12203
-socketServers:
- bridge_external:
-   protocol: 'http://'
-   host: '127.0.0.1'
-   port: 8881
- bridge_internal:
-   protocol: 'http://'
-   host: '127.0.0.1'
-   port: 8882
- proxy:
-   protocol: 'http://'
-   host: '127.0.0.1'
-   port: 8883
-redisConfig:
- host: '127.0.0.1'
- port: 6379
- socket_keepalive: true
-
-```
-
-**domain** 
-
-Your webapp domain name (including the port)
-
-**timeout**
-
-Number in seconds after the server rendering will be considered as timed out.
-
-**logbasePath**
-
-Path where all server side log file will be stored. It will attempt to create them under `/` first. If failed, it will use the relative path from where the server is launched.
-
-**gelf**
-
-Turns Graylog supports on.
-
-**socketServers**
-
-Defines all server addresses
-
-**redisConfig**
-
-Information about your redis server.
-
-
-###serverRenderRules.yml
-
-Tells the server which URL it should pre-render. Those not pre-rendered will return the original HTML.
-
-`strategy` is `always` or `never`
-`rules[]` contains a list of Regexes. If strategy is always, then every URL matching this list will be pre-rendered. Otherwise they will be ignored. 
-
-Example 1: pre-render every URLs.
-
-```yaml
-strategy: 'always'
-rules: []
-```
-
-Example 2: pre-render only URLS ending with `.html`.
-
-```yaml
-strategy: 'always'
-rules: 
-    - /.*\.html$/   
-```
-
-
-Example 3: pre-render everything execpt URLS containing `user`.
-
-```yaml
-strategy: 'never'
-rules: 
-    - /user/   
-```
-
-
-###serverCacheRules.yml 
-
-Now the URL is pre-rendered, should the server cache this HTML for next time?
-
-###slimerRestCacheRules.yml
-
-Configures what dependencies / REST url will be cached.
-
-ex1: Scripts dependencies, want to cache all calls to angular-ui ? angular-material? your sources? This is recommended because this will greatly improves the pre-rendering speed.
-
-ex2: Some $http rest calls are known to be static? Some other changes once in a while? You can cache them too !
-
-Both `serverCacheRules.yml` and `slimerRestCacheRules.yml` files format specification follows [redis-url-cache config file format](https://ng-consult.github.io/redis-url-cache/api.html#config.cache-rules).
-
 
 #WIP
 

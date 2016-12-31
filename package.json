@@ -1,6 +1,9 @@
 {
   "name": "ng1-server",
   "author": "Antoine LUCAS <antoine.lucas.australia@gmail.com>",
+  "bin": {
+    "ng1-server": "bin/master.sh"
+  },
   "scripts": {
     "getslimer": "sh install-slimerjs.sh",
     "bower": "./node_modules/.bin/bower install",
@@ -14,7 +17,7 @@
   },
   "pre-commit": [],
   "main": "dist/ng-server.js",
-  "version": "1.0.0-beta6",
+  "version": "1.0.0-beta7",
   "license": "GLGPL v3",
   "repository": {
     "type": "git",
