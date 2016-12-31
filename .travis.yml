@@ -14,7 +14,7 @@ env:
   - CXX=g++-4.8 SLIMERJSLAUNCHER=$(which firefox) DISPLAY=:99.0 PATH=$TRAVIS_BUILD_DIR/slimerjs:$PATH
 cache:
   directories:
-  - node_modules
+  #- node_modules
   #- test-server/bower
   - typings
 addons:

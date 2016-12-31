@@ -42,13 +42,25 @@ What does server side rendering means for angular?
 
 ### Pre-requirement
 
-First install ng1-server globally
+
+First install ng1-server globally, firefox and xvfb
 
 ```bash
-# Needs firefox engine
-sudo apt-get install firefox
+# Needs firefox engine and  
+sudo apt-get install firefox xvfb
 
 npm install -g ng1-server
+```
+
+
+Start xvfb
+
+`!! TODO !! FIX slimer.js global path`
+
+```bash
+sh -e /etc/init.d/xvfb start
+SLIMERJSLAUNCHER=$(which firefox) DISPLAY=:99.0 
+
 ```
 
 Then install the angular client side ng-server module: 
