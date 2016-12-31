@@ -5,7 +5,7 @@ var jade = require('pug');
 var utils = require('./../utils').express;
 var path = require('path');
 var debug = require('debug')(require('./../utils').debugStr);
-var Client = require('./../../../dist/client');
+var Client = require('ng1-server-node-client');
 
 // todo write an express middleware that uses the client.
 
@@ -24,7 +24,7 @@ module.exports = (config) => {
         var url = 'http://127.0.0.1:3001' + req.url;
 
         debug('Calling client with url', url);
-        
+
         client.renderHTML(url, jadeHtml, (ngData) => {
             debug('jade Server render received response');
             debug(ngData);

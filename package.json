@@ -1,6 +1,7 @@
 {
   "name": "ng1-server",
   "author": "Antoine LUCAS <antoine.lucas.australia@gmail.com>",
+  "version": "1.0.0-beta8",
   "bin": {
     "ng1-server": "bin/master.sh"
   },
@@ -17,7 +18,6 @@
   },
   "pre-commit": [],
   "main": "dist/ng-server.js",
-  "version": "1.0.0-beta7",
   "license": "GLGPL v3",
   "repository": {
     "type": "git",
@@ -112,6 +112,7 @@
     "lodash": "^4.3.0",
     "mocha": "^3.0.2",
     "moment": "^2.11.2",
+    "ng1-server-node-client": "^1.0.0-beta0",
     "node-phantom": "^0.2.5",
     "phantom": "latest",
     "pre-commit": "^1.1.3",

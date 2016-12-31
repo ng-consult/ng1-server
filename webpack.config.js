@@ -18,7 +18,6 @@ nodeModules['system'] = 'commonjs system';
 module.exports = {
 
     entry:  {
-        'client': './src/client.ts',
         'ng-server': './src/masterProcess.ts',
         'slimer-page': './src/slimerPage.ts'
     } ,

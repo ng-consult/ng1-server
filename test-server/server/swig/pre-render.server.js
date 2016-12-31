@@ -5,7 +5,7 @@ var swig = require('swig');
 var utils = require('./../utils').express;
 var path = require('path');
 var debug = require('debug')(require('./../utils').debugStr);
-var Client = require('./../../../dist/client');
+var Client = require('ng1-server-node-client');
 
 module.exports = (config) => {
 

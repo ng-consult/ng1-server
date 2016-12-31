@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 "use strict";
-var Client = require('./../dist/client');
+var Client = require('ng1-server-node-client');
 var request = require('request');
 var debug = require('debug')('ngServer-test');
 var client = new Client('http://127.0.0.1:8881');

@@ -341,16 +341,23 @@ We'll call it **GoalHTML**.
 -->
 
 
-### Running the client
+### Clients
+
+So far, only one client [ng1-server-node-client](https://github.com/ng-consult/ng1-server-node-client) is implemented.
+
+Install it by running `npm install --save ng1-server-node-client` inside your web server project.
+ 
  
 The client connects to the ngServer port specified in the config.
 
 ```
-var Client = require('ngServerClient`);
+var Client = require('ng1-server-node-client`);
+
+#http://127.0.0.1:8881 is the BRidge_internal url defined inside your serverConfig.yaml
 
 var client = new Client('http://127.0.0.1:8881');
 
-client.renderHTML(url, function( response ) {
+client.renderURL(url, function( response ) {
     
 });
 
@@ -361,23 +368,10 @@ client.renderHTML(url, html, function( response ) {
 
 ```
 
-**Response's structure:** 
 
-```
-{
-  status: number,
-  html?: string  
-}
-
-```
-
-**Status codes:** 
-
-- **1** : This URL should never be pre-rendered as defined in the `configDir/serverRenderRules.js`
-- **2** : This URL has been pre-rendered correctly, the `response.html` property contains the result.
-- **4** : Some error happens, html has not been preprendered, `response.html` is not set.
-
-
+For more information, check  [ng1-server-node-client](https://github.com/ng-consult/ng1-server-node-client) 's README.
+ 
+ 
 ##Logging
 
 

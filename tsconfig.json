@@ -17,7 +17,6 @@
   "files": [
     "typings/index.d.ts",
     "src/bridge.ts",
-    "src/client.ts",
     "src/masterProcess.ts"
   ],
   "exclude": [
