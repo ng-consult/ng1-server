@@ -178,6 +178,9 @@ const parseTrace = (trace: string) => {
 
 const onError = (msg, trace) => {
 
+    console.log(JSON.stringify(trace));
+    console.log(JSON.stringify(msg));
+
     if(typeof trace === 'string') {
 
         console.log('STRING TRACE = ', trace);

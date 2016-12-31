@@ -5,8 +5,10 @@ var fs = require('fs-extra');
 var path = require('path');
 var chai = require('chai');
 var debug = require('debug')('mocha-test');
-
+var request = require('request');
 var expect = chai.expect;
+var async = require('async');
+var tidy = require('./tidyHtml');
 
 module.exports.testClosePhantomJS = function () {
 
@@ -21,133 +23,80 @@ module.exports.testClosePhantomJS = function () {
     });
 };
 
-module.exports.testDescribeURL = function (url, conf) {
+module.exports.getRequestedData = function(url, cb) {
 
-    var getFileName = function (url, prefix, name) {
-        return path.join(__dirname, '/../outputs', encodeURIComponent(url), prefix + '.' + name + '.html');
+    var data = {
+        server: {
+            cache: {
+                html: null,
+                networkRequests: []
+            },
+            nocache: {
+                html: null,
+                networkRequests: []
+            }
+        },
+        noserver: {
+            cache: {
+                html: null,
+                networkRequests: []
+            },
+            nocache: {
+                html: null,
+                networkRequests: []
+            }
+        }
+    };
+    const urls = [3000, 3001, 3002, 3003].map( (port) => {
+        return `http://localhost:${port}/${url}`;
+    });
+
+    async.map(urls, getRequestedDati, (err, results) => {
+        if(err) return cb(err);
+        data.server.cache = results[3];
+        data.server.nocache = results[1];
+        data.noserver.cache = results[2];
+        data.noserver.nocache = results[0];
+        cb(null, data);
+
+    });
+};
+
+var getRequestedDati = function(url, cb) {
+
+    var results = {
+        curl: null,
+        js: null,
+        networkRequests: null,
+        curlTime: 0,
+        jsTime: 0
     };
 
-    describe('Creating the output directory: ', function () {
-        it('Should create the directory ' + path.join(__dirname, '/../outputs', encodeURIComponent(url)), function (done) {
-            try {
-                fs.mkdirsSync(path.join(__dirname, '/../outputs', encodeURIComponent(url)));
-                done();
-            }
-            catch (e) {
-                done(e);
-            }
-        });
-    });
+    const t1 = Date.now();
+    request(url, function (error, response, body) {
+        if(error) {
+            debug(error);
+            return cb(error);
+        }
 
-    describe(`URL: ${url}`, function () {
+        if (!error && response.statusCode == 200) {
+            const regex = /<body[^>]*>((.|[\n\r])*)<\/body>/im;
+            const matches = regex.exec(body);
+            results.curl = tidy(matches[0]);
+            results.curlTime = Date.now() - t1;
 
-        conf.forEach(function (serverData) {
-
-            describe(serverData.desc, function () {
-
-                it('phantom with js disabled', function (done) {
-
-                    phantomHelper.jsDisabled(serverData.url + url).then((html) => {
-                        debug('noJS received ', url);
-                        fs.writeFileSync(getFileName(url, serverData.prefix, 'js-disabled'), html, 'utf-8');
-                        done();
-                    }, (err) => {
-                        debug(err);
-                        done(err);
-                    }).catch( (e) => {
-                        debug('excetion', e);
-                        done(e);
-                    });
-                });
-
-                it('phantom with js enabled - wait 4000ms', function (done) {
-
-                    phantomHelper.jsEnabled(serverData.url + url).then( html => {
-                        debug('success JS', url);
-                        fs.writeFileSync(getFileName(url, serverData.prefix, 'js-enabled'), html, 'utf-8');
-                        done();
-                    }, err => {
-                        debug(err);
-                        done(err);
-                    }).catch((err) =>{
-                        debug(err);
-                        done(err);
-                    });
-                });
-
-                if (serverData.equals.length >= 2) {
-                    it(serverData.equals[0] + ' should render the same HTML than ' + serverData.equals[1], function (done) {
-                        try {
-                            var file1 = fs.readFileSync(getFileName(url, serverData.prefix, serverData.equals[0]), 'utf-8').trim();
-                            var file2 = fs.readFileSync(getFileName(url, serverData.prefix, serverData.equals[1]), 'utf-8').trim();
-                            expect(file1).to.equal(file2);
-                            done();
-                        } catch( e)  {
-                            done(e);
-                        }
-                    });
-                }
-
-                /*
-                 if(serverData.cache === true) {
-
-                 beforeEach(function() {
-                 cachedUrl = cacheEngine.url(url);
-                 });
-
-                 it('The files should have been cached by the server', function(done) {
-                 cachedUrl.has().then(function(cached) {
-                 expect(cached).to.be.ok;
-                 done();
-                 }, function(e) {
-                 debug('cachedURL = ', cachedUrl);
-                 done(e);
-                 }).catch(function(err){
-                 done(err);
-                 });
-                 });
-
-                 it('The server cached file should match phantom.js-enabled\'s output', function(done) {
-
-                 try {
-                 var phantomJSHtml = fs.readFileSync( getFileName(url, serverData.prefix, 'js-enabled'), 'utf-8').trim();
-                 cachedUrl.get().then(function(content) {
-                 expect(tidy(content).trim()).to.eql(phantomJSHtml);
-                 done();
-                 }, function(err) {
-                 done(err);
-                 }).catch(function(err) {
-                 done(err)
-                 });
-
-                 } catch(e) {
-                 done(e);
-                 }
-
-                 });
-
-                 it('We remove the server\'s cached file', function(done) {
-                 cachedUrl.delete().then(function(removed) {
-                 expect(removed).eql(true);
-                 done();
-                 }, function(err){
-                 done(err);
-                 })
-                 });
-
-                 };*/
-
-                it('Should remove test files ok', function (done) {
-                    try {
-                        fs.unlinkSync(getFileName(url, serverData.prefix, 'js-disabled'));
-                        fs.unlinkSync(getFileName(url, serverData.prefix, 'js-enabled'));
-                        done();
-                    } catch (e) {
-                        done(e);
-                    }
-                });
+            phantomHelper.jsEnabled(url).then( data => {
+                results.js = data.html;
+                results.networkRequests = data.networkRequests;
+                results.jsTime = Date.now() - results.curlTime;
+                return cb(null, results);
+            }, err => {
+                debug(err);
+                return cb(err);
+            }).catch((err) =>{
+                debug(err);
+                return cb(err);
             });
-        });
+        }
     });
-
 };

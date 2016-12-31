@@ -76,13 +76,15 @@ module.exports.jsDisabled = (url) => {
         });
 
     return resultDefer.promise;
-}
+};
 
 module.exports.jsEnabled = (url ) => {
     let sitepage = null;
 
     const resultDefer = q.defer();
     const pjs = startPhantomInstance();
+
+    const networkRequests = [];
 
     debug('Starting JS-Enabled for url', url);
     pjs
@@ -102,13 +104,17 @@ module.exports.jsEnabled = (url ) => {
                 //done(JSON.stringify(err));
             });
             page.on('onConsoleMessage', false, function (msg, lineNum, sourceId) {
-                console.log('***CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
+                debug('***CONSOLE: ' + msg + ' (from line #' + lineNum + ' in "' + sourceId + '")');
             });
 
             page.on('onResourceError', false, function(resourceError) {
                 console.error('Unable to load resource (#' + resourceError.id + 'URL:' + resourceError.url + ')');
                 console.error('Error code: ' + resourceError.errorCode + '. Description: ' + resourceError.errorString);
                 resultDefer.reject(resourceError);
+            });
+
+            page.on('onResourceRequested', false, function(requestData) {
+                networkRequests.push(requestData.url);
             });
 
             page.on('onResourceTimeout', false, function(request) {
@@ -127,7 +133,7 @@ module.exports.jsEnabled = (url ) => {
                 }
                 console.error(msgStack.join('\n'));
                 resultDefer.reject(msgStack);
-            })
+            });
 
             sitepage = page;
             return sitepage.setting('javascriptEnabled', true);
@@ -150,15 +156,12 @@ module.exports.jsEnabled = (url ) => {
             debug('logic comming');
 
             sitepage.on('onCallback', false, function (data) {
-                console.log('INSIDE CALLBACK');
-
                 defer.resolve(true);
             });
 
             sitepage.evaluate(function () {
-                console.log('adding event listener');
                 window.addEventListener('Idle', function () {
-                    console.log('INSIDE eventListenr - phantom IDLE caught');
+                    //debug('INSIDE eventListenr - phantom IDLE caught');
                     window.callPhantom({});
                 });
             });
@@ -170,7 +173,7 @@ module.exports.jsEnabled = (url ) => {
             return sitepage.property('content')
         })
         .then(function (contentPromise) {
-            resultDefer.resolve(tidy(contentPromise));
+            resultDefer.resolve( {html: tidy(contentPromise), networkRequests: networkRequests});
             return sitepage.close();
         })
         .catch(function (err) {

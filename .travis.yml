@@ -15,7 +15,7 @@ env:
 cache:
   directories:
   - node_modules
-  - test-server/bower
+  #- test-server/bower
   - typings
 addons:
   firefox: "49.0"

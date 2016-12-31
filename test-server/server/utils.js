@@ -119,8 +119,8 @@ module.exports.startWebServers = function (restServerURL, cb) {
     const jadePreRenderServer = require('./pug/pre-render.server')({debug: appDebug});
     //const jadeMiddleWareServer = require('./pug/middleware.server')();
 
-    //var swigClassicServer = require('./swig/classic.server')();
-    //var swigPreRenderServer = require('./swig/pre-render.server')();
+    var swigClassicServer = require('./swig/classic.server')({debug: appDebug});
+    var swigPreRenderServer = require('./swig/pre-render.server')({debug: appDebug});
     //var swigMiddleWareServer = require('./swig/middleware.server')();
 
     const promiseArray = [
@@ -128,8 +128,8 @@ module.exports.startWebServers = function (restServerURL, cb) {
         serve(jadePreRenderServer, 'jade - server side rendering', 3001),
         //serve(jadeMiddleWareServer, 'jade - server side rendering middleware', 3003),
 
-        //serve(swigClassicServer, 'swig - no server side rendering', 3004),
-        //serve(swigPreRenderServer, 'swig - server side rendering', 3005),
+        serve(swigClassicServer, 'swig - no server side rendering', 3004),
+        serve(swigPreRenderServer, 'swig - server side rendering', 3005),
         //serve(swigMiddleWareServer, 'swig - server side rendering middleware', 3007),
 
         serve(rfcServer, 'rfc server', 3030),
@@ -138,10 +138,15 @@ module.exports.startWebServers = function (restServerURL, cb) {
     ];
 
     if(typeof restServerURL === 'string' &&  restServerURL.length > 0) {
-        const jadeClassicServerREST = require('./pug/classic.server')({restServerURL: restServerURL, restCache: true, debug: appDebug});
+        const jadeClassicServerRESTNoRendering = require('./pug/classic.server')({restServerURL: restServerURL, restCache: true, debug: appDebug});
+        const swigClassicServerRESTNoRendering = require('./swig/classic.server')({restServerURL: restServerURL, restCache: true, debug: appDebug});
+        promiseArray.push(serve(jadeClassicServerRESTNoRendering, 'jade - no server side rendering with REST caching', 3002));
+        promiseArray.push(serve(swigClassicServerRESTNoRendering, 'swig - no server side rendering with REST caching', 3006));
+
+        const jadeClassicServerREST = require('./pug/pre-render.server')({restServerURL: restServerURL, restCache: true, debug: appDebug});
         const swigClassicServerREST = require('./swig/pre-render.server')({restServerURL: restServerURL, restCache: true, debug: appDebug});
-        promiseArray.push(serve(jadeClassicServerREST, 'jade - no server side rendering with REST caching', 3002));
-        promiseArray.push(serve(swigClassicServerREST, 'swig - no server side rendering with REST caching', 3006));
+        promiseArray.push(serve(jadeClassicServerREST, 'jade - server side rendering with REST caching', 3003));
+        promiseArray.push(serve(swigClassicServerREST, 'swig - server side rendering with REST caching', 3007));
     }
 
     Promise.all(promiseArray).then((servers) => {

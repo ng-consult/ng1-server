@@ -2,9 +2,6 @@ doctype html
 html(ng-app="myApp")
     head
         base(href="/")
-    body
-
-        include angular
         script(src="public/angular/angular.js")
         script(src="public/angular-resource/angular-resource.js")
         script(src="public/angular-route/angular-route.js")
@@ -37,3 +34,5 @@ html(ng-app="myApp")
             }
             window.serverConfig = window.serverConfig || {};
             window.serverConfig = Object.assign(window.serverConfig, !{JSON.stringify(ngServerConf)} );
+    body
+        include angular
