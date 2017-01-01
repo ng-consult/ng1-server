@@ -55,14 +55,6 @@ npm install -g ng1-server
 
 Start xvfb
 
-`!! TODO !! FIX slimer.js global path`
-
-```bash
-sh -e /etc/init.d/xvfb start
-SLIMERJSLAUNCHER=$(which firefox) DISPLAY=:99.0 
-
-```
-
 Then install the angular client side ng-server module: 
 
 ```bash

@@ -1,0 +1,10 @@
+[Unit]
+Description=xvfb daemon for ng1-server : a server side renderer for Angular 1.5+ applications
+
+[Service]
+ExecStart=/usr/bin/Xvfb :99 -screen 0 1024x768x24 -fbdir /var/run -ac
+Type=simple
+Environment=PID_DIR=/var/run/xvfb
+
+[Install]
+WantedBy=default.target

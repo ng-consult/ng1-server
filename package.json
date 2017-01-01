@@ -1,7 +1,7 @@
 {
   "name": "ng1-server",
   "author": "Antoine LUCAS <antoine.lucas.australia@gmail.com>",
-  "version": "1.0.0-beta9",
+  "version": "1.0.0-beta10",
   "bin": {
     "ng1-server": "bin/master.sh"
   },
