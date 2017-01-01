@@ -1,6 +1,7 @@
 domain: 'http://localhost:3000'
 timeout: 10
 logBasePath: '/logs'
+preboot: false
 gelf:
  enabled: true
  host: '127.0.0.1'

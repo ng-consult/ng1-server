@@ -20,7 +20,6 @@ What does server side rendering means for angular?
 - You don't have to modify your existing Angular.js code base.
 - You can have big SEO benefits
 - You get support for REST caching out of the box
-- You get Support for REST pre-loading on page load out of the box
 - Your website will behave as a web application - which means a much richer UX.
 - You get huge performances benefits by server side caching REST API and templateCache and replay them in your client instantly on page load
 - You can start developing your website with Angular, server side render it, and later port it into a mobile app with [cordova]()
@@ -113,8 +112,6 @@ Enables the REST caching functionality. Every subsequent $http call will be goin
 **restServerURL** *default = null*
 
 If `restCacheEnabled`, this setting is required. The restServerURL will proxy all $http request, and will cache them according to the `slimerRestCacheRules.yml` rules.
-
-
 
 
 ### ng-server configuration
@@ -229,10 +226,6 @@ ex2: Some $http rest calls are known to be static? Some other changes once in a 
 
 Both `serverCacheRules.yml` and `slimerRestCacheRules.yml` files format specification follows [redis-url-cache config file format](https://ng-consult.github.io/redis-url-cache/api.html#config.cache-rules).
 
-
-
-
-
 ## How does it works?
 
 It is composed by 5 main components, 
@@ -285,23 +278,23 @@ It is used by **the slimmer.js instances** and **the ng1-server-bower angualr mo
 This is a beta, and it is still WIP.
 What need to be done before reaching stable release is : 
 
-
 - All cases for e2e testing have to be implemented [Documented here](test/README.md)
 - Packaging the server into `.deb`, `.rpm`, `mac os` and windows `.exe` binaries ( possible with [nexe](https://github.com/nexe) ) 
+
 
 ## Test
 
 Simply run `npm run test` or [check the travis output](https://travis-ci.org/ng-consult/ng1-server)
 
+
 ## Main dependencies
 
-This library uses 
-
 - [Bunyan](https://github.com/trentm/node-bunyan) to log server related metrics and web app behavior. It also integrtes with [Graylog](https://www.graylog.org/)
+- [Ng1-server client library](https://github.com/ng-consult/ng1-server-bower) to link this all together.
+- [Preboot](https://github.com/angular/preboot) to manage the transition of state (i.e. events, focus, data) from a server-generated web view to a client-generated web view.
+- [Redis Url Cache](https://www.npmjs.com/package/redis-url-cache) to handle the url caching and 
 - [Slimer.JS](https://slimerjs.org/) to execute the angular app in a browser like environment on the server, 
-- [redis-url-cache](https://www.npmjs.com/package/redis-url-cache) to handle the url caching and 
-- [ng1-server client library](https://github.com/ng-consult/ng1-server-bower) to link this all together.
-- [socket-io](http://socket.io/) to establish communication between the application modules. 
+- [Socket-io](http://socket.io/) to establish communication between the application modules. 
 
 <!--
 To explain what is going on under the hood, let's use a todo case scenario and compare it with angular-server's flow.
@@ -350,7 +343,6 @@ We'll call it **GoalHTML**.
 So far, only one client [ng1-server-node-client](https://github.com/ng-consult/ng1-server-node-client) is implemented.
 
 Install it by running `npm install --save ng1-server-node-client` inside your web server project.
- 
  
 The client connects to the ngServer port specified in the config.
 

@@ -1,7 +1,7 @@
 {
   "name": "ng1-server",
   "author": "Antoine LUCAS <antoine.lucas.australia@gmail.com>",
-  "version": "1.0.0-beta10",
+  "version": "1.0.0-beta11",
   "bin": {
     "ng1-server": "bin/master.sh"
   },
@@ -14,7 +14,8 @@
     "supertest": " --require source-map-support/register",
     "test": "rm -Rf ./coverage ;./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test -- -R spec",
     "codecov": "./node_modules/.bin/codecov",
-    "install": "npm run getslimer ; npm run bower ; npm run typings"
+    "preboot": "mkdir ./test-server/bower/preboot ; cp ./node_modules/preboot/__dist/preboot_browser.js ./test-server/bower/preboot/",
+    "install": "npm run getslimer ; npm run bower ; npm run typings ; npm run preboot"
   },
   "pre-commit": [],
   "main": "dist/ng-server.js",
@@ -66,6 +67,7 @@
     "node-slimerjs": "^1.0.1",
     "node-uuid": "^1.4.7",
     "npm": "^3.10.9",
+    "preboot": "^4.5.2",
     "redis-url-cache": "^2.1.2",
     "request": "^2.75.0",
     "sinon": "^1.17.6",

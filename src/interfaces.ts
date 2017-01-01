@@ -22,6 +22,7 @@ export interface IServerConfig {
     domain:string,
     timeout:number,
     logBasePath:string,
+    preboot: boolean,
     gelf: {
         enabled: boolean,
         host?: string,

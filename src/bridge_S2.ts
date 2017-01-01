@@ -7,13 +7,14 @@ import {MSG, PARAM_WEBAPP_LOG, PARAM_SLIMER_ERROR, PARAM_IDLE, ENUM_CACHE_STATUS
 import {RedisStorageConfig, CacheEngineCB, Instance} from 'redis-url-cache';
 import {Cache, UrlCache} from "./cache";
 import ServerLog from './serverLog';
-
+const preboot = require('preboot');
 const debug = require('debug')('ngServer-Bridge_S2');
 
 export default class Bridge_S2 {
 
     private httpServer: http.Server;
     private socketServer: SocketIO.Server;
+    preboot: boolean = false;
 
     constructor(port: number) {
 
@@ -82,9 +83,16 @@ export default class Bridge_S2 {
 
                 const serialized = JSON.stringify(response.exportedCache);
                 const script = `<script type="text/javascript">window.ngServerCache = ${serialized};</script></head>`;
-                const superHTML: string = response.html.replace(/<\/head>/, script);
+                let superHTML: string = response.html.replace(/<\/head>/, script);
 
-                //debug('Query strategy = ', Bridge_Pool.pool[response.uid].query);
+
+                if(this.preboot) {
+                    const prebootOptions = {
+                        appRoot: 'document.body'
+                    };
+                    const inlinePrebootCode = '<script type="text/javascript">' + preboot.getInlineCode(prebootOptions) + '</script></body>';
+                    superHTML = superHTML.replace(/<\/body>/, inlinePrebootCode);
+                }
 
                 if( Bridge_Pool.pool[response.uid].query.strategy === ENUM_CACHE_STATUS.RENDER_CACHE) {
                     const newUrl = new UrlCache(Bridge_Pool.pool[response.uid].query.url);

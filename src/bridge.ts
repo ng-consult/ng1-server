@@ -22,9 +22,8 @@ export default class Bridge {
 
         Bridge_Pool.init(this.serverConfig);
         ServerLog.initLogs(this.serverConfig.logBasePath, this.serverConfig.gelf);
-
-
     }
+
 
     start(cb: Function) : void {
         const logger = ServerLog.Log.child({ script: 'Bridge' });
@@ -43,6 +42,7 @@ export default class Bridge {
                 this.Bridge_S1 = new Bridge_S1(this.serverConfig.socketServers.bridge_external.port, cache);
 
                 this.Bridge_S2 = new Bridge_S2(this.serverConfig.socketServers.bridge_internal.port);
+                this.Bridge_S2.preboot = this.serverConfig.preboot;
 
                 cb();
             } catch(e) {
