@@ -24,35 +24,27 @@ What does server side rendering means for angular?
 - You get huge performances benefits by server side caching REST API and templateCache and replay them in your client instantly on page load
 - You can start developing your website with Angular, server side render it, and later port it into a mobile app with [cordova]()
 
-<!--
-[//]: # ##Comparing server pre-rendering with no pre-rendering
 
-[//]: # ![MEAN.js HTML with Angular.js](screenshots/no-prerender.png)
-[//]: # **MEAN.js HTML with Angular.js**
+##Comparing server pre-rendering with no pre-rendering
 
-[//]: # ![MEAN.js HTML with Angular.js-server](screenshots/prerender.png)
-[//]: # **MEAN.js HTML with Angular.js-server**
+![MEAN.js HTML with Angular.js](old/screenshots/no-prerender.png)
+**MEAN.js HTML with Angular.js**
 
-[//]: # You can check this out by yourself at this url: https://github.com/a-lucas/mean
--->
-
+![MEAN.js HTML with Angular.js-server](old/screenshots/prerender.png)
+**MEAN.js HTML with Angular.js-server**
 
 ## Getting started
 
 ### Pre-requirement
 
-
 First install ng1-server globally, firefox and xvfb
 
 ```bash
-# Needs firefox engine and  
-sudo apt-get install firefox xvfb
+# Dependencies
+sudo apt-get install firefox xvfb git
 
 npm install -g ng1-server
 ```
-
-
-Start xvfb
 
 Then install the angular client side ng-server module: 
 
@@ -95,7 +87,7 @@ var serverConfig = {
 
 **clientTimeoutValue** *default = 200*
  
-You shouldn't have to change/set this setting. It is used by the client to triggerthe IDLE status of the app. Once a potential IDLE status is detetcetd, it will check again in 200ms if the app status has changed since then. If no, then this is an IDLE.
+You shouldn't have to change/set this setting. It is used by the client to trigger the IDLE status of the app. Once a potential IDLE status is detected, it will check again in 200ms if the app status has changed since then. If no, then this is an IDLE.
 
 **debug** *default = false*
 
@@ -105,9 +97,9 @@ Turns the `$log.dev` on the client.
 
 After the client replays all the $http calls, set $http.cache to this value.
 
-**restCacheEnabled** *default = false*
+**restCache** *default = false*
 
-Enables the REST caching functionality. Every subsequent $http call will be going trough the `restServerURL`. 
+Enables the REST caching functionality. Every  $http call will be going trough the `restServerURL`. 
  
 **restServerURL** *default = null*
 
@@ -116,9 +108,9 @@ If `restCacheEnabled`, this setting is required. The restServerURL will proxy al
 
 ### ng-server configuration
 
-Create a folder `configYaml` isnide your webapp folder, and copy paste the content of `bin/configYaml` inside it.
+Create a folder `configYaml` inside your webapp folder, and copy paste the content of [bin/configYaml](/bin/configYaml) inside it.
 
-Modify the config files at your wish, then start the server passing the absolute path to your configYaml folder: 
+Modify the config files at your wish, then start the server passing the absolute path to your `configYaml ` folder: 
 
 ```bash
 ng1-server PATH-TO-configYaml
@@ -130,6 +122,7 @@ ng1-server PATH-TO-configYaml
 ```yaml
 domain: 'http://localhost:3000'
 timeout: 10
+preboot: false
 logBasePath: '/logs'
 gelf:
  enabled: true
@@ -163,22 +156,26 @@ Your webapp domain name (including the port)
 
 Number in seconds after the server rendering will be considered as timed out.
 
+**preboot**
+
+Enables [preboot](https://github.com/angular/preboot) support
+
 **logbasePath**
 
 Path where all server side log file will be stored. It will attempt to create them under `/` first. If failed, it will use the relative path from where the server is launched.
 
 **gelf**
 
-Turns Graylog supports on.
+Turns [Graylog](https://www.graylog.org/) logging on.
 
 **socketServers**
 
 Defines all server addresses
+> ng1-server  launches all 3 servers on different ports, make sure these are available.
 
 **redisConfig**
 
 Information about your redis server.
-
 
 ####serverRenderRules.yml
 
@@ -220,9 +217,9 @@ Now the URL is pre-rendered, should the server cache this HTML for next time?
 
 Configures what dependencies / REST url will be cached.
 
-ex1: Scripts dependencies, want to cache all calls to angular-ui ? angular-material? your sources? This is recommended because this will greatly improves the pre-rendering speed.
+*ex1:* Scripts dependencies, want to cache all calls to angular-ui ? angular-material? your sources? This is recommended because this will greatly improves the pre-rendering speed.
 
-ex2: Some $http rest calls are known to be static? Some other changes once in a while? You can cache them too !
+*ex2:* Some $http rest calls are known to be static? Some other changes once in a while? You can cache them too !
 
 Both `serverCacheRules.yml` and `slimerRestCacheRules.yml` files format specification follows [redis-url-cache config file format](https://ng-consult.github.io/redis-url-cache/api.html#config.cache-rules).
 
@@ -248,14 +245,14 @@ The second port is dedicated to internal communications with **the Angular clien
 
 Each pre-rendering is made via slimer.js which is similar to phantom.js. It simulates a real web-browser environment, and execute the URL/HTML.
 
-- Communicates with it parent's process trough websocket, sending runtimes error informations
+- Communicates with it parent's process trough websocket, sending runtimes informations
 - Intercept every network communication ( `<script>` loading, '$http' calls, and forward them to the **cache  web server**.
 - Makes sure no zombie are left behind
 - Handles runtimes error
 
 ###The ng1-Server-bower client module
 
-This module is included inside the angualr web-app and modifies several providers to adapt with the server side environment.
+This module is included inside the angular web-app and modifies several providers to adapt with the server side environment.
 
 *When running on server:*
 
@@ -264,7 +261,7 @@ This module is included inside the angualr web-app and modifies several provider
     
 *When running on the client's browser:*
 
-- Replays the `$cacheFactory` content for faser client side rendering
+- Replays the `$cacheFactory` content for faster client side rendering
 - If enabled, forward all `$http` calls to the **cache web server**
     
 ###A Cache Web Server
@@ -286,70 +283,32 @@ What need to be done before reaching stable release is :
 
 Simply run `npm run test` or [check the travis output](https://travis-ci.org/ng-consult/ng1-server)
 
+The web app used to run the tests [can be found here](https://github.com/a-lucas/angular.js-server-test-client). This app needs to get updated to support testing of
+
+- cookies
+- authentication
+- preboot
 
 ## Main dependencies
 
-- [Bunyan](https://github.com/trentm/node-bunyan) to log server related metrics and web app behavior. It also integrtes with [Graylog](https://www.graylog.org/)
+- [Bunyan](https://github.com/trentm/node-bunyan) to log server related metrics and web app behavior. It also integrates with [Graylog](https://www.graylog.org/)
 - [Ng1-server client library](https://github.com/ng-consult/ng1-server-bower) to link this all together.
 - [Preboot](https://github.com/angular/preboot) to manage the transition of state (i.e. events, focus, data) from a server-generated web view to a client-generated web view.
 - [Redis Url Cache](https://www.npmjs.com/package/redis-url-cache) to handle the url caching and 
 - [Slimer.JS](https://slimerjs.org/) to execute the angular app in a browser like environment on the server, 
 - [Socket-io](http://socket.io/) to establish communication between the application modules. 
 
-<!--
-To explain what is going on under the hood, let's use a todo case scenario and compare it with angular-server's flow.
-
-## Usual flow
-
-1. The  browser request `/Todo`
-2. The server receives the request and sends back the HTML ( which doesnt't have much body, the ng-app loads it asynchronously )
-3. The client receives the HTML, loads all the JS scripts and then bootstrap angular, resolving the route and $http'ing all the needed templates 
-4. Once bootstrapped ng-app sends a $http request back to the server for a todo list
-5. The server sends back a json list.we'll call it  **json-time**, and all the html templates, which we call **templates[]**
-6. Then angular displays the todo list on screen
-
-*At this stage, the HTML you have in the web inspector is what ng-server aims for.*
-We'll call it **GoalHTML**.
-
-## ng1-server's flow
-
-1. The browser request `/Todo`
-2. The server receives and ask : **Should `/Todo` be rendered ?**
-    - *(yes)*
-        - **Is Caching enabled?**
-            - *(yes)*
-                - **Is Todo already cached?**
-                    - *(no)*
-                        - -> pre-render on server the app and get **GoalHTML** ready to be sent
-                        - -> cache the **GoalHTML** for subsequent calls
-                        - **Is REST caching enabled?**
-                            - *(yes)*
-                                - -> cache **json-time**
-                                - -> cache **templates[]**                                    
-                    - *(yes)*
-                        - -> Retrieve **GoalHTML** , **json-time** and **templates[]**
-            - *(no)*
-                - pre-render on server the app and get **GoalHTML** ready to be sent            
-        - Sends back **GoalHTML** + **json-time** + **templates[]** embeded for an instant replay on the client
-    - *(no)*
-        - -> Return the vanilla HTML.
-
->> Note: All logging and error handling have been skipped for padding purposes
--->
-
-
-### Clients
+## Clients
 
 So far, only one client [ng1-server-node-client](https://github.com/ng-consult/ng1-server-node-client) is implemented.
 
 Install it by running `npm install --save ng1-server-node-client` inside your web server project.
  
 The client connects to the ngServer port specified in the config.
-
 ```
 var Client = require('ng1-server-node-client`);
 
-#http://127.0.0.1:8881 is the BRidge_internal url defined inside your serverConfig.yaml
+#http://127.0.0.1:8881 is the Bridge_external url defined inside your serverConfig.yaml
 
 var client = new Client('http://127.0.0.1:8881');
 
@@ -397,83 +356,9 @@ web-app-errors.log
 ### GrayLog 
  
  You can forward all these logs to a GrayLog server by changing the config `serverConfig.gelf`. Note that the input must be UDP. 
+
+# Contributing
  
+Contributors are very much welcomed. I currently work full time, and my free time to help with this project can sometimes be very limited.
 
-<!---
-## Config
-
-Angular-server has severall config options :
- 
-- **ServerConfig**
-    Sets the domain name, port, base url, timeout and debug
-- **RenderConfig**
-    Add and remove Regex rules, and set up the render strategy to adopt. 
-- **LogConfig**
-    All your client log is written on the server, here you setup the base dir, server log, and fine tune each of [warn, info, log, debug and error]'s behavior. 
-- **CacheConfig** and **RestCacheConfig**
-    They both share the same class definition. Add/Get/Remove caching rules, clear cache. 
-
-> All these config objects are passed by reference and are public. 
-
-## Config API
-
-Check the `docs` folder.
-
-## Dependencies
-
-This library depends on a compatible version of [Angular.js-server client](https://github.com/a-lucas/angular.js-server-bower "Angular.js-server")
-
-[![Build Status](https://travis-ci.org/a-lucas/angular.js-server-bower.svg?branch=master)](https://travis-ci.org/a-lucas/angular.js-server-bower)   [![codecov](https://codecov.io/gh/a-lucas/angular.js-server-bower/branch/master/graph/badge.svg)](https://codecov.io/gh/a-lucas/angular.js-server-bower)
-
-## Requirements
-
-**html5mode**
-
-Your angular app must use [html5mode](). The reason behind this requirement is that browsers don't send the hashbang fragment to the server.
-
-**Angular.js 1.5.x**
-
-This has been written with 1.5.x in mind.
-
-**node.js**
-
-
-
-## Functionalities
-
-**REST $http caching & angular template pre-caching**
-
-When pre-rendered, every templateRequest and REST call can be optionally cached and injected into the client before the angular app bootstraps. These requests are instantly replayed, decreasing considerably the client page loading time.
-REST and template caching is shared between angular instances.
-
-**URL filtering**
-
-You can decide which URLs will be pre-rendered, and uses either of the two strategies `include` or `exclude` by providing an array of Regexes to match URL against.
-
-**Logging** 
-
-
-## Installation
-
-### Client Side library
-
-You can install [it](https://github.com/a-lucas/angular.js-server-bower) vith bower. 
-
-```bash
-bower install angular.js-server
-```
-
-For those without bower, this is [where the file is](https://github.com/a-lucas/angular.js-server-bower/tree/master/dist)
-
-Then you need to include the module `server` as a dependency in your AngularJS application.
-
-### Server module installation
-
-```bash
-npm install angular.js-server
-```
--->
-
-#WIP
-
-This work is incomplete and in progress - DON'T use it on prod withouth prior testing.
+Also don't hesitate to file issues.
