@@ -15,8 +15,7 @@
     "test": "rm -Rf ./coverage ;./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha ./test -- -R spec",
     "codecov": "./node_modules/.bin/codecov",
     "preboot": "mkdir ./test-server/bower/preboot ; cp ./node_modules/preboot/__dist/preboot_browser.js ./test-server/bower/preboot/",
-    "install": "npm run getslimer; npm run typings; npm run bower",
-    "post-install": "npm run preboot"
+    "install": "npm run getslimer; npm run typings; npm run bower"
   },
   "pre-commit": [],
   "main": "dist/ng-server.js",
@@ -118,7 +117,7 @@
     "moment": "^2.11.2",
     "ng1-server-node-client": "^1.0.0-beta0",
     "node-phantom": "^0.2.5",
-    "phantom": "latest",
+    "phantom": "3.2.1",
     "pre-commit": "^1.1.3",
     "pug": "^2.0.0-beta6",
     "requirejs": "^2.3.2",
@@ -136,6 +135,6 @@
     "ts-loader": "^0.8.2",
     "typescript": "latest",
     "typings": "latest",
-    "webpack": "latest"
+    "webpack": "^1"
   }
 }

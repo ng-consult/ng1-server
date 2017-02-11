@@ -24,6 +24,7 @@ install:
   - npm run typings
   - npm run build
   - npm run getslimer
+  - npm run preboot
 node_js:
   - "5.11"
 notifications:
