@@ -7,7 +7,7 @@ test-server/bower
 .idea
 npm-debug.log
 typings
-dist
+dist/logs
 logs
 test-tape/logs/
 test2/logs/
