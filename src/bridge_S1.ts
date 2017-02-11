@@ -69,6 +69,7 @@ export default class Bridge_S1 {
                 logger.debug('AAA_MSG.CHECK_URL');
 
                 this.cache.checkURL(url, (status, data) => {
+                    debug('CHECK_URL result', status, data);
                     logger.debug({status: status, data: data}, 'AAA_MSG.CHECK_URL RESPONSE');
                     socket.emit(status, data);
                 });

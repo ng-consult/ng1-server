@@ -93,6 +93,8 @@ export default class SlimerProcess {
             Bridge_Pool.next();
             //}
         } else {
+            debug('Existing slimerProcess with data', Bridge_Pool.pool[this.uid]);
+
             if (Bridge_Pool.pool[this.uid].status === ENUM_RENDER_STATUS.HTML) {
                 debug('There is HTML, lets next()');
                 Bridge_Pool.deleteUID(this.uid);
